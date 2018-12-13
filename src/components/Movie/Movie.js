@@ -108,32 +108,24 @@ class Movie extends Component {
                     />
 
                     <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {this.state.Title}
-                        </Typography>
-                        <Typography component="p">
-                            {this.state.nameHeb}
-                        </Typography>
-                        <Typography component="p">
-                            {this.state.Year}
-                        </Typography>
+                        <Typography variant="h4"> {this.state.Title} </Typography>
+                        <Typography variant="h5"> {this.state.nameHeb}  </Typography>
+                        <Typography variant="h6"> {this.state.Country} {this.state.Year} <div style={{display: 'inline-block'}}>({this.state.Runtime})</div></Typography>
                     </CardContent>
 
                 </CardActionArea>
 
                 <CardActions>
 
-
-                {MovieTabs}
-
-
-
-                    {/* <Button size="small" color="primary">
-                        Show more
-                    </Button>
-                    <Button size="small" color="secondary">
-                        Download
-                    </Button> */}
+                    <MovieTabs
+                        title={this.state.Title}
+                        year={this.state.Year}
+                        ratings={this.state.Ratings}
+                        imdbRating={this.state.imdbRating}
+                        plot={this.state.Plot}
+                        actors={this.state.Actors}
+                        genre={this.state.Genre}
+                    />
 
                 </CardActions>
 
@@ -146,3 +138,10 @@ class Movie extends Component {
 }
 
 export default Movie;
+
+{/* <Button size="small" color="primary">
+    Show more
+</Button>
+<Button size="small" color="secondary">
+    Download
+</Button> */}

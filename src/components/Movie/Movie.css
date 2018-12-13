@@ -1,9 +1,8 @@
 .movieCard {
-    /* max-width: 20%; */
-    min-width: 300px; 
+    /* min-width: 300px;  */
     max-width: 300px;
-    margin: 20px;
-    flex-grow: 1;
+    margin: 20px 10px;
+    /* flex-grow: 1; */
 }
 
 .MuiCardContent-root-37 {
