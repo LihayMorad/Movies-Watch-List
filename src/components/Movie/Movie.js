@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import MovieTabs from './MovieTabs/MovieTabs';
+import MovieModal from './MovieModal/MovieModal';
 
 import axios from 'axios';
 
@@ -75,6 +76,8 @@ class Movie extends Component {
         this.getMovieDb();
     }
 
+    // http://www.omdbapi.com/?t=A Perfect Getaway&y=2009type=movie&apikey=2ac6a078
+
     async getMovieDb() {
         const omdbResponse = await axios('http://www.omdbapi.com/?t=' + this.props.nameEng + '&y=' + this.props.releaseYear + 'type=movie&apikey=2ac6a078');
         try {
@@ -84,6 +87,10 @@ class Movie extends Component {
         } catch (error) {
             console.error('error: ', error);
         }
+    }
+
+    watchTrailer = () => {
+        alert('test');
     }
 
     componentDidUpdate() {
@@ -102,15 +109,16 @@ class Movie extends Component {
                         component="img"
                         alt={this.state.nameEng + " Movie Poster"}
                         // className={{ objectFit: 'cover' }}
-                        // height="200px"
+                        // height="600px"
                         image={this.state.Poster}
                         title={this.state.Title}
+                        onClick={this.watchTrailer}
                     />
 
-                    <CardContent>
+                    <CardContent style={{ boxSizing: 'border-box', width: '350px', padding: '12px' }}>
                         <Typography variant="h4"> {this.state.Title} </Typography>
-                        <Typography variant="h5"> {this.state.nameHeb}  </Typography>
-                        <Typography variant="h6"> {this.state.Country} {this.state.Year} <div style={{display: 'inline-block'}}>({this.state.Runtime})</div></Typography>
+                        <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
+                        <Typography > {this.state.Country} {this.state.Year} <div style={{ display: 'inline-block' }}>({this.state.Runtime})</div></Typography>
                     </CardContent>
 
                 </CardActionArea>
@@ -122,6 +130,7 @@ class Movie extends Component {
                         year={this.state.Year}
                         ratings={this.state.Ratings}
                         imdbRating={this.state.imdbRating}
+                        imdbId={this.state.imdbID}
                         plot={this.state.Plot}
                         actors={this.state.Actors}
                         genre={this.state.Genre}
@@ -129,6 +138,7 @@ class Movie extends Component {
 
                 </CardActions>
 
+                <MovieModal isOpen={true}/>
             </Card>
 
         );
