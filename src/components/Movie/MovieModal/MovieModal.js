@@ -2,76 +2,97 @@ import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
+import axios from 'axios';
+
+// import YTSearch from 'ytsearch';
 
 import './MovieModal.css';
 
 class MovieModal extends Component {
 
   state = {
-    open: false,
-  };
-
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  componentDidMount() {
-    this.setState({
-      open: this.props.isOpen
-    });
+    trailerId: "",
+    trailerTitle: ""
   }
 
-  render() {
+  // componentDidMount() {
+  //   console.log('Movie Modal [componentDidMount] this.props.isOpen', this.props.isOpen);
+  // }
 
+  // componentDidUpdate() {
+  //   console.log('Movie Modal [componentDidMount] this.props.isOpen', this.props.isOpen);
+  // }
+
+  // https://upload.wikimedia.org/wikipedia/en/thumb/6/63/IMG_%28business%29.svg/1200px-IMG_%28business%29.svg.png
+
+  // 'colors'),
+  // 'format-number')(),
+  // 'minimist'),
+  // 'youtube-best-video').findBestMusicVideo,
+  // 'youtube-search'),
+  // 'slashes'),
+  // 'timelabel'),
+  // ('get-youtube-id'),
+
+  async getTrailer() {
+    console.log('this.props.searchParams: ', this.props.searchParams);
+
+    if (this.props) {
+      const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=AIzaSyCUbrEdnpgemTm9Qivmu6Aeg44bNOKl2Uo`);
+      try {
+        let youtubeTrailerId = youtubeSearchResponse.data.items[0].id.videoId;
+        let youtubeTrailerTitle = youtubeSearchResponse.data.items[0].snippet.title;
+        console.log('youtubeTrailerId', youtubeSearchResponse.data.items[0]);
+        console.log('youtubeTrailerTitle: ', youtubeTrailerTitle);
+
+        this.setState({
+          trailerId: youtubeTrailerId,
+          trailerTitle: youtubeTrailerTitle
+        });
+
+      } catch (error) {
+        console.error('error: ', error);
+      }
+    }
+
+  }
+  render() {
 
     return (
       <div>
-        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-          Open full-screen dialog
-        </Button>
+
         <Dialog
-          fullScreen
-          open={this.state.open}
-          onClose={this.handleClose}
-        // TransitionComponent={Transition}
-        >
-          <AppBar style={{ position: 'relative' }}>
-            <Toolbar>
-              <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h6" color="inherit" style={{ flex: '1' }}>
-                Sound
-              </Typography>
-              <Button color="inherit" onClick={this.handleClose}>
-                save
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <List>
-            <ListItem button>
-              <ListItemText primary="Phone ringtone" secondary="Titania" />
-            </ListItem>
-            <Divider />
-            <ListItem button>
-              <ListItemText primary="Default notification ringtone" secondary="Tethys" />
-            </ListItem>
-          </List>
+          fullWidth
+          maxWidth="xl"
+          open={this.props.isOpen}
+          onClose={this.props.toggle}
+          onEnter={this.getTrailer.bind(this)}>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <DialogTitle style={{ margin: 'auto' }} id="scroll-dialog-title">{this.state.trailerTitle}</DialogTitle>
+            <IconButton style={{ position: 'absolute' }} color="inherit" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
+          </div>
+
+          <DialogContent>
+            <div className={"videowrapper"}>
+              <iframe width={"560px"} height={"315px"} src={`https://www.youtube.com/embed/${this.state.trailerId}?autoplay=0`} frameBorder={"0"}
+                allow={"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"} allowFullScreen title={"Movie Trailer"}></iframe>
+            </div>
+            {/* <DialogContentText>Cras mattis consectetur purus sit amet fermentum.</DialogContentText> */}
+          </DialogContent>
+
+          <DialogActions style={{ margin: '0' }}>
+            <Button style={{ margin: '0', padding: '12px' }} color="inherit" onClick={this.props.toggle}>Close</Button>
+          </DialogActions>
+
         </Dialog>
+
       </div>
     );
   }

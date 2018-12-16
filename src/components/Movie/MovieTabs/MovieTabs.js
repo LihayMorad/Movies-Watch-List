@@ -19,15 +19,17 @@ class MovieTabs extends Component {
   };
 
   render() {
-    console.log('[this.props]', this.props);
+    // console.log('[this.props]', this.props);
 
     const { expanded } = this.state;
     let ratings = "";
+    let imdbRating = "";
     let torrents = [];
     let subtitles = [];
     let searchParams = "";
     let actors = [];
     let mainActor = "";
+    let fullcast = "";
     const torrentsSites = [
       { "name": "RarBG", "url": "https://rarbgtor.org/torrents.php?search=" },
       { "name": "TorrentDownloads", "url": "https://www.torrentdownloads.me/search/?s_cat=4&search=" },
@@ -44,38 +46,45 @@ class MovieTabs extends Component {
     if (this.props.title) {
       // onClick={()=>window.location.href='http://www.hyperlinkcode.com/button-links.php'
 
-      ratings = this.props.ratings ?
-        this.props.ratings.map(rating => <Typography key={this.props.imdbID} style={{ padding: '5px' }} variant={'body2'} >{rating.Source}: {rating.Value}</Typography>)
-        : <div></div>;
+      ratings = this.props.ratings ? this.props.ratings.map(rating =>
+        <Typography key={`${this.props.imdbID}_${rating.Source}`} style={{ padding: '5px' }} variant={'body2'} >{rating.Source}: {rating.Value}</Typography>) : <div></div>;
+      imdbRating = this.props.imdbRating === "N/A" ? "N/A" : `IMDb: ${this.props.imdbRating}`;
 
       searchParams = this.props.title + "+" + this.props.year;
 
       torrents = torrentsSites.map(site => {
+        let attributes = "";
         switch (site.name) {
-          case "RarBG": return <a style={{ margin: '0 auto' }} href={site.url + searchParams} target="_blank" rel="noopener noreferrer">{site.name}</a>
-          case "TorrentDownloads": return <a style={{ margin: '0 auto' }} href={site.url + searchParams} target="_blank" rel="noopener noreferrer">{site.name}</a>
-          case "1337X": return <a style={{ margin: '0 auto' }} href={site.url + searchParams + site.urlExt} target="_blank" rel="noopener noreferrer">{site.name}</a>
-          case "LimeTorrents": return <a style={{ margin: '0 auto' }} href={site.url + searchParams} target="_blank" rel="noopener noreferrer">{site.name}</a>
-          case "KickassTorrents": return <a style={{ margin: '0 auto' }} href={site.url + this.props.title + " " + this.props.year + site.urlExt} target="_blank" rel="noopener noreferrer">{site.name}</a>
+          case "RarBG": attributes = site.url + searchParams; break;
+          case "TorrentDownloads": attributes = site.url + searchParams; break;
+          case "1337X": attributes = site.url + searchParams + site.urlExt; break;
+          case "LimeTorrents": attributes = site.url + searchParams; break;
+          case "KickassTorrents": attributes = site.url + this.props.title + " " + this.props.year + site.urlExt; break;
           default: return <p></p>;
         }
+        return <a key={`${this.props.imdbId}_${site.name}`} style={{ margin: '0 auto' }} href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
       });
 
       subtitles = subtitlesSites.map(site => {
+        let attributes = "";
         switch (site.name) {
-          case "Subcenter": return <a style={{ margin: '0 auto' }} href={site.url + this.props.title} target="_blank" rel="noopener noreferrer">{site.name}</a>
-          case "Wizdom": return <a style={{ margin: '0 auto' }} href={site.url + this.props.imdbId} target="_blank" rel="noopener noreferrer">{site.name}</a>
-          case "ScrewZira": return <a style={{ margin: '0 auto' }} href={site.url + this.props.title} target="_blank" rel="noopener noreferrer">{site.name}</a>
+          case "Subcenter": attributes = site.url + this.props.title; break;
+          case "Wizdom": attributes = site.url + this.props.imdbId; break;
+          case "ScrewZira": attributes = site.url + this.props.title; break;
           default: return <p></p>;
         }
+        return <a key={`${this.props.imdbId}_${site.name}`} style={{ margin: '0 auto' }} href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
       });
 
       actors = this.props.actors.split(',').map(actor => {
-        return <a href={"https://en.wikipedia.org/wiki/" + actor} target={"_blank"} onClick={(e) => e.stopPropagation()}
-          style={{ display: 'inline-block', paddingLeft: '5px' }}>{actor.trim()}</a>
+        return <a key={`${this.props.imdbId} _${actor}`} href={`https://en.wikipedia.org/wiki/${actor}`} target={"_blank"} rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+          style={{ display: 'inline-block', paddingLeft: '5px' }
+          }> {actor.trim()}</a >
       });
 
       mainActor = actors[0];
+      fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbId}/fullcredits/`}
+        target={"_blank"} rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>more</a>
     }
 
     return (
@@ -87,13 +96,13 @@ class MovieTabs extends Component {
             <Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Plot</Typography>
             <Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{this.props.genre}</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ padding: '8px 10px', borderTop: '1px solid rgba(0, 0, 0, 0.12)' }}>{this.props.plot}</ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ padding: '8px 10px', borderTop: '1px solid rgba(0, 0, 0, 0.12)' }}>{this.props.plot ? this.props.plot : ""}</ExpansionPanelDetails>
         </ExpansionPanel>
 
         <ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Actors</Typography>
-            <Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{mainActor}  &  more</Typography>
+            <Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Cast</Typography>
+            <Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{mainActor} & {fullcast}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ padding: '8px 10px', borderTop: '1px solid rgba(0, 0, 0, 0.12)' }}>
             <Typography variant={'body2'}>{actors.splice(1)}</Typography>
@@ -103,7 +112,7 @@ class MovieTabs extends Component {
         <ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left' }} variant={'h6'}>Ratings</Typography>
-            <Typography style={{ margin: 'auto' }} variant={'subtitle2'}>IMDb: {this.props.imdbRating}</Typography>
+            <Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{imdbRating}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ padding: '8px 10px', borderTop: '1px solid rgba(0, 0, 0, 0.12)' }}>{ratings}</ExpansionPanelDetails>
         </ExpansionPanel>

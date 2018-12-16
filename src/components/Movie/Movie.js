@@ -5,7 +5,6 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import MovieTabs from './MovieTabs/MovieTabs';
@@ -32,20 +31,16 @@ import './Movie.css';
 //     "Country": "USA, Canada",
 //     "Awards": "1 win & 2 nominations.",
 //     "Poster": "https://m.media-amazon.com/images/M/MV5BMTk5MTk3OTk3OV5BMl5BanBnXkFtZTcwMzg4MzgxNg@@._V1_SX300.jpg",
-//     "Ratings": [
-//       {
+//     "Ratings": [ {
 //         "Source": "Internet Movie Database",
 //         "Value": "5.2/10"
-//       },
-//       {
+//          }, {
 //         "Source": "Rotten Tomatoes",
 //         "Value": "24%"
-//       },
-//       {
+//          }, {
 //         "Source": "Metacritic",
 //         "Value": "24/100"
-//       }
-//     ],
+//          } ],
 //     "Metascore": "24",
 //     "imdbRating": "5.2",
 //     "imdbVotes": "50,554",
@@ -66,22 +61,21 @@ class Movie extends Component {
         releaseYear: "",
         trailerURL: "",
         comments: "",
+        watchingTrailer: false
     }
 
     componentDidMount() {
         // console.log('Movie [componentDidMount]');
         this.setState({ ...this.props });
-        console.log(this.props);
+        // console.log(this.props);
 
         this.getMovieDb();
     }
 
-    // http://www.omdbapi.com/?t=A Perfect Getaway&y=2009type=movie&apikey=2ac6a078
-
     async getMovieDb() {
-        const omdbResponse = await axios('http://www.omdbapi.com/?t=' + this.props.nameEng + '&y=' + this.props.releaseYear + 'type=movie&apikey=2ac6a078');
+        const omdbResponse = await axios(`http://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=2ac6a078`);
         try {
-            console.log(omdbResponse.data);
+            // console.log(omdbResponse.data);
             let omdbData = omdbResponse.data;
             this.setState({ ...omdbData });
         } catch (error) {
@@ -89,13 +83,26 @@ class Movie extends Component {
         }
     }
 
-    watchTrailer = () => {
-        alert('test');
+    // another approach: by using boolean 'loading' in state
+    // getMovieDb() {
+    //     axios(`http://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=2ac6a078`)
+    //         .then(response => {
+    //             this.setState({ ...omdbData, loading: false });
+    //         })
+    //         .catch(error => {
+    //             console.error('error: ', error);
+    //         });
+    // }
+
+    toggleWatchTrailer = () => {
+        this.setState({
+            watchingTrailer: !this.state.watchingTrailer
+        });
     }
 
-    componentDidUpdate() {
-        console.log(this.state);
-    }
+    // componentDidUpdate() {
+    //     console.log(this.state);
+    // }
 
     render() {
 
@@ -112,13 +119,13 @@ class Movie extends Component {
                         // height="600px"
                         image={this.state.Poster}
                         title={this.state.Title}
-                        onClick={this.watchTrailer}
+                        onClick={this.toggleWatchTrailer}
                     />
 
-                    <CardContent style={{ boxSizing: 'border-box', width: '350px', padding: '12px' }}>
+                    <CardContent style={{ padding: '12px' }}>
                         <Typography variant="h4"> {this.state.Title} </Typography>
                         <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
-                        <Typography > {this.state.Country} {this.state.Year} <div style={{ display: 'inline-block' }}>({this.state.Runtime})</div></Typography>
+                        <p style={{ fontSize: '14px', marginTop: '4px', marginBottom: '0' }}>{this.state.Country} {this.state.Year} <span style={{ display: 'inline-block' }}>({this.state.Runtime})</span></p>
                     </CardContent>
 
                 </CardActionArea>
@@ -138,7 +145,9 @@ class Movie extends Component {
 
                 </CardActions>
 
-                <MovieModal isOpen={true}/>
+                <MovieModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
+                    searchParams={`${this.state.Title} ${this.state.Year}`} />
+
             </Card>
 
         );
