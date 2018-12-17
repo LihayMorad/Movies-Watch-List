@@ -4,7 +4,7 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+// import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
 import MovieTabs from './MovieTabs/MovieTabs';
@@ -102,6 +102,11 @@ class Movie extends Component {
     // }
 
     render() {
+        // console.log(this.state);
+
+        if (this.state.Error) {
+            return <h1>TESTTEST @@@@@@@</h1>
+        }
 
         return (
 
@@ -109,18 +114,13 @@ class Movie extends Component {
 
                 <CardActionArea>
 
-                    <CardMedia
-                        component="img"
-                        // className={{ objectFit: 'cover' }}
-                        // height="600px"
-                        // image={this.state.Poster}
-                        alt={""}
-                        title={this.state.Title}
-                    />
+                    {/* <CardMedia // component="img" // className={{ objectFit: 'cover' }} // height="600px"
+                        // image={this.state.Poster} alt={""} title={this.state.Title}
+                        image="https://opengameart.org/sites/default/files/Transparency500.png" /> */}
 
                     <CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer}>
                         <div className={"movieCardContentImgDiv"}>
-                            <img src={this.state.Poster ? this.state.Poster : ""}/>
+                            <img src={this.state.Poster ? this.state.Poster : ""} alt={"Movie Poster"} />
                         </div>
                         <Divider variant="middle"></Divider>
                         <div className={"movieCardContentTextDiv"}>

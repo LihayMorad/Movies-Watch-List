@@ -1,6 +1,6 @@
 import React from 'react';
 
-import HeaderIMG from '../../../assets/HeaderIMG.png';
+// import HeaderIMG from '../../../assets/HeaderIMG.png';
 import './Header.css';
 
 const Header = props => {

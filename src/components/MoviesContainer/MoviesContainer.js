@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import Movie from '../Movie/Movie';
+import UserMenu from '../UserMenu/UserMenu';
 import Spinner from '../Spinner/Spinner';
 
 import './MoviesContainer.css';
@@ -16,44 +17,94 @@ class MoviesContainer extends Component {
     componentDidMount() { // an example of OMDb http://www.omdbapi.com/?t=avatar&y=2003&apikey=2ac6a078
         // console.log('MoviesContainer [componentDidMount]');
 
-        const GOOGLE_SHEET_API_URL = "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values/A1%3A1?key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc";
+        // const GOOGLE_SHEET_API_URL = "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values/A1%3A2?key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc";
         // ALSO WORKING: "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values:batchGet?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=FORMATTED_STRING&ranges=A1%3AZ&majorDimension=ROWS&key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc"
-        this.getMoviesToWatch(GOOGLE_SHEET_API_URL);
+
+        // from id 0 to 5 include :'https://movies-to-watch-26077.firebaseio.com/movies.json?orderBy="$key"&startAt="0"&endAt="5"'
+        // all :'https://movies-to-watch-26077.firebaseio.com/movies.json?'
+
+        const FIREBASE_URL = 'https://movies-to-watch-26077.firebaseio.com/movies.json?orderBy="$key"&startAt="73"&endAt="75"';
+        this.getMoviesToWatch(FIREBASE_URL);
     }
 
     // componentDidUpdate() {
     //     console.log(this.state.moviesData);
     // }
 
-    async getMoviesToWatch(googleSheetURL) {
-        const googleSheetResponse = await axios(googleSheetURL);
+    async getMoviesToWatch(firebaseURL) {
+        const firebaseResponse = await axios.get(firebaseURL);
         try {
-            const googleSheetData = googleSheetResponse.data.values.map((movie => {
+            let firebaseData = Array.isArray(firebaseResponse.data) ?
+                firebaseResponse.data : Object.keys(firebaseResponse.data).map(key => { return firebaseResponse.data[key] });
+            console.log('firebaseData: ', firebaseData);
+
+            const movies = firebaseData.map((movie => {
                 return <Movie
-                    key={`${movie[1]}_${movie[2]}`}
-                    nameHeb={movie[0]}
-                    nameEng={movie[1]}
-                    releaseYear={movie[2]}
-                    trailerURL={movie[3]}
-                    comments={movie[4]}
+                    key={`${movie['NameEng']}_${movie['Year']}`}
+                    nameHeb={movie['NameHeb']}
+                    nameEng={movie['NameEng']}
+                    releaseYear={movie['Year']}
+                    trailerURL={movie['TrailerURL']}
+                    comments={movie['Comments']}
                 />
             }));
-            this.setState({ moviesData: googleSheetData, loading: false });
+
+            this.setState({ moviesData: movies, loading: false });
+
         } catch (error) {
             console.error('error: ', error);
         }
     }
 
-    render() {
-        // console.log(this.state.moviesData);
+    sortMovies = (filter, order) => {
+        console.log('order: ', order);
+        console.log('sortBy: ', filter);
 
-        if(this.state.loading) {
+        let sortByPicked = "", orderPicked = "";
+
+        switch (filter) {
+            case "nameEng": sortByPicked = "nameEng"; break;
+            case "nameHeb": sortByPicked = "nameHeb"; break;
+            default: sortByPicked = "releaseYear";
+        }
+
+        orderPicked = order === "ascending" ? "ascending" : "descending";
+
+        let sortedMovies = this.state.moviesData.slice().filter(movie => !movie.Error).sort((a, b) => {
+
+            const movie1 = a.props[sortByPicked];
+            const movie2 = b.props[sortByPicked];
+
+            console.log('movie2', movie2);
+            console.log('movie1', movie1);
+
+            if (sortByPicked === "releaseYear") {
+                return orderPicked === "descending" ? movie2 - movie1 : movie1 - movie2;
+            }
+            return orderPicked === "descending" ?
+                movie2 > movie1 ? 1 : movie2 === movie1 ? 0 : -1 :
+                movie1 < movie2 ? -1 : movie2 === movie1 ? 0 : 1;
+
+        });
+
+        this.setState({ moviesData: sortedMovies });
+    }
+
+    render() {
+        console.log(this.state.moviesData);
+
+        if (this.state.loading) {
             return <Spinner />
         }
 
         return (
-            <div className="MoviesContainer">
-                {this.state.moviesData}
+            <div>
+                <div className={"UserMenu"}>
+                    <UserMenu sortMovies={this.sortMovies} />
+                </div>
+                <div className={"MoviesGallery"}>
+                    {this.state.moviesData}
+                </div>
             </div>
         );
 
