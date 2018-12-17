@@ -1,1 +1,13 @@
-/*  */
+.ratingsText {
+    padding: 5px;
+}
+
+.downloadSitesLinks {
+    margin: 0 auto;
+    padding: 4px;
+}
+
+.actorsList {
+    display: inline-block;
+    padding: 0px 3px;
+}

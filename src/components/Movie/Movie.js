@@ -9,12 +9,13 @@ import Typography from '@material-ui/core/Typography';
 
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieModal from './MovieModal/MovieModal';
+import Divider from '@material-ui/core/Divider';
 
 import axios from 'axios';
 
-// https://docs.google.com/spreadsheets/d/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/edit#gid=1798005677
-
 import './Movie.css';
+
+// https://docs.google.com/spreadsheets/d/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/edit#gid=1798005677
 
 // {
 //     "Title": "Apollo 18",
@@ -67,15 +68,13 @@ class Movie extends Component {
     componentDidMount() {
         // console.log('Movie [componentDidMount]');
         this.setState({ ...this.props });
-        // console.log(this.props);
 
         this.getMovieDb();
     }
 
-    async getMovieDb() {
+    async getMovieDb() { // example: http://www.omdbapi.com/?t=avatar&y=2009&type=movie&apikey=2ac6a078
         const omdbResponse = await axios(`http://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=2ac6a078`);
         try {
-            // console.log(omdbResponse.data);
             let omdbData = omdbResponse.data;
             this.setState({ ...omdbData });
         } catch (error) {
@@ -95,9 +94,7 @@ class Movie extends Component {
     // }
 
     toggleWatchTrailer = () => {
-        this.setState({
-            watchingTrailer: !this.state.watchingTrailer
-        });
+        this.setState({ watchingTrailer: !this.state.watchingTrailer });
     }
 
     // componentDidUpdate() {
@@ -114,23 +111,28 @@ class Movie extends Component {
 
                     <CardMedia
                         component="img"
-                        alt={this.state.nameEng + " Movie Poster"}
                         // className={{ objectFit: 'cover' }}
                         // height="600px"
-                        image={this.state.Poster}
+                        // image={this.state.Poster}
+                        alt={""}
                         title={this.state.Title}
-                        onClick={this.toggleWatchTrailer}
                     />
 
-                    <CardContent style={{ padding: '12px' }}>
-                        <Typography variant="h4"> {this.state.Title} </Typography>
-                        <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
-                        <p style={{ fontSize: '14px', marginTop: '4px', marginBottom: '0' }}>{this.state.Country} {this.state.Year} <span style={{ display: 'inline-block' }}>({this.state.Runtime})</span></p>
+                    <CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer}>
+                        <div className={"movieCardContentImgDiv"}>
+                            <img src={this.state.Poster ? this.state.Poster : ""}/>
+                        </div>
+                        <Divider variant="middle"></Divider>
+                        <div className={"movieCardContentTextDiv"}>
+                            <Typography variant="h4"> {this.state.Title} </Typography>
+                            <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
+                            <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
+                        </div>
                     </CardContent>
 
                 </CardActionArea>
 
-                <CardActions>
+                <CardActions style={{ padding: '7px' }}>
 
                     <MovieTabs
                         title={this.state.Title}
@@ -157,10 +159,3 @@ class Movie extends Component {
 }
 
 export default Movie;
-
-{/* <Button size="small" color="primary">
-    Show more
-</Button>
-<Button size="small" color="secondary">
-    Download
-</Button> */}
