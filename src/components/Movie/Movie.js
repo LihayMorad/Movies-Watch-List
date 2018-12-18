@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieModal from './MovieModal/MovieModal';
 import Divider from '@material-ui/core/Divider';
+import MovieNotFound from '../../assets/MovieNotFound.png';
 
 import axios from 'axios';
 
@@ -57,11 +58,11 @@ import './Movie.css';
 class Movie extends Component {
 
     state = {
-        nameHeb: "",
-        nameEng: "",
-        releaseYear: "",
-        trailerURL: "",
-        comments: "",
+        nameHeb: "", nameEng: "", releaseYear: "", trailerURL: "", comments: "",
+
+        Response: "",
+        Error: "",
+
         watchingTrailer: false
     }
 
@@ -76,7 +77,7 @@ class Movie extends Component {
         const omdbResponse = await axios(`http://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=2ac6a078`);
         try {
             let omdbData = omdbResponse.data;
-            this.setState({ ...omdbData });
+            omdbData.Response ? this.setState({ ...omdbData }) : this.setState({ Response: omdbData.Response, Error: omdbData.Error });
         } catch (error) {
             console.error('error: ', error);
         }
@@ -104,13 +105,11 @@ class Movie extends Component {
     render() {
         // console.log(this.state);
 
-        if (this.state.Error) {
-            return <h1>TESTTEST @@@@@@@</h1>
-        }
+        const movieDBError = this.state.Error;
 
         return (
 
-            <Card className="movieCard" >
+            <Card className="movieCard" style={{ width: '350px' }}>
 
                 <CardActionArea>
 
@@ -120,13 +119,18 @@ class Movie extends Component {
 
                     <CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer}>
                         <div className={"movieCardContentImgDiv"}>
-                            <img src={this.state.Poster ? this.state.Poster : ""} alt={"Movie Poster"} />
+                            {!movieDBError ? <img src={this.state.Poster} alt={"Movie Poster"}></img> :
+                                <div className={"movieCardContentImgDivError"}>
+                                    <img src={MovieNotFound} alt={this.state.Error} alt={"Movie Error"}></img>
+                                    <h1>{this.state.Error}</h1>
+                                </div>
+                            }
                         </div>
                         <Divider variant="middle"></Divider>
                         <div className={"movieCardContentTextDiv"}>
-                            <Typography variant="h4"> {this.state.Title} </Typography>
+                            <Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.nameEng} </Typography>
                             <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
-                            <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
+                            {!movieDBError ? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p> : <p>{this.state.releaseYear}</p>}
                         </div>
                     </CardContent>
 
@@ -134,7 +138,7 @@ class Movie extends Component {
 
                 <CardActions style={{ padding: '7px' }}>
 
-                    <MovieTabs
+                    {!movieDBError && <MovieTabs
                         title={this.state.Title}
                         year={this.state.Year}
                         ratings={this.state.Ratings}
@@ -143,12 +147,12 @@ class Movie extends Component {
                         plot={this.state.Plot}
                         actors={this.state.Actors}
                         genre={this.state.Genre}
-                    />
+                    />}
 
                 </CardActions>
 
                 <MovieModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
-                    searchParams={`${this.state.Title} ${this.state.Year}`} />
+                    searchParams={!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.releaseYear}`} />
 
             </Card>
 

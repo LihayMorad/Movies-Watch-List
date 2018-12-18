@@ -40,3 +40,7 @@
 .movieCardContentTextDiv span {
     display: inline-block;
 }
+
+.movieCardContentImgDivError {
+    width: 100%;
+}

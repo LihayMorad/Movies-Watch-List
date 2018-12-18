@@ -23,7 +23,7 @@ class MoviesContainer extends Component {
         // from id 0 to 5 include :'https://movies-to-watch-26077.firebaseio.com/movies.json?orderBy="$key"&startAt="0"&endAt="5"'
         // all :'https://movies-to-watch-26077.firebaseio.com/movies.json?'
 
-        const FIREBASE_URL = 'https://movies-to-watch-26077.firebaseio.com/movies.json?orderBy="$key"&startAt="73"&endAt="75"';
+        const FIREBASE_URL = 'https://movies-to-watch-26077.firebaseio.com/movies.json';
         this.getMoviesToWatch(FIREBASE_URL);
     }
 
@@ -91,7 +91,7 @@ class MoviesContainer extends Component {
     }
 
     render() {
-        console.log(this.state.moviesData);
+        // console.log('this.state.moviesData', this.state.moviesData);
 
         if (this.state.loading) {
             return <Spinner />
