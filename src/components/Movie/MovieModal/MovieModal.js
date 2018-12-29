@@ -28,15 +28,6 @@ class MovieModal extends Component {
 
   // https://upload.wikimedia.org/wikipedia/en/thumb/6/63/IMG_%28business%29.svg/1200px-IMG_%28business%29.svg.png
 
-  // 'colors'),
-  // 'format-number')(),
-  // 'minimist'),
-  // 'youtube-best-video').findBestMusicVideo,
-  // 'youtube-search'),
-  // 'slashes'),
-  // 'timelabel'),
-  // ('get-youtube-id'),
-
   async getTrailer() {
     // console.log('this.props.searchParams: ', this.props.searchParams);
 

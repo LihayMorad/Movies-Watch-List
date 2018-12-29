@@ -1,0 +1,54 @@
+import React, { Component } from 'react';
+
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+class movieCommentsModal extends Component {
+
+    state = {
+        comments: ""
+    }
+
+    handleChange = event => { this.setState({ comments: event.target.value }); }
+
+    modalOpened = () => { this.setState({ comments: this.props.comments }); }
+
+    render() {
+
+        return (
+            <Dialog
+                open={this.props.isOpen}
+                onEnter={this.modalOpened}
+                onClose={this.props.toggle}>
+
+                <DialogTitle>Movie Comments</DialogTitle>
+
+                <DialogContent>
+                    <DialogContentText>You can edit movie comments below.</DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="comments"
+                        type="text"
+                        defaultValue={this.props.comments}
+                        onChange={this.handleChange}
+                        fullWidth
+                    />
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={() => { this.props.handleComments(this.state.comments) }} color="primary">Save</Button>
+                </DialogActions>
+
+            </Dialog>
+        );
+
+    }
+}
+
+export default movieCommentsModal;

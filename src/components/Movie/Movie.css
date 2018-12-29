@@ -1,5 +1,5 @@
 .movieCard {
-    max-width: 350px;
+    max-width: 300px;
     margin: 20px 20px;
     /* background: linear-gradient(45deg, #2196F3 30%, #21CBF3 90%); */
 }
@@ -9,7 +9,7 @@
 } */
 
 .movieCardContentImgDiv {
-    height: 600px;
+    height: 500px;
     display: flex;
     align-items: center;
     background: radial-gradient(ellipse at center, #21CBF3 10%, #2196F3 80%);
@@ -22,13 +22,20 @@
 }
 
 .movieCardContentTextDiv {
-    height: 170px;
-    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    height: 200px;
+    padding: 8px 5px;
     background: radial-gradient(ellipse at center, #21CBF3 10%, #2196F3 80%);
     border-radius: 15px 15px 15px 15px;
+}
+
+.movieCardContentTextDiv div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .movieCardContentTextDiv p {

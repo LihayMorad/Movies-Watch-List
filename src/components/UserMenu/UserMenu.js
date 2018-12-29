@@ -4,37 +4,38 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
-import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
+
+import './UserMenu.css';
 
 class UserMenu extends Component {
 
     state = {
         filter: "releaseYear",
-        order: "ascending"
+        order: "ascending",
+        year: "All"
     }
 
     handleChange = event => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
+        this.setState({ [event.target.name]: event.target.value });
     };
 
     render() {
 
+        var yearsSet = new Set(this.props.years);
+        const years = [...yearsSet].map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
+
         return (
 
-            <form style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}} autoComplete="off">
+            <form className={"Menu"}>
 
-                <FormControl>
-                    <InputLabel htmlFor={"age-auto-width"}>Sort By</InputLabel>
+                <FormControl style={{ margin: '10px' }} className={"MenuElement"} >
+                    <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                     <Select
                         value={this.state.filter}
                         onChange={this.handleChange}
-                        input={<Input name="filter" id="age-auto-width" />}
+                        input={<Input name="filter" id="sortFilter" />}
                         autoWidth
                     >
                         <MenuItem value={"releaseYear"}><em>Year</em></MenuItem>
@@ -44,12 +45,12 @@ class UserMenu extends Component {
                     {/* <FormHelperText>Auto width</FormHelperText> */}
                 </FormControl>
 
-                <FormControl>
-                    <InputLabel htmlFor="age-auto-width">Order type</InputLabel>
+                <FormControl style={{ margin: '10px' }} className={"MenuElement"} >
+                    <InputLabel htmlFor="orderBy">Order by</InputLabel>
                     <Select
                         value={this.state.order}
                         onChange={this.handleChange}
-                        input={<Input name="order" id="age-auto-width" />}
+                        input={<Input name="order" id="orderBy" />}
                         autoWidth
                     >
                         <MenuItem value={"ascending"}><em>Ascending</em></MenuItem>
@@ -58,7 +59,23 @@ class UserMenu extends Component {
                     {/* <FormHelperText>Auto width</FormHelperText> */}
                 </FormControl>
 
-                <Button onClick={()=>this.props.sortMovies(this.state.filter, this.state.order)}>Sort</Button>
+                <FormControl style={{ margin: '10px' }} className={"MenuElement"} >
+                    <InputLabel htmlFor="showYear">Year</InputLabel>
+                    <Select
+                        value={this.state.year}
+                        onChange={this.handleChange}
+                        input={<Input name="year" id="showYear" />}
+                        autoWidth
+                    >
+                        <MenuItem value={"All"}><em>{"All"}</em></MenuItem>
+                        {years}
+
+                    </Select>
+                    {/* <FormHelperText>Auto width</FormHelperText> */}
+                </FormControl>
+
+                <Button style={{ margin: '10px' }} color={"primary"} variant="contained" size="small" 
+                onClick={() => this.props.sortMovies(this.state.filter, this.state.order, this.state.year)}>Apply</Button>
 
             </form>
 
