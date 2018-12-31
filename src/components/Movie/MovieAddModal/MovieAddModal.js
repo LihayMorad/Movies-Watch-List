@@ -58,7 +58,7 @@ class movieAddModal extends Component {
                             onChange={this.handleChange}
                         />
                         <TextField
-                            multiline required fullWidth
+                            required fullWidth
                             margin="dense" id="movieReleaseYear" type="number"
                             name="Year" label={"Movie's Release year"}
                             placeholder={"Enter release year"}

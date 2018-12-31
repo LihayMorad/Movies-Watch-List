@@ -81,8 +81,8 @@ class Movie extends Component {
         this.getMovieDb();
     }
 
-    async getMovieDb() { // example: http://www.omdbapi.com/?t=avatar&y=2009&type=movie&apikey=2ac6a078
-        const omdbResponse = await axios(`http://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=2ac6a078`);
+    async getMovieDb() { // example: https://www.omdbapi.com/?t=avatar&y=2009&type=movie&apikey=2ac6a078
+        const omdbResponse = await axios(`https://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=2ac6a078`);
         try {
             let omdbData = omdbResponse.data;
             omdbData.Response ? this.setState({ ...omdbData, loading: false }) : this.setState({ Response: omdbData.Response, Error: omdbData.Error, loading: false });
@@ -91,17 +91,14 @@ class Movie extends Component {
         }
     }
 
-    toggleWatchTrailer = () => {
-        this.setState({ watchingTrailer: !this.state.watchingTrailer });
-    }
+    toggleWatchTrailer = () => { this.setState({ watchingTrailer: !this.state.watchingTrailer }); }
 
-    toggleEditingComments = () => {
-        this.setState({ editingComments: !this.state.editingComments });
-    }
+    toggleEditingComments = () => { this.setState({ editingComments: !this.state.editingComments }); }
 
     handleComments = comments => {
-        this.setState({ comments: comments, editingComments: false });
-        database.ref('/mymovies/' + this.props.dbID).update({ Comments: comments });
+        this.setState({ comments: comments, editingComments: false }, () => {
+            database.ref('/mymovies/' + this.props.dbID).update({ Comments: comments }, alert("Comments saved succesfully"));
+        });
     }
 
     // componentDidUpdate() {
@@ -127,7 +124,7 @@ class Movie extends Component {
                     <CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer}>
                         <div className={"movieCardContentImgDiv"}>
                             {!loading ?
-                                !movieDBError ? <img src={this.state.Poster} alt={"Movie Poster"}></img> :
+                                !movieDBError ? <img src={this.state.Poster} alt={"Movie Poster Not Found"}></img> :
                                     <div className={"movieCardContentImgDivError"}>
                                         <img src={MovieNotFound} alt={this.state.Error}></img>
                                         <h1>Database error: {this.state.Error}</h1>
@@ -151,7 +148,7 @@ class Movie extends Component {
 
                 </CardActionArea>
 
-                <CardActions style={{ padding: '7px' }}>
+                <CardActions style={{ display: 'inherit', padding: '7px' }}>
                     {!loading ?
                         !movieDBError && <MovieTabs
                             title={this.state.Title}

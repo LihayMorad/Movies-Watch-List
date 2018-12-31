@@ -19,7 +19,9 @@ class MoviesContainer extends PureComponent {
         loading: true
     }
 
-    componentDidMount() { // an example of OMDb http://www.omdbapi.com/?t=avatar&y=2003&apikey=2ac6a078
+    componentDidMount() {
+        // an example of OMDb Title http://www.omdbapi.com/?t=avatar&y=2003&apikey=2ac6a078
+        // an example of OMDb Search http://www.omdbapi.com/?s=avatar&type=movie&apikey=BanMePlz
 
         // const GOOGLE_SHEET_API_URL = "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values/A1%3A2?key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc";
         // ALSO WORKING: "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values:batchGet?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=FORMATTED_STRING&ranges=A1%3AZ&majorDimension=ROWS&key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc"
@@ -54,7 +56,7 @@ class MoviesContainer extends PureComponent {
 
     handleMovieAdd = details => {
         console.log('[handleDelete] DB ADD');
-        database.ref('/mymovies').push(details, () => { this.toggleMovieAdd(); });
+        database.ref('/mymovies').push(details, () => { alert(`'${details.NameEng} (${details.Year})' added successfully`); this.toggleMovieAdd(); });
     }
 
     toggleMovieAdd = () => { this.setState({ addingMovie: !this.state.addingMovie }); }

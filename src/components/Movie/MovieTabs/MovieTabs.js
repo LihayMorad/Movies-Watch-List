@@ -119,7 +119,7 @@ class MovieTabs extends Component {
 
         <ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')} style={{ borderTop: 'solid 1px dodgerblue', borderRadius: '10px' }}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left' }} variant={'h6'}>Downloads</Typography>
+            <Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Downloads</Typography>
             <Typography style={{ margin: 'auto' }} variant={'subtitle2'}>Torrents & Subtitles</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ padding: '8px 10px', flexWrap: 'wrap' }}>{torrents}</ExpansionPanelDetails>

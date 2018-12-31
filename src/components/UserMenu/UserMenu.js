@@ -39,8 +39,8 @@ class UserMenu extends Component {
 
             <form className={"Menu"}>
 
-                <Fab color="primary" size="medium" onClick={this.props.toggle} >
-                    <AddIcon />
+                <Fab color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large" style={{margin: '10px'}}>
+                    <AddIcon />Add Movie
                 </Fab>
 
                 <FormControl style={{ margin: '10px' }} className={"MenuElement"} >
@@ -85,7 +85,7 @@ class UserMenu extends Component {
                 </FormControl>
 
                 <FormControl style={{ margin: '10px' }} className={"MenuElement"} >
-                    <InputLabel htmlFor="maxResults">Max Results</InputLabel>
+                    <InputLabel htmlFor="maxResults">Results</InputLabel>
 
                     <Select
                         value={this.state.maxResults}
@@ -104,7 +104,7 @@ class UserMenu extends Component {
                     </Select>
                 </FormControl>
 
-                <Button style={{ margin: '10px' }} color={"primary"} variant="contained" size="small"
+                <Button style={{ margin: '10px' }} color="primary" variant="contained" size="medium"
                     onClick={() => this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults)}>Apply</Button>
 
                 <MovieAddModal isOpen={this.props.isOpen} toggle={this.props.toggle} addMovie={this.props.addMovie} />
