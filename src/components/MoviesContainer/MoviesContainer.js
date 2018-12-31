@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 // import axios from 'axios';
 
 import Movie from '../Movie/Movie';
@@ -9,12 +9,13 @@ import { database } from '../../config/firebase';
 
 import './MoviesContainer.css';
 
-class MoviesContainer extends Component {
+class MoviesContainer extends PureComponent {
 
     state = {
         moviesData: [],
         moviesSorted: null,
-        maxResults: 0,
+        maxResults: 10,
+        addingMovie: false,
         loading: true
     }
 
@@ -26,34 +27,53 @@ class MoviesContainer extends Component {
         // from id 0 to 5 include :'https://movies-to-watch-26077.firebaseio.com/movies.json?orderBy="$key"&startAt="0"&endAt="5"'
         // all :'https://movies-to-watch-26077.firebaseio.com/movies.json?'
 
-        // const FIREBASE_URL = `https://movies-to-watch-26077.firebaseio.com/mymovies.json?orderBy="$key"&startAt="${this.state.startAt}"&endAt="${this.state.endAt}"`;
         // const FIREBASE_URL = 'https://movies-to-watch-26077.firebaseio.com/mymovies.json?orderBy="$key"&startAt="50"&endAt="55"';
 
-        database.ref('/mymovies').limitToFirst(12).on('value',
-            data => { this.getMoviesToWatch(data.val()); },
-            error => { console.log(error); });
+        this.getMoviesToWatch("releaseYear", "descending", "All", this.state.maxResults);
     }
 
-    componentDidUpdate() {
-        console.log('[componentDidUpdate] this.state.moviesData: ', this.state.moviesData);
-    }
+    componentDidUpdate() { console.log('[componentDidUpdate] this.state.moviesData: ', this.state.moviesData); }
 
     handleDelete = movieID => {
-        // console.log('movieID: ', movieID);
-        let indexToDelete = "";
-        let updatedMoviesData = this.state.moviesData;
-        updatedMoviesData.filter((movie, index) => {
-            if (movieID === movie.key) indexToDelete = index;
-        }
-        );
+        let deletedMovieDetails = "";
+        let updatedMoviesData = this.state.moviesData.slice(); // same as ES6 [...this.state.moviesData]
 
-        updatedMoviesData.splice(indexToDelete, 1);
+        updatedMoviesData = updatedMoviesData.filter(movie => {
+            if (movieID === movie.key) {
+                deletedMovieDetails = `${movie.props.nameEng} (${movie.props.releaseYear})`;
+                return false;
+            }
+            return true;
+        });
 
-        this.setState({ moviesData: updatedMoviesData });
-        database.ref('/mymovies/' + movieID).remove(alert("Delete successfuly"));
+        this.setState({ moviesData: updatedMoviesData }, () => {
+            console.log('[handleDelete] DB REMOVE');
+            database.ref('/mymovies/' + movieID).remove(alert(`'${deletedMovieDetails}' deleted successfully`))
+        });
     }
 
-    getMoviesToWatch = (firebaseResponse) => {
+    handleMovieAdd = details => {
+        console.log('[handleDelete] DB ADD');
+        database.ref('/mymovies').push(details, () => { this.toggleMovieAdd(); });
+    }
+
+    toggleMovieAdd = () => { this.setState({ addingMovie: !this.state.addingMovie }); }
+
+    getMoviesToWatch = (filter, order, year, maxResults) => {
+
+        // send request to db only if maxResults has changed or entering the website
+        if (maxResults !== this.state.maxResults || this.state.moviesData.length === 0)
+            this.setState({ maxResults: maxResults, loading: true }, () => {
+                database.ref('/mymovies').limitToFirst(this.state.maxResults).on('value', data => {
+                    console.log('[getMoviesToWatch] DB GET');
+                    this.setMoviesToWatch(data.val(), filter, order, year);
+                }, error => { console.log(error); });
+            });
+        else
+            this.sortMovies(filter, order, year);
+    }
+
+    setMoviesToWatch = (firebaseResponse, filter, order, year) => {
 
         let firebaseData = [];
         Object.keys(firebaseResponse).map(key => { firebaseData.push({ key, ...firebaseResponse[key] }) });
@@ -71,14 +91,10 @@ class MoviesContainer extends Component {
             />
         }));
 
-        this.setState({ moviesData: movies, loading: false });
-
+        this.setState({ moviesData: movies, loading: false }, () => { this.sortMovies(filter, order, year); });
     }
 
     sortMovies = (filter, order, year) => {
-        // console.log('year: ', year);
-        console.log('this.state.moviesData: ', this.state.moviesData);
-        // console.log('this.state.moviesSorted: ', this.state.moviesSorted);
 
         let sortedMovies = this.state.moviesData.slice().filter(movie => !movie.Error && (year === movie.props.releaseYear || year === "All")).sort((a, b) => {
 
@@ -99,22 +115,25 @@ class MoviesContainer extends Component {
     }
 
     render() {
-        // console.log('this.state.moviesData', this.state.moviesData);
-
-        if (this.state.loading) {
-            return <MoviesSpinner />
-        }
 
         const years = this.state.moviesData.map(movie => movie.props.releaseYear).sort((a, b) => b - a);
 
         return (
             <div>
                 <div className={"UserMenu"}>
-                    <UserMenu sortMovies={this.sortMovies} years={years} />
+                    <UserMenu isOpen={this.state.addingMovie} toggle={this.toggleMovieAdd}
+                        addMovie={(details) => { this.handleMovieAdd(details) }}
+                        getMovies={this.getMoviesToWatch} years={years}
+                        maxResults={this.state.maxResults} handleMaxResults={this.handleMaxResults}
+                    />
                 </div>
-                <div className={"MoviesGallery"}>
-                    {this.state.moviesSorted ? this.state.moviesSorted : this.state.moviesData}
-                </div>
+
+                {!this.state.loading ?
+                    <div className={"MoviesGallery"}>
+                        {this.state.moviesSorted ? this.state.moviesSorted : this.state.moviesData}
+                    </div>
+                    : <MoviesSpinner />
+                }
             </div>
         );
 

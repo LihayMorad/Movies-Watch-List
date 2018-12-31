@@ -142,7 +142,7 @@ class Movie extends Component {
                                     <Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.nameEng} </Typography>
                                     <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
                                     {!movieDBError ? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p> : <p>{this.state.releaseYear}</p>}
-                                    {this.state.comments ? <p>Comments: {this.state.comments} </p> : ""}
+                                    {this.state.comments ? <p>Comments: <span style={{ wordBreak: 'break-word', direction: 'rtl' }}>{this.state.comments}</span></p> : ""}
                                 </div>
                                 : <MovieSpinner />
                             }
@@ -172,11 +172,11 @@ class Movie extends Component {
                     searchParams={!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.releaseYear}`} />
 
 
-                <Fab style={{ margin: '0px 10px 7px 10px' }} onClick={this.toggleEditingComments} color="primary" title={"Edit movie comments"}>
+                <Fab style={{ margin: '0px 10px 7px 10px' }} size="small" onClick={this.toggleEditingComments} color="primary" title={"Edit movie comments"}>
                     <Icon>edit_icon</Icon>
                 </Fab>
 
-                <Fab style={{ margin: '0px 10px 7px 10px' }} onClick={() => this.props.delete(this.state.dbID)} color="secondary" title={"Delete movie"}>
+                <Fab style={{ margin: '0px 10px 7px 10px' }} size="small" onClick={() => this.props.delete(this.state.dbID)} color="secondary" title={"Delete movie"}>
                     <DeleteIcon />
                 </Fab>
 

@@ -19,16 +19,18 @@
 
 .movieCardContentImgDiv img {
     width: 100%;
+    height: 100%;
+    border-radius: inherit;
 }
 
 .movieCardContentTextDiv {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    height: 200px;
+    min-height: 200px;
     padding: 8px 5px;
     background: radial-gradient(ellipse at center, #21CBF3 10%, #2196F3 80%);
-    border-radius: 15px 15px 15px 15px;
+    border-radius: 15px;
 }
 
 .movieCardContentTextDiv div {
@@ -36,6 +38,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    flex: auto;
 }
 
 .movieCardContentTextDiv p {

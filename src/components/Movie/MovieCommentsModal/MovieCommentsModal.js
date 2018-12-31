@@ -24,13 +24,17 @@ class movieCommentsModal extends Component {
             <Dialog
                 open={this.props.isOpen}
                 onEnter={this.modalOpened}
-                onClose={this.props.toggle}>
+                onClose={this.props.toggle}
+                fullWidth
+                maxWidth="md"
+                >
 
                 <DialogTitle>Movie Comments</DialogTitle>
 
                 <DialogContent>
                     <DialogContentText>You can edit movie comments below.</DialogContentText>
                     <TextField
+                    multiline
                         autoFocus
                         margin="dense"
                         id="comments"

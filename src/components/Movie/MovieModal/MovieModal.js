@@ -58,7 +58,7 @@ class MovieModal extends Component {
 
         <Dialog
           fullWidth
-          maxWidth="xl"
+          maxWidth="lg"
           open={this.props.isOpen}
           onClose={this.props.toggle}
           onEnter={this.getTrailer.bind(this)}>
