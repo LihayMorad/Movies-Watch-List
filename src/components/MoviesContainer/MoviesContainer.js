@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react';
-// import axios from 'axios';
+import { database } from '../../config/firebase';
 
 import Movie from '../Movie/Movie';
 import UserMenu from '../UserMenu/UserMenu';
 import MoviesSpinner from '../Spinners/MoviesSpinner/MoviesSpinner';
-
-import { database } from '../../config/firebase';
 
 import './MoviesContainer.css';
 
@@ -19,26 +17,13 @@ class MoviesContainer extends PureComponent {
         loading: true
     }
 
-    componentDidMount() {
-        // an example of OMDb Title http://www.omdbapi.com/?t=avatar&y=2003&apikey=2ac6a078
-        // an example of OMDb Search http://www.omdbapi.com/?s=avatar&type=movie&apikey=BanMePlz
-
-        // const GOOGLE_SHEET_API_URL = "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values/A1%3A2?key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc";
-        // ALSO WORKING: "https://content-sheets.googleapis.com/v4/spreadsheets/1PjtUDRc6u76YySXlwN_oM9rgc2-xKdjQBHJKiy9unuI/values:batchGet?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=FORMATTED_STRING&ranges=A1%3AZ&majorDimension=ROWS&key=AIzaSyCFE7t_jrVgeC2erH83J65tIxMKcivfWDc"
-
-        // from id 0 to 5 include :'https://movies-to-watch-26077.firebaseio.com/movies.json?orderBy="$key"&startAt="0"&endAt="5"'
-        // all :'https://movies-to-watch-26077.firebaseio.com/movies.json?'
-
-        // const FIREBASE_URL = 'https://movies-to-watch-26077.firebaseio.com/mymovies.json?orderBy="$key"&startAt="50"&endAt="55"';
-
-        this.getMoviesToWatch("releaseYear", "descending", "All", this.state.maxResults);
-    }
+    componentDidMount() { this.getMoviesToWatch("releaseYear", "descending", "All", this.state.maxResults); }
 
     componentDidUpdate() { console.log('[componentDidUpdate] this.state.moviesData: ', this.state.moviesData); }
 
     handleDelete = movieID => {
         let deletedMovieDetails = "";
-        let updatedMoviesData = this.state.moviesData.slice(); // same as ES6 [...this.state.moviesData]
+        let updatedMoviesData = this.state.moviesData.slice(); // same as ES6: [...this.state.moviesData]
 
         updatedMoviesData = updatedMoviesData.filter(movie => {
             if (movieID === movie.key) {
@@ -78,7 +63,7 @@ class MoviesContainer extends PureComponent {
     setMoviesToWatch = (firebaseResponse, filter, order, year) => {
 
         let firebaseData = [];
-        Object.keys(firebaseResponse).map(key => { firebaseData.push({ key, ...firebaseResponse[key] }) });
+        Object.keys(firebaseResponse).map(key => { firebaseData.push({ key, ...firebaseResponse[key] }) }); // try do foreach instead
 
         const movies = firebaseData.map((movie => {
             return <Movie
@@ -98,7 +83,7 @@ class MoviesContainer extends PureComponent {
 
     sortMovies = (filter, order, year) => {
 
-        let sortedMovies = this.state.moviesData.slice().filter(movie => !movie.Error && (year === movie.props.releaseYear || year === "All")).sort((a, b) => {
+        const sortedMovies = this.state.moviesData.slice().filter(movie => !movie.Error && (year === movie.props.releaseYear || year === "All")).sort((a, b) => {
 
             const movie1 = a.props[filter];
             const movie2 = b.props[filter];

@@ -3,20 +3,21 @@
     padding-bottom: 55.25%;
     height: 0;
     /* float: none;
-    clear: both; */
-    /* width: 100%; */
-    /* padding-top: 25px; */
+    clear: both;
+    width: 100%;
+    padding-top: 25px; */
 }
 
 .DialogContentYoutubeDivWrapper iframe {
     position: absolute;
-    /* top: 0;  */
-    /* left: 0; */
-    /* width: 100%; */
-    /* height: 100%; */
+    /* top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%; */
 }
 
 .DialogTitleDiv {
-    display: flex;
-    justify-content: flex-end;
+    /* display: flex;
+    justify-content: flex-end; */
+    display: grid;
 }

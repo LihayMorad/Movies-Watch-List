@@ -20,9 +20,7 @@ class movieAddModal extends Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
-    handleSubmit = event => {
-        this.props.addMovie(this.state);
-    }
+    handleSubmit = event => { this.props.addMovie(this.state); }
 
     render() {
 
@@ -30,7 +28,6 @@ class movieAddModal extends Component {
 
             <Dialog
                 open={this.props.isOpen}
-                // onEnter={this.modalOpened}
                 onClose={this.props.toggle}
                 fullWidth
                 maxWidth="sm"
@@ -47,7 +44,6 @@ class movieAddModal extends Component {
                             margin="dense" id="movieNameEng" type="text"
                             name="NameEng" label="Movie's English name"
                             placeholder="Enter english name"
-                            // defaultValue={"Enter the movie's english name"}
                             onChange={this.handleChange}
                         />
                         <TextField
@@ -81,7 +77,7 @@ class movieAddModal extends Component {
                     </DialogContent>
 
                     <DialogActions>
-                        <Button type="submit" color="primary" onClick={() => { console.log("clicked"); }}>Add</Button>
+                        <Button type="submit" color="primary">Add</Button>
                     </DialogActions>
 
                 </form>
