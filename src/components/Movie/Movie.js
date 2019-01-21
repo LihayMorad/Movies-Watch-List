@@ -34,14 +34,14 @@ class Movie extends Component {
         loading: true
     }
 
+
     componentDidMount() {
         // console.log('Movie [componentDidMount]');
         this.setState({ ...this.props });
-
         this.getMovieDb();
     }
 
-    async getMovieDb() { 
+    async getMovieDb() {
         const omdbResponse = await axios(`https://www.omdbapi.com/?t=${this.props.nameEng}&y=${this.props.releaseYear}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
         try {
             let omdbData = omdbResponse.data;
@@ -57,7 +57,7 @@ class Movie extends Component {
 
     handleComments = comments => {
         this.setState({ comments: comments, editingComments: false }, () => {
-            database.ref('/mymovies/' + this.props.dbID).update({ Comments: comments }, alert("Comments saved succesfully"));
+            database.ref('/mymovies/' + this.props.dbID).update({ Comments: comments }, () => { alert("Comments saved succesfully"); });
         });
     }
 
@@ -69,7 +69,7 @@ class Movie extends Component {
         // console.log(this.state);
 
         // @@@@@ check whether it help performance or not
-        const movieDBError = this.state.Error; 
+        const movieDBError = this.state.Error;
         const loading = this.state.loading;
 
         return (

@@ -28,8 +28,7 @@ class UserMenu extends Component {
 
     render() {
 
-        var yearsSet = new Set(this.props.years); // for deletion of duplicates
-        const years = [...yearsSet].map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
+        const years = [...this.props.years].map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
 
         return (
 
@@ -80,7 +79,7 @@ class UserMenu extends Component {
                     </Select>
                 </FormControl>
 
-                <FormControl style={{ margin: '10px', width: '50px'}} className={"MenuElement"} >
+                <FormControl style={{ margin: '10px', width: '52px'}} className={"MenuElement"} >
                     <InputLabel htmlFor="maxResults">Results</InputLabel>
 
                     <Select

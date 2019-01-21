@@ -11,15 +11,21 @@ class MoviesContainer extends PureComponent {
 
     state = {
         moviesData: [],
-        moviesSorted: null,
         maxResults: 10,
         addingMovie: false,
+        years: [],
         loading: true
     }
 
-    componentDidMount() { this.getMoviesToWatch("releaseYear", "descending", "All", this.state.maxResults); }
+    componentDidMount() {
+        this.myRef = React.createRef();
+        this.getMoviesToWatch();
+    }
 
-    componentDidUpdate() { console.log('[componentDidUpdate] this.state.moviesData: ', this.state.moviesData); }
+    componentDidUpdate() {
+        // this.state.moviesData.forEach(elem => { console.log(elem.key) });
+        // console.log('[componentDidUpdate] this.state.moviesData: ', this.state.moviesData);
+    }
 
     handleDelete = movieID => {
         let deletedMovieDetails = "";
@@ -35,37 +41,60 @@ class MoviesContainer extends PureComponent {
 
         this.setState({ moviesData: updatedMoviesData }, () => {
             console.log('[handleDelete] DB REMOVE');
-            database.ref('/mymovies/' + movieID).remove(alert(`'${deletedMovieDetails}' deleted successfully`))
+            database.ref('/mymovies/' + movieID).remove()
+                .then((res) => { console.log(res); alert(`'${deletedMovieDetails}' deleted successfully`); })
+                .catch((error) => { console.error(error); })
         });
     }
 
     handleMovieAdd = details => {
         console.log('[handleDelete] DB ADD');
-        database.ref('/mymovies').push(details, () => { alert(`'${details.NameEng} (${details.Year})' added successfully`); this.toggleMovieAdd(); });
+        const Year = parseInt(details.Year);
+        const movieToBeAdded = { ...details, Year };
+        database.ref('/mymovies').push(movieToBeAdded, () => { alert(`'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully`); this.toggleMovieAdd(); });
     }
 
     toggleMovieAdd = () => { this.setState({ addingMovie: !this.state.addingMovie }); }
 
-    getMoviesToWatch = (filter, order, year, maxResults) => {
+    getMoviesToWatch = (filter = "releaseYear", order = "descending", year = "All", maxResults = this.state.maxResults) => {
 
-        // send request to db only if maxResults has changed or entering the website
-        if (maxResults !== this.state.maxResults || this.state.moviesData.length === 0)
-            this.setState({ maxResults: maxResults, loading: true }, () => {
-                database.ref('/mymovies').limitToFirst(this.state.maxResults).on('value', data => {
-                    console.log('[getMoviesToWatch] DB GET');
-                    this.setMoviesToWatch(data.val(), filter, order, year);
-                }, error => { console.log(error); });
-            });
-        else
-            this.sortMovies(filter, order, year);
+        const filterToShow = filter === "releaseYear" ? "Year" : filter.charAt(0).toUpperCase() + filter.slice(1); // for matching DB's keys: nameEng > NameEng
+
+        this.setState({ maxResults: maxResults, loading: true }, () => {
+            year === "All"
+                ?
+                database.ref('/mymovies').orderByChild(filterToShow).limitToLast(this.state.maxResults)
+                    .on('value', response => { this.handleFirebaseData(response, filterToShow, order, year); }, error => { console.log(error); })
+                :
+                database.ref('/mymovies').orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
+                    .on('value', response => { this.handleFirebaseData(response, filterToShow, order, year); }, error => { console.log(error); });
+
+        });
     }
 
-    setMoviesToWatch = (firebaseResponse, filter, order, year) => {
+    handleFirebaseData = (response, filter, order, year) => {
+        let sortedMovies = [];
 
-        let firebaseData = [];
-        Object.keys(firebaseResponse).map(key => { firebaseData.push({ key, ...firebaseResponse[key] }) }); // try do foreach instead
+        if (year !== "All") {
+            sortedMovies = this.sortMoviesofTheSameYear(response.val(), filter, order, year); // sort movies of the same year by filter
+        }
 
-        const movies = firebaseData.map((movie => {
+        else {
+            order === "descending" ?
+                response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
+                :
+                response.forEach(elem => { sortedMovies.push({ key: elem.key, ...elem.val() }); });
+        }
+
+        console.table(sortedMovies);
+        this.setMoviesToWatch(sortedMovies);
+    }
+
+    setMoviesToWatch = moviesData => {
+
+        let years = [];
+        const movies = moviesData.map((movie => { // .slice(0, this.state.maxResults)
+            years.push(movie['Year']);
             return <Movie
                 key={movie['key']}
                 dbID={movie['key']}
@@ -78,19 +107,21 @@ class MoviesContainer extends PureComponent {
             />
         }));
 
-        this.setState({ moviesData: movies, loading: false }, () => { this.sortMovies(filter, order, year); });
+        years = new Set([...this.state.years, ...years]);
+        this.setState({ moviesData: movies, years: years, loading: false });
     }
 
-    sortMovies = (filter, order, year) => {
+    sortMoviesofTheSameYear = (responseData, filter, order, year) => {
 
-        const sortedMovies = this.state.moviesData.slice().filter(movie => !movie.Error && (year === movie.props.releaseYear || year === "All")).sort((a, b) => {
+        let sortedMovies = [];
 
-            const movie1 = a.props[filter];
-            const movie2 = b.props[filter];
+        for (const elem in responseData)
+            sortedMovies.push({ key: elem, ...responseData[elem] });
 
-            if (filter === "releaseYear") {
-                return order === "descending" ? movie2 - movie1 : movie1 - movie2;
-            }
+        sortedMovies = sortedMovies.sort((a, b) => { // filter(movie => !movie.Error).
+
+            const movie1 = a[filter], movie2 = b[filter];
+
             return order === "descending"
                 ?
                 movie2 > movie1 ? 1 : movie2 === movie1 ? 0 : -1
@@ -98,29 +129,30 @@ class MoviesContainer extends PureComponent {
                 movie1 < movie2 ? -1 : movie2 === movie1 ? 0 : 1;
         });
 
-        this.setState({ moviesSorted: sortedMovies });
+        return sortedMovies;
     }
 
     render() {
 
-        const years = this.state.moviesData.map(movie => movie.props.releaseYear).sort((a, b) => b - a);
-
         return (
             <div>
-                <div className={"UserMenu"}>
-                    <UserMenu isOpen={this.state.addingMovie} toggle={this.toggleMovieAdd}
-                        addMovie={(details) => { this.handleMovieAdd(details) }}
-                        getMovies={this.getMoviesToWatch} years={years}
-                        maxResults={this.state.maxResults} handleMaxResults={this.handleMaxResults}
+                <div className={"UserMenu"} ref={this.myRef}>
+                    <UserMenu
+                        isOpen={this.state.addingMovie}
+                        toggle={this.toggleMovieAdd}
+                        addMovie={details => { this.handleMovieAdd(details) }}
+                        getMovies={this.getMoviesToWatch}
+                        years={this.state.years}
+                        maxResults={this.state.maxResults}
                     />
                 </div>
 
                 {!this.state.loading ?
-                    <div className={"MoviesGallery"}>
-                        {this.state.moviesSorted ? this.state.moviesSorted : this.state.moviesData}
-                    </div>
-                    : <MoviesSpinner />
+                    <div className={"MoviesGallery"}>{this.state.moviesData}</div>
+                    :
+                    <MoviesSpinner />
                 }
+                <button onClick={() => { window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" }); }}>Scroll to the TOP MENU</button>
             </div>
         );
 

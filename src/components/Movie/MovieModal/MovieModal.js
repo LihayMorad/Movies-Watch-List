@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -60,12 +59,10 @@ class MovieModal extends Component {
             <IconButton style={{ position: 'absolute', right: '0' }} color="inherit" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
           </div>
 
-          {/* <DialogContent> */}
           <div className={"DialogContentYoutubeDivWrapper"}>
             <iframe width={"100%"} height={"100%"} src={`https://www.youtube.com/embed/${this.state.trailerId}?autoplay=0`} frameBorder={"0"}
               allow={"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"} allowFullScreen title={"Movie Trailer"}></iframe>
           </div>
-          {/* </DialogContent> */}
 
           <DialogActions style={{ margin: '0' }}>
             <Button style={{ margin: '0', padding: '12px' }} color="inherit" onClick={this.props.toggle}>Close</Button>
