@@ -50,10 +50,15 @@ class MoviesContainer extends PureComponent {
                 console.log('user: ', user.uid);
             })
             .catch(error => {  // Handle Errors here.
+                console.log('error: ', error);
                 let errorCode = error.code;
+                console.log('errorCode: ', errorCode);
                 let errorMessage = error.message;
+                console.log('errorMessage: ', errorMessage);
                 let email = error.email; // The email of the user's account used.
+                console.log('email: ', email);
                 let credential = error.credential; // The firebase.auth.AuthCredential type that was used.
+                console.log('credential: ', credential);
             });
     }
 
@@ -63,6 +68,7 @@ class MoviesContainer extends PureComponent {
                 alert("Sign out successfully");
             })
             .catch(error => {  // An error happened.
+                console.log('error: ', error);
                 alert("Sign out error!");
             });
     }
