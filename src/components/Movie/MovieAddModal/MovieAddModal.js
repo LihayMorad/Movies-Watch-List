@@ -28,7 +28,7 @@ class movieAddModal extends Component {
     handleSubmit = event => { this.state.imdbID ? this.props.addMovie(this.state) : alert("Please click on the search button and choose a movie.") }
 
     async handleMovieSearch() {
-        const omdbResponse = await axios(`http://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
+        const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
         try {
             let movieSearchResults = omdbResponse.data.Search;
             omdbResponse.data.Response === "True" ? this.setState({ movieSearchResults, searched: true }) : alert("Search error: " + omdbResponse.data.Error);

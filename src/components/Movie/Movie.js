@@ -44,7 +44,7 @@ class Movie extends Component {
 	}
 
 	async getMovieDb() {
-		const omdbResponse = await axios(`http://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
+		const omdbResponse = await axios(`https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
 		try {
 			let omdbData = omdbResponse.data;
 			omdbData.Response === "True" ? this.setState({ ...omdbData, loading: false }) : this.setState({ Response: omdbData.Response, Error: omdbData.Error, loading: false });
