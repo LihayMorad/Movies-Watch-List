@@ -22,15 +22,8 @@ class MoviesContainer extends PureComponent {
         this.myRef = React.createRef();
 
         firebase.auth().onAuthStateChanged(user => {
-            if (user) { // User is signed in.
-                // console.log("@@@@@@ LOGGED IN");
-                // console.log("firebase.auth().currentUser.uid", firebase.auth().currentUser.uid);
-
-                this.getMoviesToWatch();
-            } else { // No user is signed in.
-                console.log("@@@@@@ NOT LOGGED IN");
-                this.handleUserSignIn();
-            }
+            if (user) { this.getMoviesToWatch(); }  // User is signed in.
+            else { this.handleUserSignIn(); } // No user is signed in.
         });
     }
 
@@ -40,37 +33,20 @@ class MoviesContainer extends PureComponent {
     }
 
     handleUserSignIn = () => {
-        console.log("firebase.auth().currentUser", firebase.auth().currentUser);
+        // console.log("firebase.auth().currentUser", firebase.auth().currentUser);
 
         let provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
-            .then(result => { // This gives you a Google Access Token. You can use it to access the Google API.
-                // let token = result.credential.accessToken;
-                let user = result.user; // The signed-in user info.
-                console.log('user: ', user.uid);
-            })
-            .catch(error => {  // Handle Errors here.
-                console.log('error: ', error);
-                let errorCode = error.code;
-                console.log('errorCode: ', errorCode);
-                let errorMessage = error.message;
-                console.log('errorMessage: ', errorMessage);
-                let email = error.email; // The email of the user's account used.
-                console.log('email: ', email);
-                let credential = error.credential; // The firebase.auth.AuthCredential type that was used.
-                console.log('credential: ', credential);
-            });
+            .then(result => { console.log('Signed in successfully'); })
+            .catch(error => { console.log('error: ', error); });
     }
 
     handleUserSignOut = () => {
-        firebase.auth().signOut()
-            .then(() => { // Sign-out successful.
-                alert("Sign out successfully");
-            })
-            .catch(error => {  // An error happened.
-                console.log('error: ', error);
-                alert("Sign out error!");
-            });
+        if (window.confirm("Are you sure you want to logout from your account " + firebase.auth().currentUser.email + " ?")) {
+            firebase.auth().signOut()
+                .then(() => { alert("Sign out successfully"); }) // Sign-out successfully.
+                .catch(error => { alert("Sign out error!"); }); // Sign-out failed.
+        }
     }
 
     handleMovieDelete = movieID => {
@@ -88,15 +64,18 @@ class MoviesContainer extends PureComponent {
         this.setState({ moviesData: updatedMoviesData }, () => {
             console.log('[handleDelete] DB REMOVE');
             database.ref('/mymovies/' + firebase.auth().currentUser.uid + "/" + movieID).remove()
-                .then((res) => { console.log(res); alert(`'${deletedMovieDetails}' deleted successfully`); })
+                .then(() => { alert(`'${deletedMovieDetails}' deleted successfully`); })
                 .catch((error) => { console.error(error); })
         });
     }
 
     handleMovieAdd = details => {
-        console.log('[handleDelete] DB ADD');
+        // console.log('[handleDelete] DB ADD');
         const Year = parseInt(details.Year);
         const movieToBeAdded = { ...details, Year };
+        delete movieToBeAdded.movieSearchResults;
+        delete movieToBeAdded.searched;
+
         database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, () => {
             alert(`'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully`);
             this.toggleMovieAddModal();
@@ -126,9 +105,7 @@ class MoviesContainer extends PureComponent {
 
         if (year !== "All") {
             sortedMovies = this.sortMoviesofTheSameYear(response.val(), filter, order, year); // sort movies of the same year by filter
-        }
-
-        else {
+        } else {
             order === "descending" ?
                 response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
                 :
@@ -140,6 +117,7 @@ class MoviesContainer extends PureComponent {
     }
 
     setMoviesToWatch = moviesData => {
+        // console.log('moviesData: ', moviesData);
 
         let years = [];
         const movies = moviesData.map((movie => { // .slice(0, this.state.maxResults)
@@ -147,6 +125,7 @@ class MoviesContainer extends PureComponent {
             return <Movie
                 key={movie['key']}
                 dbID={movie['key']}
+                imdbID={movie['imdbID'] ? movie['imdbID'] : null}
                 nameHeb={movie['NameHeb']}
                 nameEng={movie['NameEng']}
                 releaseYear={movie['Year']}
@@ -184,9 +163,9 @@ class MoviesContainer extends PureComponent {
 
     render() {
         const text = firebase.auth().currentUser ?
-            <h3 onClick={() => this.handleUserSignOut()}>Logged in as <span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></h3>
+            <h3 style={{ cursor: 'pointer' }} onClick={() => this.handleUserSignOut()}>Logged in as <span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></h3>
             :
-            <h3 onClick={() => this.handleUserSignIn()}>Sign in</h3>;
+            <h3 style={{ cursor: 'pointer' }} onClick={() => this.handleUserSignIn()}>Sign in</h3>;
 
         return (
             <div>

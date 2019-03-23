@@ -6,17 +6,15 @@ import './App.css';
 
 class App extends Component {
 
-  render() {
+	render() {
 
-    return (
-      <div className="App">
+		return (
+			<div className="App">
+				<Layout />
+			</div>
+		);
 
-        <Layout />
-
-      </div>
-    );
-
-  }
+	}
 
 }
 

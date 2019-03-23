@@ -34,60 +34,56 @@ class UserMenu extends Component {
 
             <form className={"Menu"}>
 
-                <Fab color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large" style={{ margin: '10px' }}>
+                <Fab style={{ margin: '10px' }} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">
                     <AddIcon />Add Movie
                 </Fab>
 
-                <FormControl style={{ margin: '10px', width: '134px'}} className={"MenuElement"} >
+                <FormControl style={{ margin: '10px', width: '134px' }} className={"MenuElement"} >
                     <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                     <Select
                         value={this.state.filter}
                         onChange={this.handleChange}
                         input={<Input name="filter" id="sortFilter" />}
-                        autoWidth
-                    >
+                        autoWidth >
                         <MenuItem value={"releaseYear"}><em>Year</em></MenuItem>
                         <MenuItem value={"nameEng"}>English Name</MenuItem>
                         <MenuItem value={"nameHeb"}>Hebrew Name</MenuItem>
                     </Select>
                 </FormControl>
 
-                <FormControl style={{ margin: '10px', width: '116px'}} className={"MenuElement"} >
+                <FormControl style={{ margin: '10px', width: '116px' }} className={"MenuElement"} >
                     <InputLabel htmlFor="orderBy">Order by</InputLabel>
                     <Select
                         value={this.state.order}
                         onChange={this.handleChange}
                         input={<Input name="order" id="orderBy" />}
-                        autoWidth
-                    >
+                        autoWidth >
                         <MenuItem value={"descending"}><em>Descending</em></MenuItem>
                         <MenuItem value={"ascending"}>Ascending</MenuItem>
                     </Select>
                 </FormControl>
 
-                <FormControl style={{ margin: '10px', width: '70px'}} className={"MenuElement"} >
+                <FormControl style={{ margin: '10px', width: '70px' }} className={"MenuElement"} >
                     <InputLabel htmlFor="showYear">Year</InputLabel>
                     <Select
                         value={this.state.year}
                         onChange={this.handleChange}
                         input={<Input name="year" id="showYear" />}
-                        autoWidth
-                    >
+                        autoWidth >
                         <MenuItem value={"All"}><em>{"All"}</em></MenuItem>
                         {years}
 
                     </Select>
                 </FormControl>
 
-                <FormControl style={{ margin: '10px', width: '52px'}} className={"MenuElement"} >
+                <FormControl style={{ margin: '10px', width: '52px' }} className={"MenuElement"} >
                     <InputLabel htmlFor="maxResults">Results</InputLabel>
 
                     <Select
                         value={this.state.maxResults}
                         onChange={this.handleChange}
                         name="maxResults"
-                        inputProps={{ id: 'maxResults' }}
-                    >
+                        inputProps={{ id: 'maxResults' }} >
                         <MenuItem value={1000}>All</MenuItem>
                         <MenuItem value={5}>5</MenuItem>
                         <MenuItem value={10}><em>10</em></MenuItem>
@@ -109,7 +105,6 @@ class UserMenu extends Component {
         );
 
     }
-
 
 };
 
