@@ -29,11 +29,11 @@ class MovieModal extends Component {
       try {
 
         let youtubeTrailerId = youtubeSearchResponse.data.items[0].id.videoId;
-        let youtubeTrailerTitle = youtubeSearchResponse.data.items[0].snippet.title;
+        // let youtubeTrailerTitle = youtubeSearchResponse.data.items[0].snippet.title;
 
         this.setState({
           trailerId: youtubeTrailerId,
-          trailerTitle: youtubeTrailerTitle
+          trailerTitle: this.props.searchParams + " Trailer"
         });
 
       } catch (error) {

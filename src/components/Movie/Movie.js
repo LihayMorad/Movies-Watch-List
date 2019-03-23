@@ -22,6 +22,8 @@ import axios from 'axios';
 
 import './Movie.css';
 
+const youTubeIcon = "https://upload.wikimedia.org/wikipedia/commons/4/4c/YouTube_icon.png";
+
 class Movie extends Component {
 
     state = {
@@ -57,7 +59,7 @@ class Movie extends Component {
 
     handleComments = comments => {
         this.setState({ comments: comments, editingComments: false }, () => {
-            database.ref('/mymovies/' + this.props.dbID).update({ Comments: comments }, () => { alert("Comments saved succesfully"); });
+            database.ref('/mymovies/' + this.props.userID + "/" + this.props.dbID).update({ Comments: comments }, () => { alert("Comments saved succesfully"); });
         });
     }
 
@@ -78,10 +80,14 @@ class Movie extends Component {
 
                 <CardActionArea>
 
-                    <CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer}>
+                    <CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer} title={"Click to open trailer"}>
                         <div className={"movieCardContentImgDiv"}>
                             {!loading ?
-                                !movieDBError ? <img src={this.state.Poster} alt={"Movie Poster Not Found"}></img> :
+                                !movieDBError ?
+                                    <>
+                                        <img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"}></img>
+                                        <img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"Youtube icon"}></img>
+                                    </> :
                                     <div className={"movieCardContentImgDivError"}>
                                         <img src={MovieNotFound} alt={movieDBError}></img>
                                         <h1>Database error: {movieDBError}</h1>
@@ -96,7 +102,7 @@ class Movie extends Component {
                                     <Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.nameEng} </Typography>
                                     <Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
                                     {!movieDBError ? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p> : <p>{this.state.releaseYear}</p>}
-                                    {this.state.comments ? <p>Comments: <span style={{ wordBreak: 'break-word', direction: 'rtl' }}>{this.state.comments}</span></p> : ""}
+                                    {this.state.comments ? <p>Personal note: <span style={{ wordBreak: 'break-word', direction: 'rtl' }}>{this.state.comments}</span></p> : ""}
                                 </div>
                                 : <MovieSpinner />
                             }
@@ -125,11 +131,15 @@ class Movie extends Component {
                 <MovieModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
                     searchParams={!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.releaseYear}`} />
 
-                <Fab style={{ margin: '0px 10px 7px 10px' }} size="small" onClick={this.toggleEditingComments} color="primary" title={"Edit movie comments"}>
+                <Fab style={{ margin: '0px 10px 7px 10px' }} size="small" onClick={this.toggleEditingComments} color="primary" title={"Add/Edit movie's personal note"}>
                     <Icon>edit_icon</Icon>
                 </Fab>
 
-                <Fab style={{ margin: '0px 10px 7px 10px' }} size="small" onClick={() => this.props.delete(this.state.dbID)} color="secondary" title={"Delete movie"}>
+                <Fab style={{ margin: '0px 10px 7px 10px' }} size="small" onClick={() => {
+                    if (window.confirm("Are you sure you want to delete this movie?")) {
+                        this.props.delete(this.state.dbID)
+                    }
+                }} color="secondary" title={"Delete movie"}>
                     <DeleteIcon />
                 </Fab>
 

@@ -29,10 +29,10 @@ class movieCommentsModal extends Component {
                 maxWidth="md"
                 >
 
-                <DialogTitle>Movie Comments</DialogTitle>
+                <DialogTitle>Movie note</DialogTitle>
 
                 <DialogContent>
-                    <DialogContentText>You can edit movie comments below.</DialogContentText>
+                    <DialogContentText>You can edit your personal note below.</DialogContentText>
                     <TextField
                     multiline
                         autoFocus
