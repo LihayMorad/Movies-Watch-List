@@ -23,7 +23,7 @@ class MoviesContainer extends PureComponent {
 
         firebase.auth().onAuthStateChanged(user => {
             if (user) { this.getMoviesToWatch(); }  // User is signed in.
-            else { this.handleUserSignIn(); } // No user is signed in.
+            else { alert("Please sign in to use and save your watch list.") } // No user is signed in.
         });
     }
 
@@ -163,9 +163,9 @@ class MoviesContainer extends PureComponent {
 
     render() {
         const text = firebase.auth().currentUser ?
-            <h3 style={{ cursor: 'pointer' }} onClick={() => this.handleUserSignOut()}>Logged in as <span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></h3>
+            <h3 style={{ cursor: 'pointer', color: 'blue' }} onClick={() => this.handleUserSignOut()}>Logged in as <span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></h3>
             :
-            <h3 style={{ cursor: 'pointer' }} onClick={() => this.handleUserSignIn()}>Sign in</h3>;
+            <h3 style={{ cursor: 'pointer', color: 'blue' }} onClick={() => this.handleUserSignIn()}>Sign in</h3>;
 
         return (
             <div>

@@ -10,18 +10,25 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import axios from 'axios';
 
-import './MovieAddModal.css';
+import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
+
+const initialState = {
+    NameHeb: "", NameEng: "", Year: "", TrailerURL: "", Comments: "",
+    searched: false, movieSearchResults: [], imdbID: ""
+};
 
 class movieAddModal extends Component {
 
     state = {
-        NameHeb: "", NameEng: "", Year: "", TrailerURL: "", Comments: "",
-        searched: false
+        ...initialState
     }
 
-    // componentDidMount() { console.log('this.props.addMovie: ', this.props.addMovie); }
+    // componentDidMount() { console.log("[componentDidMount]"); }
 
-    // componentDidUpdate() { console.log('this.state: ', this.state); }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.isOpen !== this.props.isOpen)
+            this.setState({ ...initialState });
+    }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
@@ -36,6 +43,8 @@ class movieAddModal extends Component {
             console.error('error: ', error);
         }
     }
+
+    handleupdateCurrentMovie = (imdbID, year) => { this.setState({ imdbID: imdbID, Year: year }); }
 
     render() {
 
@@ -86,19 +95,10 @@ class movieAddModal extends Component {
 
                         <Button color="secondary" onClick={e => this.handleMovieSearch()}>Search</Button>
 
-                        {this.state.searched && <ul id={"moviesSearchResults"}>
-                            {this.state.movieSearchResults.map(elem => {
-                                return (elem.Poster !== "N/A" && <li key={elem.imdbID}
-                                    onClick={event => {
-                                        event.currentTarget.classList.toggle("chosenIMG");
-                                        // console.log(this.state.imdbID);
-                                        // console.log('event.currentTarget: ', event.currentTarget);
-                                        this.setState({ imdbID: elem.imdbID, Year: elem.Year });
-                                    }}><h3>{elem.Title} {elem.Year} </h3><img src={elem.Poster} alt={"Movie poster"}></img></li>)
-
-                            })}
-
-                        </ul>}
+                        {this.state.searched && <MoviesResultsGrid
+                            results={this.state.movieSearchResults}
+                            imdbID={this.state.imdbID}
+                            updateCurrentMovie={this.handleupdateCurrentMovie} />}
 
                     </DialogContent>
 

@@ -48,7 +48,8 @@ class MovieTabs extends Component {
 			ratings = this.props.ratings ? this.props.ratings.map(rating =>
 				<Typography key={`${this.props.imdbID}_${rating.Source}`} className={"ratingsText"}
 					variant={'body2'} >{rating.Source}: {rating.Value}</Typography>) : <div></div>;
-			imdbRating = this.props.imdbRating === "N/A" ? "N/A" : `IMDb: ${this.props.imdbRating}`;
+			imdbRating = <a href={`https://www.imdb.com/title/${this.props.imdbId}`} target={"_blank"} rel="noopener noreferrer">
+				{this.props.imdbRating === "N/A" ? "N/A" : `IMDb: ${this.props.imdbRating}`}</a>;
 
 			searchParams = this.props.title + "+" + this.props.year;
 
