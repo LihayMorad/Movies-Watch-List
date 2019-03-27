@@ -12,3 +12,7 @@
     display: inline-block;
     padding: 0px 3px;
 }
+
+.MuiExpansionPanel-root-221:before{
+    height: 0px !important;
+}

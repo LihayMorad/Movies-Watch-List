@@ -7,6 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import SearchResultsSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
 import axios from 'axios';
 
@@ -14,14 +15,12 @@ import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
 const initialState = {
     NameHeb: "", NameEng: "", Year: "", TrailerURL: "", Comments: "",
-    searched: false, movieSearchResults: [], imdbID: ""
+    movieSearchResults: [], imdbID: "", loading: false
 };
 
 class movieAddModal extends Component {
 
-    state = {
-        ...initialState
-    }
+    state = { ...initialState }
 
     // componentDidMount() { console.log("[componentDidMount]"); }
 
@@ -35,16 +34,18 @@ class movieAddModal extends Component {
     handleSubmit = event => { this.state.imdbID ? this.props.addMovie(this.state) : alert("Please click on the search button and choose a movie.") }
 
     async handleMovieSearch() {
+        this.setState({ loading: true });
         const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
         try {
             let movieSearchResults = omdbResponse.data.Search;
-            omdbResponse.data.Response === "True" ? this.setState({ movieSearchResults, searched: true }) : alert("Search error: " + omdbResponse.data.Error);
+            omdbResponse.data.Response === "True" ? this.setState({ movieSearchResults, loading: false }) : alert("Search error: " + omdbResponse.data.Error);
         } catch (error) {
             console.error('error: ', error);
+            this.setState({ loading: false });
         }
     }
 
-    handleupdateCurrentMovie = (imdbID, year) => { this.setState({ imdbID: imdbID, Year: year }); }
+    handleUpdateCurrentMovie = (imdbID, title, year) => { this.setState({ imdbID: imdbID, NameEng: title, Year: year }); }
 
     render() {
 
@@ -53,15 +54,20 @@ class movieAddModal extends Component {
             <Dialog
                 open={this.props.isOpen}
                 onClose={this.props.toggle}
-                maxWidth="lg"
+                maxWidth="md"
                 fullWidth >
 
-                <DialogTitle>Adding a movie</DialogTitle>
+                <DialogTitle>Add a movie to your watch list</DialogTitle>
 
                 <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
 
                     <DialogContent>
-                        <DialogContentText>You can add movie details below.</DialogContentText>
+                        <DialogContentText>
+                            Search a movie by its english name (you may also specify a year).<br></br>
+                            Click 'Search' and then click on the movie you searched for.<br></br>
+                            If you'd like to, you can also specify its hebrew name, trailer link and personal note.<br></br>
+                            Click 'Add' at the bottom.
+                        </DialogContentText>
                         <TextField
                             multiline autoFocus required fullWidth
                             margin="dense" id="movieNameEng" type="text"
@@ -69,41 +75,44 @@ class movieAddModal extends Component {
                             placeholder="Enter english name"
                             onChange={this.handleChange} />
                         <TextField
-                            multiline fullWidth
-                            margin="dense" id="movieNameHeb" type="text"
-                            name="NameHeb" label={"Movie's Hebrew name"}
-                            placeholder={"Enter hebrew name"}
-                            onChange={this.handleChange} />
-                        <TextField
                             fullWidth
                             margin="dense" id="movieReleaseYear" type="number"
                             name="Year" label={"Movie's Release year"}
                             placeholder={"Enter release year"}
                             onChange={this.handleChange} />
+
+                        <Button color="secondary" variant="outlined" style={{ marginTop: '10px' }} onClick={() => this.handleMovieSearch()}>Search</Button>
+
+                        {!this.state.loading ? <MoviesResultsGrid
+                            results={this.state.movieSearchResults}
+                            imdbID={this.state.imdbID}
+                            updateCurrentMovie={this.handleUpdateCurrentMovie} />
+                            :
+                            <SearchResultsSpinner />}
+
+                        <TextField
+                            multiline fullWidth
+                            margin="dense" id="movieNameHeb" type="text"
+                            name="NameHeb" label={"Movie's Hebrew name"}
+                            placeholder={"Enter hebrew name (optional)"}
+                            onChange={this.handleChange} />
                         <TextField
                             multiline fullWidth
                             margin="dense" id="movieTrailer" type="text"
                             name="TrailerURL" label={"Movie's Trailer"}
-                            placeholder={"Enter trailer link"}
+                            placeholder={"Enter trailer link (optional)"}
                             onChange={this.handleChange} />
                         <TextField
                             multiline fullWidth
                             margin="dense" id="movieComments" type="text"
-                            name="Comments" label={"Movie's Comments"}
-                            placeholder={"Enter comments"}
+                            name="Comments" label={"Movie's Personal Note"}
+                            placeholder={"Enter Personal Note (optional)"}
                             onChange={this.handleChange} />
-
-                        <Button color="secondary" onClick={e => this.handleMovieSearch()}>Search</Button>
-
-                        {this.state.searched && <MoviesResultsGrid
-                            results={this.state.movieSearchResults}
-                            imdbID={this.state.imdbID}
-                            updateCurrentMovie={this.handleupdateCurrentMovie} />}
 
                     </DialogContent>
 
                     <DialogActions>
-                        <Button type="submit" color="primary">Add</Button>
+                        <Button type="submit" color="primary" variant="contained">Add</Button>
                     </DialogActions>
 
                 </form>

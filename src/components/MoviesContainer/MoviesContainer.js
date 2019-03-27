@@ -5,6 +5,10 @@ import { database } from '../../config/firebase';
 import Movie from '../Movie/Movie';
 import UserMenu from '../UserMenu/UserMenu';
 import MoviesSpinner from '../Spinners/MoviesSpinner/MoviesSpinner';
+import SignInOutDialog from './SignInOutDialog/SignInOutDialog';
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import NavigationIcon from '@material-ui/icons/Navigation';
 
 import './MoviesContainer.css';
 
@@ -15,15 +19,21 @@ class MoviesContainer extends PureComponent {
         maxResults: 5,
         addingMovie: false,
         years: [],
-        loading: true
+        loading: true,
+        showSignInOutDialog: false,
+        signInOutDialogTitle: "",
     }
 
     componentDidMount() {
         this.myRef = React.createRef();
 
+        if (firebase.auth().currentUser) {
+            alert("Welcome, please sign in to use and save your movies watch list.");
+        }
+
         firebase.auth().onAuthStateChanged(user => {
             if (user) { this.getMoviesToWatch(); }  // User is signed in.
-            else { alert("Please sign in to use and save your watch list.") } // No user is signed in.
+            else { } // No user is signed in.
         });
     }
 
@@ -33,20 +43,27 @@ class MoviesContainer extends PureComponent {
     }
 
     handleUserSignIn = () => {
-        // console.log("firebase.auth().currentUser", firebase.auth().currentUser);
-
-        let provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
-            .then(result => { console.log('Signed in successfully'); })
-            .catch(error => { console.log('error: ', error); });
+            .then(result => { // Sign-in successfully.
+                const username = result.additionalUserInfo.profile.name;
+                this.setState({ signInOutDialogTitle: `Hi ${username}, you are now logged in.` }, () => { this.toggleUserSignInOutDialog(); });
+            })
+            .catch(error => { console.log('Sign in error: ', error); }); // Sign-in failed.
     }
 
     handleUserSignOut = () => {
-        if (window.confirm("Are you sure you want to logout from your account " + firebase.auth().currentUser.email + " ?")) {
+        if (window.confirm("Are you sure you want to log out from your account " + firebase.auth().currentUser.email + " ?")) {
             firebase.auth().signOut()
-                .then(() => { alert("Sign out successfully"); }) // Sign-out successfully.
-                .catch(error => { alert("Sign out error!"); }); // Sign-out failed.
+                .then(() => { // Sign-out successfully.
+                    this.setState({ signInOutDialogTitle: "You are now logged out." }, () => { this.toggleUserSignInOutDialog(); });
+                })
+                .catch(error => { console.log('Sign out error: ', error); }); // Sign-out failed.
         }
+    }
+
+    toggleUserSignInOutDialog = () => {
+        this.setState({ showSignInOutDialog: !this.state.showSignInOutDialog }, () => { setTimeout(() => { this.setState({ showSignInOutDialog: false }) }, 1800) });
     }
 
     handleMovieDelete = movieID => {
@@ -64,21 +81,24 @@ class MoviesContainer extends PureComponent {
         this.setState({ moviesData: updatedMoviesData }, () => {
             console.log('[handleDelete] DB REMOVE');
             database.ref('/mymovies/' + firebase.auth().currentUser.uid + "/" + movieID).remove()
-                .then(() => { alert(`'${deletedMovieDetails}' deleted successfully`); })
+                .then(() => {
+                    this.setState({ signInOutDialogTitle: `'${deletedMovieDetails}' deleted successfully` }, () => { this.toggleUserSignInOutDialog(); });
+                })
                 .catch((error) => { console.error(error); })
         });
     }
 
     handleMovieAdd = details => {
-        // console.log('[handleDelete] DB ADD');
         const Year = parseInt(details.Year);
         const movieToBeAdded = { ...details, Year };
         delete movieToBeAdded.movieSearchResults;
-        delete movieToBeAdded.searched;
+        delete movieToBeAdded.loading;
 
         database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, () => {
-            alert(`'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully`);
-            this.toggleMovieAddModal();
+            this.setState({ signInOutDialogTitle: `'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully` }, () => {
+                this.toggleMovieAddModal();
+                this.toggleUserSignInOutDialog();
+            });
         });
     }
 
@@ -120,7 +140,7 @@ class MoviesContainer extends PureComponent {
         // console.log('moviesData: ', moviesData);
 
         let years = [];
-        const movies = moviesData.map((movie => { // .slice(0, this.state.maxResults)
+        const movies = moviesData.map(movie => { // .slice(0, this.state.maxResults)
             years.push(movie['Year']);
             return <Movie
                 key={movie['key']}
@@ -132,9 +152,8 @@ class MoviesContainer extends PureComponent {
                 trailerURL={movie['TrailerURL']}
                 userID={firebase.auth().currentUser.uid}
                 comments={movie['Comments']}
-                delete={this.handleMovieDelete}
-            />
-        }));
+                delete={this.handleMovieDelete} />
+        });
 
         years = new Set([...this.state.years, ...years]);
         this.setState({ moviesData: movies, years: years, loading: false });
@@ -162,31 +181,50 @@ class MoviesContainer extends PureComponent {
     }
 
     render() {
-        const text = firebase.auth().currentUser ?
-            <h3 style={{ cursor: 'pointer', color: 'blue' }} onClick={() => this.handleUserSignOut()}>Logged in as <span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></h3>
+
+        const isLoggedIn = firebase.auth().currentUser ? true : false;
+        const SignInOutButton = isLoggedIn ?
+            <Button color="primary" variant="contained" style={{ margin: '5px', backgroundColor: 'forestgreen' }} title={`Log out from ${firebase.auth().currentUser.email}`} onClick={() => this.handleUserSignOut()}>
+                Logged in as&nbsp;<span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></Button>
             :
-            <h3 style={{ cursor: 'pointer', color: 'blue' }} onClick={() => this.handleUserSignIn()}>Sign in</h3>;
+            <Button color="primary" variant="contained" title={"Sign in with your Google account"} onClick={() => this.handleUserSignIn()}>Sign in</Button>;
+
+        let userMenu = null;
+        let moviesC = null;
+        let scrollToMenu = null;
+
+        if (isLoggedIn) {
+            userMenu = <div className={"UserMenu"} ref={this.myRef}>
+                <UserMenu
+                    isOpen={this.state.addingMovie}
+                    toggle={this.toggleMovieAddModal}
+                    addMovie={details => { this.handleMovieAdd(details) }}
+                    getMovies={this.getMoviesToWatch}
+                    years={this.state.years}
+                    maxResults={this.state.maxResults} />
+            </div>;
+            moviesC = !this.state.loading ?
+                <div className={"MoviesGallery"}>{this.state.moviesData}</div>
+                : <MoviesSpinner />;
+
+            scrollToMenu = <Fab style={{ margin: '10px', bottom: '1px', backgroundColor: 'black' }} color="primary" variant="extended" size="small" title=" Scroll to the top menu"
+                onClick={() => { window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" }); }} > <NavigationIcon /> </Fab>
+        }
 
         return (
             <div>
-                {text}
-                {firebase.auth().currentUser && <div className={"UserMenu"} ref={this.myRef}>
-                    <UserMenu
-                        isOpen={this.state.addingMovie}
-                        toggle={this.toggleMovieAddModal}
-                        addMovie={details => { this.handleMovieAdd(details) }}
-                        getMovies={this.getMoviesToWatch}
-                        years={this.state.years}
-                        maxResults={this.state.maxResults}
-                    />
-                </div>}
-
-                {!this.state.loading ?
-                    <div className={"MoviesGallery"}>{this.state.moviesData}</div>
-                    :
-                    <MoviesSpinner />
-                }
-                <button onClick={() => { window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" }); }}>Scroll to the TOP MENU</button>
+                {SignInOutButton}
+                {isLoggedIn ?
+                    <div>
+                        {userMenu}
+                        {moviesC}
+                        {scrollToMenu}
+                    </div>
+                    : <MoviesSpinner />}
+                <SignInOutDialog
+                    isOpen={this.state.showSignInOutDialog}
+                    toggle={this.toggleUserSignInOutDialog}
+                    dialogTitle={this.state.signInOutDialogTitle} />
             </div>
         );
 
