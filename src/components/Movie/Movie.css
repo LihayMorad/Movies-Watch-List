@@ -66,8 +66,3 @@
 .movieCardContentImgDivError {
     width: 100%;
 }
-
-.MuiExpansionPanel-root-216:before {
-    /* Hide horizontal gray line */
-    height: 0px !important;
-}

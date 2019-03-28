@@ -10,7 +10,7 @@ function Transition(props) {
     return <Slide direction="up" {...props} />;
 }
 
-const SignInOutDialog = props => {
+const informationDialog = props => {
 
     return (
         <div>
@@ -30,4 +30,4 @@ const SignInOutDialog = props => {
     );
 }
 
-export default SignInOutDialog;
+export default informationDialog;

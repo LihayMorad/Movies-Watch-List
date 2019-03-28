@@ -7,7 +7,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import SearchResultsSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
+
+import { withStyles } from '@material-ui/core/styles';
 
 import axios from 'axios';
 
@@ -17,6 +21,8 @@ const initialState = {
     NameHeb: "", NameEng: "", Year: "", TrailerURL: "", Comments: "",
     movieSearchResults: [], imdbID: "", loading: false
 };
+
+const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 
 class movieAddModal extends Component {
 
@@ -37,11 +43,14 @@ class movieAddModal extends Component {
         this.setState({ loading: true });
         const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
         try {
-            let movieSearchResults = omdbResponse.data.Search;
-            omdbResponse.data.Response === "True" ? this.setState({ movieSearchResults, loading: false }) : alert("Search error: " + omdbResponse.data.Error);
+            let movieSearchResults = [];
+            if (omdbResponse.data.Response === "True") {
+                movieSearchResults = omdbResponse.data.Search;
+            } else { alert("Search error: " + omdbResponse.data.Error); }
+            this.setState({ loading: false, movieSearchResults });
         } catch (error) {
-            console.error('error: ', error);
             this.setState({ loading: false });
+            alert("Error: " + error);
         }
     }
 
@@ -49,15 +58,23 @@ class movieAddModal extends Component {
 
     render() {
 
+        const closeBtnStyles = {
+            position: 'absolute',
+            right: '0',
+            top: '0'
+        }
+
         return (
 
-            <Dialog
+            <StyledDialog
                 open={this.props.isOpen}
                 onClose={this.props.toggle}
                 maxWidth="md"
-                fullWidth >
+                fullWidth
+                disableBackdropClick
+                disableEscapeKeyDown>
 
-                <DialogTitle>Add a movie to your watch list</DialogTitle>
+                <DialogTitle>Add a movie to your watch list<IconButton style={closeBtnStyles} onClick={this.props.toggle}><CloseIcon /></IconButton></DialogTitle>
 
                 <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
 
@@ -117,8 +134,8 @@ class movieAddModal extends Component {
 
                 </form>
 
-            </Dialog >
-        )
+            </StyledDialog >
+        );
 
     }
 }

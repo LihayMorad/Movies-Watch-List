@@ -26,15 +26,14 @@ class movieCommentsModal extends Component {
                 onEnter={this.modalOpened}
                 onClose={this.props.toggle}
                 fullWidth
-                maxWidth="md"
-                >
+                maxWidth="md">
 
                 <DialogTitle>Movie note</DialogTitle>
 
                 <DialogContent>
                     <DialogContentText>You can edit your personal note below.</DialogContentText>
                     <TextField
-                    multiline
+                        multiline
                         autoFocus
                         margin="dense"
                         id="comments"

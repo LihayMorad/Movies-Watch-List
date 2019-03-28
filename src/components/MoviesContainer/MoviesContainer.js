@@ -5,7 +5,7 @@ import { database } from '../../config/firebase';
 import Movie from '../Movie/Movie';
 import UserMenu from '../UserMenu/UserMenu';
 import MoviesSpinner from '../Spinners/MoviesSpinner/MoviesSpinner';
-import SignInOutDialog from './SignInOutDialog/SignInOutDialog';
+import InformationDialog from './InformationDialog/InformationDialog';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
@@ -19,9 +19,9 @@ class MoviesContainer extends PureComponent {
         maxResults: 5,
         addingMovie: false,
         years: [],
-        loading: true,
-        showSignInOutDialog: false,
-        signInOutDialogTitle: "",
+        loading: false,
+        showInformationDialog: false,
+        informationDialogTitle: "",
     }
 
     componentDidMount() {
@@ -47,7 +47,7 @@ class MoviesContainer extends PureComponent {
         firebase.auth().signInWithPopup(provider)
             .then(result => { // Sign-in successfully.
                 const username = result.additionalUserInfo.profile.name;
-                this.setState({ signInOutDialogTitle: `Hi ${username}, you are now logged in.` }, () => { this.toggleUserSignInOutDialog(); });
+                this.setState({ informationDialogTitle: `Hi ${username}, you are now logged in.` }, () => { this.toggleInformationDialog(); });
             })
             .catch(error => { console.log('Sign in error: ', error); }); // Sign-in failed.
     }
@@ -56,14 +56,14 @@ class MoviesContainer extends PureComponent {
         if (window.confirm("Are you sure you want to log out from your account " + firebase.auth().currentUser.email + " ?")) {
             firebase.auth().signOut()
                 .then(() => { // Sign-out successfully.
-                    this.setState({ signInOutDialogTitle: "You are now logged out." }, () => { this.toggleUserSignInOutDialog(); });
+                    this.setState({ informationDialogTitle: "You are now logged out." }, () => { this.toggleInformationDialog(); });
                 })
                 .catch(error => { console.log('Sign out error: ', error); }); // Sign-out failed.
         }
     }
 
-    toggleUserSignInOutDialog = () => {
-        this.setState({ showSignInOutDialog: !this.state.showSignInOutDialog }, () => { setTimeout(() => { this.setState({ showSignInOutDialog: false }) }, 1800) });
+    toggleInformationDialog = () => {
+        this.setState({ showInformationDialog: !this.state.showInformationDialog }, () => { setTimeout(() => { this.setState({ showInformationDialog: false }) }, 3000) });
     }
 
     handleMovieDelete = movieID => {
@@ -82,7 +82,7 @@ class MoviesContainer extends PureComponent {
             console.log('[handleDelete] DB REMOVE');
             database.ref('/mymovies/' + firebase.auth().currentUser.uid + "/" + movieID).remove()
                 .then(() => {
-                    this.setState({ signInOutDialogTitle: `'${deletedMovieDetails}' deleted successfully` }, () => { this.toggleUserSignInOutDialog(); });
+                    this.setState({ informationDialogTitle: `'${deletedMovieDetails}' deleted successfully` }, () => { this.toggleInformationDialog(); });
                 })
                 .catch((error) => { console.error(error); })
         });
@@ -95,9 +95,9 @@ class MoviesContainer extends PureComponent {
         delete movieToBeAdded.loading;
 
         database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, () => {
-            this.setState({ signInOutDialogTitle: `'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully` }, () => {
+            this.setState({ informationDialogTitle: `'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully` }, () => {
                 this.toggleMovieAddModal();
-                this.toggleUserSignInOutDialog();
+                this.toggleInformationDialog();
             });
         });
     }
@@ -184,7 +184,7 @@ class MoviesContainer extends PureComponent {
 
         const isLoggedIn = firebase.auth().currentUser ? true : false;
         const SignInOutButton = isLoggedIn ?
-            <Button color="primary" variant="contained" style={{ margin: '5px', backgroundColor: 'forestgreen' }} title={`Log out from ${firebase.auth().currentUser.email}`} onClick={() => this.handleUserSignOut()}>
+            <Button color="primary" variant="contained" style={{ margin: '6px auto 10px auto', backgroundColor: 'forestgreen' }} title={`Log out from ${firebase.auth().currentUser.email}`} onClick={() => this.handleUserSignOut()}>
                 Logged in as&nbsp;<span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></Button>
             :
             <Button color="primary" variant="contained" title={"Sign in with your Google account"} onClick={() => this.handleUserSignIn()}>Sign in</Button>;
@@ -220,11 +220,11 @@ class MoviesContainer extends PureComponent {
                         {moviesC}
                         {scrollToMenu}
                     </div>
-                    : <MoviesSpinner />}
-                <SignInOutDialog
-                    isOpen={this.state.showSignInOutDialog}
-                    toggle={this.toggleUserSignInOutDialog}
-                    dialogTitle={this.state.signInOutDialogTitle} />
+                    : null}
+                <InformationDialog
+                    isOpen={this.state.showInformationDialog}
+                    toggle={this.toggleInformationDialog}
+                    dialogTitle={this.state.informationDialogTitle} />
             </div>
         );
 

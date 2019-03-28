@@ -86,21 +86,28 @@ class MovieTabs extends Component {
 			fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbId}/fullcredits/`} target={"_blank"} rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>more</a>
 		}
 
+		const tabsPanelPropertyStyles = {
+			flexBasis: '33.33%',
+			flexShrink: 0,
+			textAlign: 'left',
+			margin: 'auto 0',
+		}
+
 		return (
 
 			<div>
 
-				<ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')} style={{ borderTop: 'solid 1px dodgerblue', borderRadius: '10px' }}>
+				<ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')} className={"tabsPanel"}>
 					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Plot</Typography>
+						<Typography style={tabsPanelPropertyStyles} variant={'h6'}>Plot</Typography>
 						<Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{this.props.genre}</Typography>
 					</ExpansionPanelSummary>
 					<ExpansionPanelDetails style={{ padding: '8px 10px' }}>{this.props.plot ? this.props.plot : ""}</ExpansionPanelDetails>
 				</ExpansionPanel>
 
-				<ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')} style={{ borderTop: 'solid 1px dodgerblue', borderRadius: '10px' }}>
+				<ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')} className={"tabsPanel"}>
 					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Cast</Typography>
+						<Typography style={tabsPanelPropertyStyles} variant={'h6'}>Cast</Typography>
 						<Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{mainActor}& {fullcast}</Typography>
 					</ExpansionPanelSummary>
 					<ExpansionPanelDetails style={{ padding: '8px 10px' }}>
@@ -108,21 +115,21 @@ class MovieTabs extends Component {
 					</ExpansionPanelDetails>
 				</ExpansionPanel>
 
-				<ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')} style={{ borderTop: 'solid 1px dodgerblue', borderRadius: '10px' }}>
+				<ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')} className={"tabsPanel"}>
 					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left' }} variant={'h6'}>Ratings</Typography>
+						<Typography style={tabsPanelPropertyStyles} variant={'h6'}>Ratings</Typography>
 						<Typography style={{ margin: 'auto' }} variant={'subtitle2'}>{imdbRating}</Typography>
 					</ExpansionPanelSummary>
 					<ExpansionPanelDetails style={{ padding: '8px 10px' }}>{ratings}</ExpansionPanelDetails>
 				</ExpansionPanel>
 
-				<ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')} style={{ borderTop: 'solid 1px dodgerblue', borderRadius: '10px' }}>
+				<ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')} className={"tabsPanel"}>
 					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={{ flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto' }} variant={'h6'}>Downloads</Typography>
+						<Typography style={tabsPanelPropertyStyles} variant={'h6'}>Downloads</Typography>
 						<Typography style={{ margin: 'auto' }} variant={'subtitle2'}>Torrents & Subtitles</Typography>
 					</ExpansionPanelSummary>
 					<ExpansionPanelDetails style={{ padding: '8px 10px', flexWrap: 'wrap' }}>{torrents}</ExpansionPanelDetails>
-					<Divider variant="middle"></Divider>
+					<Divider variant={'middle'}></Divider>
 					<ExpansionPanelDetails style={{ padding: '8px 10px', flexWrap: 'wrap' }}>{subtitles}</ExpansionPanelDetails>
 				</ExpansionPanel>
 

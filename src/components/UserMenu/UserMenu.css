@@ -6,6 +6,6 @@
     align-items: center;
 }
 
-/* .MenuElement {
-    min-width: 120px;
-} */
+.MenuElement {
+    margin: 10px !important;
+}

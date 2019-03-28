@@ -23,7 +23,7 @@ class UserMenu extends Component {
         maxResults: ""
     }
 
-    componentWillMount() { this.setState({ maxResults: this.props.maxResults }); }
+    componentDidMount() { this.setState({ maxResults: this.props.maxResults }); }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
 
@@ -35,7 +35,7 @@ class UserMenu extends Component {
 
             <form>
                 <div className={"Menu"}>
-                    <FormControl style={{ margin: '10px', width: '134px' }} className={"MenuElement"} >
+                    <FormControl style={{ width: '134px' }} className={"MenuElement"} >
                         <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                         <Select
                             value={this.state.filter}
@@ -48,7 +48,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={{ margin: '10px', width: '116px' }} className={"MenuElement"} >
+                    <FormControl style={{ width: '116px' }} className={"MenuElement"} >
                         <InputLabel htmlFor="orderBy">Order by</InputLabel>
                         <Select
                             value={this.state.order}
@@ -60,7 +60,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={{ margin: '10px', width: '70px' }} className={"MenuElement"} >
+                    <FormControl style={{ width: '70px' }} className={"MenuElement"} >
                         <InputLabel htmlFor="showYear">Year</InputLabel>
                         <Select
                             value={this.state.year}
@@ -73,7 +73,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={{ margin: '10px', width: '52px' }} className={"MenuElement"} >
+                    <FormControl style={{ width: '52px' }} className={"MenuElement"} >
                         <InputLabel htmlFor="maxResults">Results</InputLabel>
 
                         <Select
@@ -82,8 +82,8 @@ class UserMenu extends Component {
                             name="maxResults"
                             inputProps={{ id: 'maxResults' }} >
                             <MenuItem value={1000}>All</MenuItem>
-                            <MenuItem value={5}>5</MenuItem>
-                            <MenuItem value={10}><em>10</em></MenuItem>
+                            <MenuItem value={5}><em>5</em></MenuItem>
+                            <MenuItem value={10}>10</MenuItem>
                             <MenuItem value={15}>15</MenuItem>
                             <MenuItem value={20}>20</MenuItem>
                             <MenuItem value={30}>30</MenuItem>
@@ -92,11 +92,11 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <Button style={{ margin: '10px' }} variant="contained" size="small"
+                    <Button className={"MenuElement"} variant="contained" size="small"
                         onClick={() => this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults)}><FilterList />&nbsp;Apply</Button>
 
                 </div>
-                <Fab style={{ margin: '5px' }} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">
+                <Fab style={{ marginTop: '10px' }} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">
                     <AddIcon />Add Movie
                 </Fab>
 

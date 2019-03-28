@@ -13,6 +13,11 @@
     padding: 0px 3px;
 }
 
-.MuiExpansionPanel-root-221:before{
+.tabsPanel {
+    border-Top: solid 1px dodgerblue;
+    border-radius: 10px !important;
+}
+
+.tabsPanel::before {
     height: 0px !important;
 }
