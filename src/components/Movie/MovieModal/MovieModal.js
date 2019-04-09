@@ -22,7 +22,6 @@ class MovieModal extends Component {
 	// componentDidUpdate() { console.log('Movie Modal [componentDidMount] this.props.isOpen', this.props.isOpen); }
 
 	async getTrailer() {
-		// console.log('this.props.searchParams: ', this.props.searchParams);
 
 		if (this.props) {
 			const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);

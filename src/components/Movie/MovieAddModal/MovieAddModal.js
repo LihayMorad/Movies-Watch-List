@@ -23,6 +23,11 @@ const initialState = {
 };
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
+const closeBtnStyles = {
+    position: 'absolute',
+    right: '0',
+    top: '0'
+}
 
 class movieAddModal extends Component {
 
@@ -37,7 +42,7 @@ class movieAddModal extends Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
-    handleSubmit = event => { this.state.imdbID ? this.props.addMovie(this.state) : alert("Please click on the search button and choose a movie.") }
+    handleAddMovie = event => { this.state.imdbID ? this.props.addMovie(this.state) : alert("Please click choose a movie from the search results.") }
 
     async handleMovieSearch() {
         this.setState({ loading: true });
@@ -57,13 +62,7 @@ class movieAddModal extends Component {
     handleUpdateCurrentMovie = (imdbID, title, year) => { this.setState({ imdbID: imdbID, NameEng: title, Year: year }); }
 
     render() {
-
-        const closeBtnStyles = {
-            position: 'absolute',
-            right: '0',
-            top: '0'
-        }
-
+        console.log('this.state.movieSearchResults: ', this.state.movieSearchResults);
         return (
 
             <StyledDialog
@@ -71,34 +70,33 @@ class movieAddModal extends Component {
                 onClose={this.props.toggle}
                 maxWidth="md"
                 fullWidth
-                disableBackdropClick
-                disableEscapeKeyDown>
+                disableBackdropClick>
 
                 <DialogTitle>Add a movie to your watch list<IconButton style={closeBtnStyles} onClick={this.props.toggle}><CloseIcon /></IconButton></DialogTitle>
 
-                <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                <form style={{ display: 'contents' }} onSubmit={e => { e.preventDefault(); this.handleMovieSearch() }}>
 
                     <DialogContent>
                         <DialogContentText>
                             Search a movie by its english name (you may also specify a year).<br></br>
                             Click 'Search' and then click on the movie you searched for.<br></br>
                             If you'd like to, you can also specify its hebrew name, trailer link and personal note.<br></br>
-                            Click 'Add' at the bottom.
+                            When you done click 'Add' below.
                         </DialogContentText>
                         <TextField
-                            multiline autoFocus required fullWidth
+                            autoFocus required fullWidth
                             margin="dense" id="movieNameEng" type="text"
                             name="NameEng" label="Movie's English name"
                             placeholder="Enter english name"
                             onChange={this.handleChange} />
                         <TextField
                             fullWidth
-                            margin="dense" id="movieReleaseYear" type="number"
+                            margin="dense" id="movieReleaseYear" type="number" defaultValue={new Date().getFullYear()} inputProps={{ min: "1950", max: new Date().getFullYear()+3 }}
                             name="Year" label={"Movie's Release year"}
                             placeholder={"Enter release year"}
                             onChange={this.handleChange} />
 
-                        <Button color="secondary" variant="outlined" style={{ marginTop: '10px' }} onClick={() => this.handleMovieSearch()}>Search</Button>
+                        <Button type="sumbit" color="secondary" variant="outlined" style={{ marginTop: '10px' }}>Search</Button>
 
                         {!this.state.loading ? <MoviesResultsGrid
                             results={this.state.movieSearchResults}
@@ -108,13 +106,13 @@ class movieAddModal extends Component {
                             <SearchResultsSpinner />}
 
                         <TextField
-                            multiline fullWidth
+                            fullWidth
                             margin="dense" id="movieNameHeb" type="text"
                             name="NameHeb" label={"Movie's Hebrew name"}
                             placeholder={"Enter hebrew name (optional)"}
                             onChange={this.handleChange} />
                         <TextField
-                            multiline fullWidth
+                            fullWidth
                             margin="dense" id="movieTrailer" type="text"
                             name="TrailerURL" label={"Movie's Trailer"}
                             placeholder={"Enter trailer link (optional)"}
@@ -127,12 +125,10 @@ class movieAddModal extends Component {
                             onChange={this.handleChange} />
 
                     </DialogContent>
-
-                    <DialogActions>
-                        <Button type="submit" color="primary" variant="contained">Add</Button>
-                    </DialogActions>
-
                 </form>
+                <DialogActions>
+                    <Button color="primary" variant="contained" onClick={() => { this.handleAddMovie(); }}>Add</Button>
+                </DialogActions>
 
             </StyledDialog >
         );

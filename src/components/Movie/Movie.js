@@ -80,7 +80,7 @@ class Movie extends Component {
 
 				<CardActionArea>
 
-					<CardContent style={{ padding: '0px' }} onClick={this.toggleWatchTrailer} title={"Click to open trailer"}>
+					<CardContent style={{ padding: '0px' }} title={"Click to open trailer"} onClick={this.toggleWatchTrailer}>
 						<div className={"movieCardContentImgDiv"}>
 							{!loading ?
 								!movieDBError ?
@@ -122,7 +122,7 @@ class Movie extends Component {
 							plot={this.state.Plot}
 							actors={this.state.Actors}
 							genre={this.state.Genre}
-						/>
+							userEmail={this.props.userEmail} />
 						: <MovieSpinner />
 					}
 				</CardActions>
@@ -131,7 +131,8 @@ class Movie extends Component {
 				<MovieModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
 					searchParams={!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.releaseYear}`} />
 
-				<Fab style={{ margin: '0px 10px 7px 10px' }} color="primary" onClick={this.toggleEditingComments} title={"Add/Edit movie's personal note"} size="small">
+				<Fab style={{ margin: '0px 10px 7px 10px' }} color="primary" title={"Add/Edit movie's personal note"} size="small"
+					onClick={this.toggleEditingComments} >
 					<Icon>edit_icon</Icon>
 				</Fab>
 

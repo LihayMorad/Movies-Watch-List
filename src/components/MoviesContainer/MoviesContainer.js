@@ -12,6 +12,12 @@ import NavigationIcon from '@material-ui/icons/Navigation';
 
 import './MoviesContainer.css';
 
+const styles = {
+    "loggedInBtn": { margin: '6px auto 10px auto', backgroundColor: 'forestgreen' },
+    "loggedInName": { textDecoration: 'underline' },
+    "scrollToMenu": { margin: '10px', bottom: '1px', backgroundColor: 'black' }
+};
+
 class MoviesContainer extends PureComponent {
 
     state = {
@@ -26,10 +32,6 @@ class MoviesContainer extends PureComponent {
 
     componentDidMount() {
         this.myRef = React.createRef();
-
-        if (firebase.auth().currentUser) {
-            alert("Welcome, please sign in to use and save your movies watch list.");
-        }
 
         firebase.auth().onAuthStateChanged(user => {
             if (user) { this.getMoviesToWatch(); }  // User is signed in.
@@ -109,14 +111,14 @@ class MoviesContainer extends PureComponent {
         const filterToShow = filter === "releaseYear" ? "Year" : filter.charAt(0).toUpperCase() + filter.slice(1); // for matching DB's keys: nameEng > NameEng
 
         this.setState({ maxResults: maxResults, loading: true }, () => {
-            year === "All"
-                ?
-                database.ref('/mymovies/' + firebase.auth().currentUser.uid).orderByChild(filterToShow).limitToLast(this.state.maxResults)
+            const userID = firebase.auth().currentUser.uid;
+            if (year === "All") {
+                database.ref('/mymovies/' + userID).orderByChild(filterToShow).limitToLast(this.state.maxResults)
                     .on('value', response => { this.handleFirebaseData(response, filterToShow, order, year); }, error => { console.log(error); })
-                :
-                database.ref('/mymovies/' + firebase.auth().currentUser.uid).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
+            } else {
+                database.ref('/mymovies/' + userID).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
                     .on('value', response => { this.handleFirebaseData(response, filterToShow, order, year); }, error => { console.log(error); });
-
+            }
         });
     }
 
@@ -124,7 +126,7 @@ class MoviesContainer extends PureComponent {
         let sortedMovies = [];
 
         if (year !== "All") {
-            sortedMovies = this.sortMoviesofTheSameYear(response.val(), filter, order, year); // sort movies of the same year by filter
+            sortedMovies = this.sortMoviesofTheSameYear(response.val(), filter, order); // sort movies of the same year by filter
         } else {
             order === "descending" ?
                 response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
@@ -132,12 +134,10 @@ class MoviesContainer extends PureComponent {
                 response.forEach(elem => { sortedMovies.push({ key: elem.key, ...elem.val() }); });
         }
 
-        // console.table(sortedMovies);
         this.setMoviesToWatch(sortedMovies);
     }
 
     setMoviesToWatch = moviesData => {
-        // console.log('moviesData: ', moviesData);
 
         let years = [];
         const movies = moviesData.map(movie => { // .slice(0, this.state.maxResults)
@@ -151,6 +151,7 @@ class MoviesContainer extends PureComponent {
                 releaseYear={movie['Year']}
                 trailerURL={movie['TrailerURL']}
                 userID={firebase.auth().currentUser.uid}
+                userEmail={firebase.auth().currentUser.email}
                 comments={movie['Comments']}
                 delete={this.handleMovieDelete} />
         });
@@ -159,7 +160,7 @@ class MoviesContainer extends PureComponent {
         this.setState({ moviesData: movies, years: years, loading: false });
     }
 
-    sortMoviesofTheSameYear = (responseData, filter, order, year) => {
+    sortMoviesofTheSameYear = (responseData, filter, order) => {
 
         let sortedMovies = [];
 
@@ -183,17 +184,20 @@ class MoviesContainer extends PureComponent {
     render() {
 
         const isLoggedIn = firebase.auth().currentUser ? true : false;
-        const SignInOutButton = isLoggedIn ?
-            <Button color="primary" variant="contained" style={{ margin: '6px auto 10px auto', backgroundColor: 'forestgreen' }} title={`Log out from ${firebase.auth().currentUser.email}`} onClick={() => this.handleUserSignOut()}>
-                Logged in as&nbsp;<span style={{ textDecoration: 'underline' }}>{firebase.auth().currentUser.displayName}</span></Button>
-            :
-            <Button color="primary" variant="contained" title={"Sign in with your Google account"} onClick={() => this.handleUserSignIn()}>Sign in</Button>;
-
+        let signInOutButton = <Button color="primary" variant="contained" title={"Sign in with your Google account"} onClick={() => this.handleUserSignIn()}>Sign in</Button>;
         let userMenu = null;
         let moviesC = null;
         let scrollToMenu = null;
 
         if (isLoggedIn) {
+            signInOutButton = <Button
+                color="primary"
+                variant="contained"
+                style={styles.loggedInBtn}
+                title={`Log out from ${firebase.auth().currentUser.email}`}
+                onClick={() => this.handleUserSignOut()}>
+                Logged in as&nbsp;<span style={styles.loggedInName}>{firebase.auth().currentUser.displayName}</span></Button>;
+
             userMenu = <div className={"UserMenu"} ref={this.myRef}>
                 <UserMenu
                     isOpen={this.state.addingMovie}
@@ -207,20 +211,22 @@ class MoviesContainer extends PureComponent {
                 <div className={"MoviesGallery"}>{this.state.moviesData}</div>
                 : <MoviesSpinner />;
 
-            scrollToMenu = <Fab style={{ margin: '10px', bottom: '1px', backgroundColor: 'black' }} color="primary" variant="extended" size="small" title=" Scroll to the top menu"
-                onClick={() => { window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" }); }} > <NavigationIcon /> </Fab>
+            scrollToMenu = <Fab
+                color="primary"
+                variant="extended"
+                style={styles.scrollToMenu}
+                size="small"
+                title=" Scroll to the top menu"
+                onClick={() => { window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" }); }}><NavigationIcon /></Fab>;
         }
 
         return (
             <div>
-                {SignInOutButton}
-                {isLoggedIn ?
-                    <div>
-                        {userMenu}
-                        {moviesC}
-                        {scrollToMenu}
-                    </div>
-                    : null}
+                {signInOutButton}
+                {userMenu}
+                {moviesC}
+                {scrollToMenu}
+
                 <InformationDialog
                     isOpen={this.state.showInformationDialog}
                     toggle={this.toggleInformationDialog}

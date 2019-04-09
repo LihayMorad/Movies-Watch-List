@@ -40,17 +40,15 @@ class movieCommentsModal extends Component {
                         type="text"
                         defaultValue={this.props.comments}
                         onChange={this.handleChange}
-                        fullWidth
-                    />
+                        fullWidth />
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={() => { this.props.handleComments(this.state.comments) }} color="primary">Save</Button>
+                    <Button color="primary" onClick={() => { this.props.handleComments(this.state.comments) }}>Save</Button>
                 </DialogActions>
 
             </Dialog>
         );
-
     }
 }
 

@@ -6,9 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
-function Transition(props) {
-    return <Slide direction="up" {...props} />;
-}
+const Transition = props => <Slide direction="up" {...props} />;
 
 const informationDialog = props => {
 
