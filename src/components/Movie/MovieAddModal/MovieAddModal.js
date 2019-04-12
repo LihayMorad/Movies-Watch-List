@@ -17,8 +17,9 @@ import axios from 'axios';
 
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
+const currYear = new Date().getFullYear();
 const initialState = {
-    NameHeb: "", NameEng: "", Year: "", TrailerURL: "", Comments: "",
+    NameHeb: "", NameEng: "", Year: currYear, TrailerURL: "", Comments: "",
     movieSearchResults: [], imdbID: "", loading: false
 };
 
@@ -33,7 +34,10 @@ class movieAddModal extends Component {
 
     state = { ...initialState }
 
-    // componentDidMount() { console.log("[componentDidMount]"); }
+    componentDidMount() {
+        this.nameEngInput = React.createRef();
+        this.yearFieldInput = React.createRef();
+    }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.isOpen !== this.props.isOpen)
@@ -42,27 +46,32 @@ class movieAddModal extends Component {
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
-    handleAddMovie = event => { this.state.imdbID ? this.props.addMovie(this.state) : alert("Please click choose a movie from the search results.") }
+    handleAddMovie = event => {
+        this.state.imdbID
+            ? this.props.addMovie(this.state)
+            : alert("Please search and choose a movie from the search results.");
+    }
 
-    async handleMovieSearch() {
-        this.setState({ loading: true });
-        const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
-        try {
-            let movieSearchResults = [];
-            if (omdbResponse.data.Response === "True") {
-                movieSearchResults = omdbResponse.data.Search;
-            } else { alert("Search error: " + omdbResponse.data.Error); }
-            this.setState({ loading: false, movieSearchResults });
-        } catch (error) {
-            this.setState({ loading: false });
-            alert("Error: " + error);
-        }
+    handleMovieSearch() {
+        this.setState({ loading: true }, async () => {
+            const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.nameEngInput.current.value}&y=${this.yearFieldInput.current.value}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
+            try {
+                let movieSearchResults = [];
+                if (omdbResponse.data.Response === "True") {
+                    movieSearchResults = omdbResponse.data.Search;
+                } else { alert("Search error: " + omdbResponse.data.Error); }
+                this.setState({ loading: false, movieSearchResults, imdbID: "" });
+            } catch (error) {
+                this.setState({ loading: false });
+                alert("Error: " + error);
+            }
+        });
     }
 
     handleUpdateCurrentMovie = (imdbID, title, year) => { this.setState({ imdbID: imdbID, NameEng: title, Year: year }); }
 
     render() {
-        console.log('this.state.movieSearchResults: ', this.state.movieSearchResults);
+        // console.log('this.state.movieSearchResults: ', this.state.movieSearchResults);
         return (
 
             <StyledDialog
@@ -88,47 +97,51 @@ class movieAddModal extends Component {
                             margin="dense" id="movieNameEng" type="text"
                             name="NameEng" label="Movie's English name"
                             placeholder="Enter english name"
+                            inputProps={{ min: "1950", max: currYear + 2, ref: this.nameEngInput }}
                             onChange={this.handleChange} />
                         <TextField
                             fullWidth
-                            margin="dense" id="movieReleaseYear" type="number" defaultValue={new Date().getFullYear()} inputProps={{ min: "1950", max: new Date().getFullYear()+3 }}
+                            margin="dense" id="movieReleaseYear" type="number"
                             name="Year" label={"Movie's Release year"}
+                            defaultValue={this.state.Year}
                             placeholder={"Enter release year"}
+                            inputProps={{ min: "1950", max: currYear + 2, ref: this.yearFieldInput }}
                             onChange={this.handleChange} />
 
                         <Button type="sumbit" color="secondary" variant="outlined" style={{ marginTop: '10px' }}>Search</Button>
 
-                        {!this.state.loading ? <MoviesResultsGrid
-                            results={this.state.movieSearchResults}
-                            imdbID={this.state.imdbID}
-                            updateCurrentMovie={this.handleUpdateCurrentMovie} />
-                            :
-                            <SearchResultsSpinner />}
+                        {!this.state.loading
+                            ? <MoviesResultsGrid
+                                results={this.state.movieSearchResults}
+                                imdbID={this.state.imdbID}
+                                updateCurrentMovie={this.handleUpdateCurrentMovie} />
+                            : <SearchResultsSpinner />}
 
-                        <TextField
-                            fullWidth
-                            margin="dense" id="movieNameHeb" type="text"
-                            name="NameHeb" label={"Movie's Hebrew name"}
-                            placeholder={"Enter hebrew name (optional)"}
-                            onChange={this.handleChange} />
-                        <TextField
-                            fullWidth
-                            margin="dense" id="movieTrailer" type="text"
-                            name="TrailerURL" label={"Movie's Trailer"}
-                            placeholder={"Enter trailer link (optional)"}
-                            onChange={this.handleChange} />
-                        <TextField
-                            multiline fullWidth
-                            margin="dense" id="movieComments" type="text"
-                            name="Comments" label={"Movie's Personal Note"}
-                            placeholder={"Enter Personal Note (optional)"}
-                            onChange={this.handleChange} />
+                        {this.state.imdbID && <>
+                            <TextField
+                                fullWidth
+                                margin="dense" id="movieNameHeb" type="text"
+                                name="NameHeb" label={"Movie's Hebrew name"}
+                                placeholder={"Enter hebrew name (optional)"}
+                                onChange={this.handleChange} />
+                            <TextField
+                                fullWidth
+                                margin="dense" id="movieTrailer" type="text"
+                                name="TrailerURL" label={"Movie's Trailer"}
+                                placeholder={"Enter trailer link (optional)"}
+                                onChange={this.handleChange} />
+                            <TextField
+                                fullWidth multiline
+                                margin="dense" id="movieComments" type="text"
+                                name="Comments" label={"Movie's Personal Note"}
+                                placeholder={"Enter Personal Note (optional)"}
+                                onChange={this.handleChange} /></>}
 
                     </DialogContent>
                 </form>
-                <DialogActions>
+                {this.state.imdbID && <DialogActions>
                     <Button color="primary" variant="contained" onClick={() => { this.handleAddMovie(); }}>Add</Button>
-                </DialogActions>
+                </DialogActions>}
 
             </StyledDialog >
         );

@@ -31,7 +31,7 @@ class MoviesContainer extends PureComponent {
     }
 
     componentDidMount() {
-        this.myRef = React.createRef();
+        this.topMenuRef = React.createRef();
 
         firebase.auth().onAuthStateChanged(user => {
             if (user) { this.getMoviesToWatch(); }  // User is signed in.
@@ -49,23 +49,27 @@ class MoviesContainer extends PureComponent {
         firebase.auth().signInWithPopup(provider)
             .then(result => { // Sign-in successfully.
                 const username = result.additionalUserInfo.profile.name;
-                this.setState({ informationDialogTitle: `Hi ${username}, you are now logged in.` }, () => { this.toggleInformationDialog(); });
+                this.handleInformationDialogTitle(`Hi ${username}, you are now logged in.`);
             })
-            .catch(error => { console.log('Sign in error: ', error); }); // Sign-in failed.
+            .catch(error => { this.handleInformationDialogTitle('Sign in error: ' + error); console.log('Sign in error: ', error); }); // Sign-in failed.
     }
 
     handleUserSignOut = () => {
-        if (window.confirm("Are you sure you want to log out from your account " + firebase.auth().currentUser.email + " ?")) {
+        if (window.confirm(`Are you sure you want to log out from your account ${firebase.auth().currentUser.email} ?`)) {
             firebase.auth().signOut()
                 .then(() => { // Sign-out successfully.
-                    this.setState({ informationDialogTitle: "You are now logged out." }, () => { this.toggleInformationDialog(); });
+                    this.handleInformationDialogTitle("You are now logged out.");
                 })
-                .catch(error => { console.log('Sign out error: ', error); }); // Sign-out failed.
+                .catch(error => { this.handleInformationDialogTitle('Sign out error: ' + error); console.log('Sign out error: ', error); }); // Sign-out failed.
         }
     }
 
     toggleInformationDialog = () => {
         this.setState({ showInformationDialog: !this.state.showInformationDialog }, () => { setTimeout(() => { this.setState({ showInformationDialog: false }) }, 3000) });
+    }
+
+    handleInformationDialogTitle = title => {
+        this.setState({ informationDialogTitle: title }, () => { this.toggleInformationDialog(); });
     }
 
     handleMovieDelete = movieID => {
@@ -81,10 +85,9 @@ class MoviesContainer extends PureComponent {
         });
 
         this.setState({ moviesData: updatedMoviesData }, () => {
-            console.log('[handleDelete] DB REMOVE');
             database.ref('/mymovies/' + firebase.auth().currentUser.uid + "/" + movieID).remove()
                 .then(() => {
-                    this.setState({ informationDialogTitle: `'${deletedMovieDetails}' deleted successfully` }, () => { this.toggleInformationDialog(); });
+                    this.handleInformationDialogTitle(`'${deletedMovieDetails}' deleted successfully`);
                 })
                 .catch((error) => { console.error(error); })
         });
@@ -97,10 +100,8 @@ class MoviesContainer extends PureComponent {
         delete movieToBeAdded.loading;
 
         database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, () => {
-            this.setState({ informationDialogTitle: `'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully` }, () => {
-                this.toggleMovieAddModal();
-                this.toggleInformationDialog();
-            });
+            this.handleInformationDialogTitle(`'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully`);
+            this.toggleMovieAddModal();
         });
     }
 
@@ -128,10 +129,9 @@ class MoviesContainer extends PureComponent {
         if (year !== "All") {
             sortedMovies = this.sortMoviesofTheSameYear(response.val(), filter, order); // sort movies of the same year by filter
         } else {
-            order === "descending" ?
-                response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
-                :
-                response.forEach(elem => { sortedMovies.push({ key: elem.key, ...elem.val() }); });
+            order === "descending"
+                ? response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
+                : response.forEach(elem => { sortedMovies.push({ key: elem.key, ...elem.val() }); });
         }
 
         this.setMoviesToWatch(sortedMovies);
@@ -153,6 +153,7 @@ class MoviesContainer extends PureComponent {
                 userID={firebase.auth().currentUser.uid}
                 userEmail={firebase.auth().currentUser.email}
                 comments={movie['Comments']}
+                handleInformationDialog={this.handleInformationDialogTitle}
                 delete={this.handleMovieDelete} />
         });
 
@@ -171,11 +172,15 @@ class MoviesContainer extends PureComponent {
 
             const movie1 = a[filter], movie2 = b[filter];
 
-            return order === "descending"
-                ?
-                movie2 > movie1 ? 1 : movie2 === movie1 ? 0 : -1
-                :
-                movie1 < movie2 ? -1 : movie2 === movie1 ? 0 : 1;
+            if (order === "descending") {
+                return (movie2 > movie1
+                    ? 1
+                    : (movie2 === movie1 ? 0 : -1));
+            } else {
+                return (movie1 < movie2
+                    ? -1
+                    : (movie2 === movie1 ? 0 : 1));
+            }
         });
 
         return sortedMovies;
@@ -198,17 +203,19 @@ class MoviesContainer extends PureComponent {
                 onClick={() => this.handleUserSignOut()}>
                 Logged in as&nbsp;<span style={styles.loggedInName}>{firebase.auth().currentUser.displayName}</span></Button>;
 
-            userMenu = <div className={"UserMenu"} ref={this.myRef}>
+            userMenu = <div className={"UserMenu"} ref={this.topMenuRef}>
                 <UserMenu
                     isOpen={this.state.addingMovie}
                     toggle={this.toggleMovieAddModal}
-                    addMovie={details => { this.handleMovieAdd(details) }}
+                    addMovie={details => { this.handleMovieAdd(details) }} // @@@@@@@@@@@@@
                     getMovies={this.getMoviesToWatch}
                     years={this.state.years}
-                    maxResults={this.state.maxResults} />
+                    maxResults={this.state.maxResults}
+                    handleInformationDialog={this.handleInformationDialogTitle} />
             </div>;
-            moviesC = !this.state.loading ?
-                <div className={"MoviesGallery"}>{this.state.moviesData}</div>
+
+            moviesC = !this.state.loading
+                ? <div className={"MoviesGallery"}>{this.state.moviesData}</div>
                 : <MoviesSpinner />;
 
             scrollToMenu = <Fab
@@ -217,7 +224,7 @@ class MoviesContainer extends PureComponent {
                 style={styles.scrollToMenu}
                 size="small"
                 title=" Scroll to the top menu"
-                onClick={() => { window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" }); }}><NavigationIcon /></Fab>;
+                onClick={() => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }}><NavigationIcon /></Fab>;
         }
 
         return (

@@ -28,17 +28,12 @@ class Movie extends Component {
 
 	state = {
 		nameHeb: "", nameEng: "", releaseYear: "", trailerURL: "", comments: "", dbID: "",
-
 		Response: "", Error: "",
-
-		watchingTrailer: false,
-		editingComments: false,
-		loading: true
+		watchingTrailer: false, editingComments: false, loading: true
 	}
 
 
 	componentDidMount() {
-		// console.log('Movie [componentDidMount]');
 		this.setState({ ...this.props });
 		this.getMovieDb();
 	}
@@ -47,7 +42,9 @@ class Movie extends Component {
 		const omdbResponse = await axios(`https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
 		try {
 			let omdbData = omdbResponse.data;
-			omdbData.Response === "True" ? this.setState({ ...omdbData, loading: false }) : this.setState({ Response: omdbData.Response, Error: omdbData.Error, loading: false });
+			omdbData.Response === "True"
+				? this.setState({ ...omdbData, loading: false })
+				: this.setState({ Response: omdbData.Response, Error: omdbData.Error, loading: false });
 		} catch (error) {
 			console.error('error: ', error);
 		}
@@ -59,7 +56,8 @@ class Movie extends Component {
 
 	handleComments = comments => {
 		this.setState({ comments: comments, editingComments: false }, () => {
-			database.ref('/mymovies/' + this.props.userID + "/" + this.props.dbID).update({ Comments: comments }, () => { alert("Comments saved succesfully"); });
+			database.ref('/mymovies/' + this.props.userID + "/" + this.props.dbID).update({ Comments: comments },
+				() => { this.props.handleInformationDialog("Comments saved succesfully"); });
 		});
 	}
 
@@ -82,13 +80,13 @@ class Movie extends Component {
 
 					<CardContent style={{ padding: '0px' }} title={"Click to open trailer"} onClick={this.toggleWatchTrailer}>
 						<div className={"movieCardContentImgDiv"}>
-							{!loading ?
-								!movieDBError ?
-									<>
+							{!loading
+								? !movieDBError
+									? <>
 										<img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"}></img>
 										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"}></img>
-									</> :
-									<div className={"movieCardContentImgDivError"}>
+									</>
+									: <div className={"movieCardContentImgDivError"}>
 										<img src={MovieNotFound} alt={movieDBError}></img>
 										<h1>Database error: {movieDBError}</h1>
 									</div>
@@ -97,8 +95,8 @@ class Movie extends Component {
 						</div>
 						<Divider variant="middle"></Divider>
 						<div className={"movieCardContentTextDiv"}>
-							{!loading ?
-								<div className={"movieCardContentText"}>
+							{!loading
+								? <div className={"movieCardContentText"}>
 									<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.nameEng} </Typography>
 									<Typography variant="h5" style={{ direction: 'rtl' }}> {this.state.nameHeb}  </Typography>
 									{!movieDBError ? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p> : <p>{this.state.releaseYear}</p>}
@@ -112,8 +110,8 @@ class Movie extends Component {
 				</CardActionArea>
 
 				<CardActions style={{ display: 'inherit', padding: '7px' }}>
-					{!loading ?
-						!movieDBError && <MovieTabs
+					{!loading
+						? !movieDBError && <MovieTabs
 							title={this.state.Title}
 							year={this.state.Year}
 							ratings={this.state.Ratings}
@@ -129,7 +127,9 @@ class Movie extends Component {
 
 
 				<MovieModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
-					searchParams={!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.releaseYear}`} />
+					searchParams={!movieDBError
+						? `${this.state.Title} ${this.state.Year}`
+						: `${this.state.nameEng} ${this.state.releaseYear}`} />
 
 				<Fab style={{ margin: '0px 10px 7px 10px' }} color="primary" title={"Add/Edit movie's personal note"} size="small"
 					onClick={this.toggleEditingComments} >

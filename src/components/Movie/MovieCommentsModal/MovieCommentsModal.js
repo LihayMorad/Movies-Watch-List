@@ -8,6 +8,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import { withStyles } from '@material-ui/core/styles';
+const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
+
 class movieCommentsModal extends Component {
 
     state = {
@@ -21,7 +24,7 @@ class movieCommentsModal extends Component {
     render() {
 
         return (
-            <Dialog
+            <StyledDialog
                 open={this.props.isOpen}
                 onEnter={this.modalOpened}
                 onClose={this.props.toggle}
@@ -47,7 +50,7 @@ class movieCommentsModal extends Component {
                     <Button color="primary" onClick={() => { this.props.handleComments(this.state.comments) }}>Save</Button>
                 </DialogActions>
 
-            </Dialog>
+            </StyledDialog>
         );
     }
 }
