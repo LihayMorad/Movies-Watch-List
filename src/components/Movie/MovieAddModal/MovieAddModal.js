@@ -11,9 +11,11 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchResultsSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
+import axios from 'axios';
+
 import { withStyles } from '@material-ui/core/styles';
 
-import axios from 'axios';
+import './MovieAddModal.css';
 
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
@@ -24,11 +26,12 @@ const initialState = {
 };
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
-const closeBtnStyles = {
-    position: 'absolute',
-    right: '0',
-    top: '0'
-}
+// const styles = {
+//     closeBtn: { position: 'absolute', right: '0', top: '0' },
+//     form: { display: 'contents' },
+//     searchBtn: { marginTop: '10px' },
+//     hebName: { direction: 'rtl' }
+// }
 
 class movieAddModal extends Component {
 
@@ -37,6 +40,7 @@ class movieAddModal extends Component {
     componentDidMount() {
         this.nameEngInput = React.createRef();
         this.yearFieldInput = React.createRef();
+        this.personalNote = React.createRef();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -52,10 +56,10 @@ class movieAddModal extends Component {
             : alert("Please search and choose a movie from the search results.");
     }
 
-    handleMovieSearch() {
+    handleMovieSearch = () => {
         this.setState({ loading: true }, async () => {
-            const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.nameEngInput.current.value}&y=${this.yearFieldInput.current.value}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
             try {
+                const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.nameEngInput.current.value}&y=${this.yearFieldInput.current.value}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
                 let movieSearchResults = [];
                 if (omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
@@ -68,10 +72,14 @@ class movieAddModal extends Component {
         });
     }
 
-    handleUpdateCurrentMovie = (imdbID, title, year) => { this.setState({ imdbID: imdbID, NameEng: title, Year: year }); }
+    handleUpdateCurrentMovie = (imdbID, title, year) => {
+        this.setState({ imdbID: imdbID, NameEng: title, Year: year }, () => {
+            this.personalNote.current.scrollIntoView({behavior: "smooth"});
+        });
+    }
 
     render() {
-        // console.log('this.state.movieSearchResults: ', this.state.movieSearchResults);
+
         return (
 
             <StyledDialog
@@ -81,15 +89,14 @@ class movieAddModal extends Component {
                 fullWidth
                 disableBackdropClick>
 
-                <DialogTitle>Add a movie to your watch list<IconButton style={closeBtnStyles} onClick={this.props.toggle}><CloseIcon /></IconButton></DialogTitle>
+                <DialogTitle>Add a movie to your watch list<IconButton id={"movieAddModalCloseBtn"} onClick={this.props.toggle}><CloseIcon /></IconButton></DialogTitle>
 
-                <form style={{ display: 'contents' }} onSubmit={e => { e.preventDefault(); this.handleMovieSearch() }}>
+                <form id={"movieAddModalForm"} onSubmit={e => { e.preventDefault(); this.handleMovieSearch() }}>
 
                     <DialogContent>
                         <DialogContentText>
-                            Search a movie by its english name (you may also specify a year).<br></br>
-                            Click 'Search' and then click on the movie you searched for.<br></br>
-                            If you'd like to, you can also specify its hebrew name, trailer link and personal note.<br></br>
+                            Search a movie by its english name and then choose it from the search results.<br></br>
+                            Yan can specify its hebrew name, trailer link and personal note.<br></br>
                             When you done click 'Add' below.
                         </DialogContentText>
                         <TextField
@@ -101,14 +108,14 @@ class movieAddModal extends Component {
                             onChange={this.handleChange} />
                         <TextField
                             fullWidth
-                            margin="dense" id="movieReleaseYear" type="number"
+                            margin="dense" id="movieReleaseYear (optional)" type="number"
                             name="Year" label={"Movie's Release year"}
                             defaultValue={this.state.Year}
                             placeholder={"Enter release year"}
                             inputProps={{ min: "1950", max: currYear + 2, ref: this.yearFieldInput }}
                             onChange={this.handleChange} />
 
-                        <Button type="sumbit" color="secondary" variant="outlined" style={{ marginTop: '10px' }}>Search</Button>
+                        <Button type="sumbit" color="secondary" variant="outlined" id={"movieAddModalSearchBtn"}>Search</Button>
 
                         {!this.state.loading
                             ? <MoviesResultsGrid
@@ -135,12 +142,13 @@ class movieAddModal extends Component {
                                 margin="dense" id="movieComments" type="text"
                                 name="Comments" label={"Movie's Personal Note"}
                                 placeholder={"Enter Personal Note (optional)"}
-                                onChange={this.handleChange} /></>}
+                                onChange={this.handleChange} inputProps={{ ref: this.personalNote }} /></>}
 
                     </DialogContent>
                 </form>
+                
                 {this.state.imdbID && <DialogActions>
-                    <Button color="primary" variant="contained" onClick={() => { this.handleAddMovie(); }}>Add</Button>
+                    <Button color="primary" variant="contained" onClick={this.handleAddMovie}>Add</Button>
                 </DialogActions>}
 
             </StyledDialog >

@@ -1,35 +1,17 @@
-#moviesSearchResults {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    margin: auto;
-    padding: unset;
-    list-style: none;
+#movieAddModalCloseBtn {
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
-ul li {
-    width: 30%;
-    margin-bottom: 10px;
-    text-align: center;
-    border: 2px blue solid;
-    border-radius: 5px;
+#movieAddModalForm {
+    display: contents;
 }
 
-ul li:hover {
-    box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.2), 0 8px 28px 0 rgba(0, 0, 0, 0.19);
+#movieAddModalSearchBtn {
+    margin-top: 10px;
 }
 
-ul li img {
-    margin: 5px auto;
-    width: 90%;
-    display: list-item;
-    border-radius: 5px;
-}
-
-ul li h3 {
-    margin: 5px auto;
-}
-
-.chosenIMG {
-    border: 3px red solid;
+#movieNameHeb {
+    direction: rtl;
 }
