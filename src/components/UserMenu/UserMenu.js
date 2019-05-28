@@ -93,7 +93,7 @@ class UserMenu extends Component {
                     </FormControl>
 
                     <Button className={"MenuElement"} variant="contained" size="small"
-                        onClick={() => this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults)}><FilterList />&nbsp;Apply</Button>
+                        onClick={() => { this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults) }}><FilterList />&nbsp;Apply</Button>
 
                 </div>
                 <Fab style={{ marginTop: '10px' }} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">

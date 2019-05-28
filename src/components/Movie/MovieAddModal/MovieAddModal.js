@@ -21,7 +21,7 @@ import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
 const currYear = new Date().getFullYear();
 const initialState = {
-    NameHeb: "", NameEng: "", Year: currYear, TrailerURL: "", Comments: "",
+    NameHeb: "", NameEng: "", Year: currYear, Comments: "",
     movieSearchResults: [], imdbID: "", loading: false
 };
 
@@ -96,7 +96,7 @@ class movieAddModal extends Component {
                     <DialogContent>
                         <DialogContentText>
                             Search a movie by its english name and then choose it from the search results.<br></br>
-                            Yan can specify its hebrew name, trailer link and personal note.<br></br>
+                            Yan can specify its hebrew name and personal note.<br></br>
                             When you done click 'Add' below.
                         </DialogContentText>
                         <TextField
@@ -130,12 +130,6 @@ class movieAddModal extends Component {
                                 margin="dense" id="movieNameHeb" type="text"
                                 name="NameHeb" label={"Movie's Hebrew name"}
                                 placeholder={"Enter hebrew name (optional)"}
-                                onChange={this.handleChange} />
-                            <TextField
-                                fullWidth
-                                margin="dense" id="movieTrailer" type="text"
-                                name="TrailerURL" label={"Movie's Trailer"}
-                                placeholder={"Enter trailer link (optional)"}
                                 onChange={this.handleChange} />
                             <TextField
                                 fullWidth multiline

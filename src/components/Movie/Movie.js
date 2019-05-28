@@ -27,15 +27,13 @@ const youTubeIcon = "https://upload.wikimedia.org/wikipedia/commons/4/4c/YouTube
 class Movie extends Component {
 
 	state = {
-		nameHeb: "", nameEng: "", releaseYear: "", trailerURL: "", comments: "", dbID: "",
+		nameHeb: "", nameEng: "", releaseYear: "", comments: "", dbID: "",
 		Response: "", Error: "",
 		watchingTrailer: false, editingComments: false, loading: true
 	}
 
 
-	componentDidMount() {
-		this.setState({ ...this.props }, this.getMovieDb);
-	}
+	componentDidMount() { this.setState({ ...this.props }, this.getMovieDb); }
 
 	getMovieDb = async () => {
 		try {
@@ -56,7 +54,7 @@ class Movie extends Component {
 	handleComments = comments => {
 		database.ref('/mymovies/' + this.props.userID + "/" + this.props.dbID).update({ Comments: comments }, () => {
 			this.setState({ comments: comments, editingComments: false }, () => {
-				this.props.handleInformationDialog("Comments saved succesfully");
+				this.props.handleInformationDialog("Comments saved successfully");
 			});
 		});
 	}
@@ -78,10 +76,10 @@ class Movie extends Component {
 						<div className={"movieCardContentImgDiv"}>
 							{!loading
 								? !movieDBError
-									? <>
+									? <React.Fragment>
 										<img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"}></img>
 										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"}></img>
-									</>
+									</React.Fragment>
 									: <div id={"movieCardContentImgDivError"}>
 										<img src={MovieNotFound} alt={movieDBError}></img>
 										<h1>Database error: {movieDBError}</h1>
@@ -125,7 +123,6 @@ class Movie extends Component {
 					}
 				</CardActions>
 
-
 				<MovieTrailerModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
 					searchParams={!movieDBError
 						? `${this.state.Title} ${this.state.Year}`
@@ -137,7 +134,7 @@ class Movie extends Component {
 				</Fab>
 
 				<Fab id={"movieCardFab2"} color="secondary" title={"Delete movie"} size="small"
-					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID) } }} >
+					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID); } }} >
 					<DeleteIcon />
 				</Fab>
 

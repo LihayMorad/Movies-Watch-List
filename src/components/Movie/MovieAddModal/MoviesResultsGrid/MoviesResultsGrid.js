@@ -6,7 +6,7 @@ const moviesResultsGrid = props => {
 
     const moviesSearchResultList = props.results.map(elem => {
         return (
-            <li key={elem.imdbID} style={{ listStyle: 'none', cursor: 'pointer' }}
+            <li key={elem.imdbID}
                 className={props.imdbID === elem.imdbID ? "movieElem chosenMovie" : "movieElem"}
                 onClick={event => { props.updateCurrentMovie(elem.imdbID, elem.Title, elem.Year); }}>
 
@@ -21,11 +21,9 @@ const moviesResultsGrid = props => {
     });
 
     return (
-
         <ul id={"moviesSearchResults"}>
             {moviesSearchResultList}
         </ul>
-
     );
 
 }
