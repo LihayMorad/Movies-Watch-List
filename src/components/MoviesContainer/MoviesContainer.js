@@ -67,7 +67,7 @@ class MoviesContainer extends PureComponent {
 
     handleUserSignOut = () => {
         const relevantAccountMessage = firebase.auth().currentUser.isAnonymous
-            ? "guest account ?\n Please pay attention that you your data will be lost! You can link it to your Google account to save it."
+            ? "guest account ?\n Please pay attention that your data will be lost! You can link it to your Google account to save it."
             : `account '${firebase.auth().currentUser.email}' ?`;
         if (window.confirm(`Are you sure you want to logout from your ${relevantAccountMessage} `)) {
             firebase.auth().signOut()
