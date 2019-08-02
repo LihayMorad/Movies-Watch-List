@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -6,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import axios from 'axios';
+import LoadingSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -18,30 +19,33 @@ class MovieTrailerModal extends Component {
 
 	state = {
 		trailerId: "",
-		trailerTitle: ""
+		trailerTitle: "",
+		searchError: false,
+		loading: false
 	}
-
-	// componentDidMount() { console.log('Movie Modal [componentDidMount] this.props.isOpen', this.props.isOpen); }
-
-	// componentDidUpdate() { console.log('Movie Modal [componentDidMount] this.props.isOpen', this.props.isOpen); }
 
 	getTrailer = async () => {
 
-		if (this.props) {
-			try {
-				const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);
-				let youtubeTrailerId = youtubeSearchResponse.data.items[0].id.videoId;
-
+		this.setState({ loading: true });
+		try {
+			const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);
+			if (youtubeSearchResponse.status === 200) {
 				this.setState({
-					trailerId: youtubeTrailerId,
-					trailerTitle: this.props.searchParams + " Trailer"
+					trailerId: youtubeSearchResponse.data.items[0].id.videoId,
+					trailerTitle: this.props.searchParams + " Trailer",
+					loading: false
 				});
-
-			} catch (error) { console.error('error: ', error); }
+			} else {
+				throw Error(youtubeSearchResponse);
+			}
+		} catch (error) {
+			this.setState({ searchError: error, loading: false });
+			console.error(error);
 		}
 	}
 
 	render() {
+		const { trailerId, trailerTitle, searchError, loading } = this.state;
 
 		return (
 
@@ -53,14 +57,22 @@ class MovieTrailerModal extends Component {
 				onClose={this.props.toggle}>
 
 				<div className={"DialogTitleDiv"}>
-					<DialogTitle id="scroll-dialog-title">{this.state.trailerTitle}</DialogTitle>
+					<DialogTitle id="scroll-dialog-title">{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>
 					<IconButton color="inherit" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
 				</div>
 
-				<div className={"DialogContentYoutubeDivWrapper"}>
-					<iframe allow={"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"} allowFullScreen
-						src={`https://www.youtube.com/embed/${this.state.trailerId}?autoplay=0`} frameBorder={"0"} title={"Movie Trailer"}></iframe>
-				</div>
+				{!loading
+					? <div className={"DialogContentYoutubeDivWrapper"}>
+						<iframe
+							src={`https://www.youtube.com/embed/${trailerId}?autoplay=0`}
+							allow={"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"}
+							allowFullScreen
+							frameBorder="0"
+							title="Movie Trailer">
+						</iframe>
+					</div>
+					: <LoadingSpinner />
+				}
 
 				<DialogActions id={"TrailerModalActions"}>
 					<Button color="inherit" onClick={this.props.toggle}>Close</Button>

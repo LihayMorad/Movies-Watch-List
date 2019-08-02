@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import { database } from '../../config/firebase';
 
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -16,13 +18,10 @@ import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
 import MovieSpinner from '../Spinners/MovieSpinner/MovieSpinner';
 
-import { database } from '../../config/firebase';
-
-import axios from 'axios';
-
 import './Movie.css';
 
 const youTubeIcon = "https://upload.wikimedia.org/wikipedia/commons/4/4c/YouTube_icon.png";
+const styles = { "cardContent": { padding: '0px' } };
 
 class Movie extends Component {
 
@@ -31,7 +30,6 @@ class Movie extends Component {
 		Response: "", Error: "",
 		watchingTrailer: false, editingComments: false, loading: true
 	}
-
 
 	componentDidMount() { this.setState({ ...this.props }, this.getMovieDb); }
 
@@ -52,14 +50,12 @@ class Movie extends Component {
 	toggleEditingComments = () => { this.setState({ editingComments: !this.state.editingComments }); }
 
 	handleComments = comments => {
-		database.ref('/mymovies/' + this.props.userID + "/" + this.props.dbID).update({ Comments: comments }, () => {
+		database.ref(`/mymovies/${this.props.userID}/${this.props.dbID}`).update({ Comments: comments }, () => {
 			this.setState({ comments: comments, editingComments: false }, () => {
 				this.props.handleInformationDialog("Comments saved successfully");
 			});
 		});
 	}
-
-	// componentDidUpdate() { console.log(this.state); }
 
 	render() {
 
@@ -72,16 +68,16 @@ class Movie extends Component {
 
 				<CardActionArea>
 
-					<CardContent style={{ padding: '0px' }} title={"Click to open trailer"} onClick={this.toggleWatchTrailer}>
+					<CardContent style={styles.cardContent} title={"Click to open trailer"} onClick={this.toggleWatchTrailer}>
 						<div className={"movieCardContentImgDiv"}>
 							{!loading
 								? !movieDBError
 									? <React.Fragment>
-										<img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"}></img>
-										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"}></img>
+										<img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"} />
+										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"} />
 									</React.Fragment>
 									: <div id={"movieCardContentImgDivError"}>
-										<img src={MovieNotFound} alt={movieDBError}></img>
+										<img src={MovieNotFound} alt={movieDBError} />
 										<h1>Database error: {movieDBError}</h1>
 									</div>
 								: <MovieSpinner />
@@ -123,7 +119,9 @@ class Movie extends Component {
 					}
 				</CardActions>
 
-				<MovieTrailerModal isOpen={this.state.watchingTrailer} toggle={this.toggleWatchTrailer}
+				<MovieTrailerModal
+					isOpen={this.state.watchingTrailer}
+					toggle={this.toggleWatchTrailer}
 					searchParams={!movieDBError
 						? `${this.state.Title} ${this.state.Year}`
 						: `${this.state.nameEng} ${this.state.releaseYear}`} />
@@ -138,8 +136,11 @@ class Movie extends Component {
 					<DeleteIcon />
 				</Fab>
 
-				<MovieCommentsModal isOpen={this.state.editingComments} toggle={this.toggleEditingComments}
-					handleComments={this.handleComments} comments={this.state.comments} />
+				<MovieCommentsModal
+					isOpen={this.state.editingComments}
+					toggle={this.toggleEditingComments}
+					handleComments={this.handleComments}
+					comments={this.state.comments} />
 
 			</Card>
 

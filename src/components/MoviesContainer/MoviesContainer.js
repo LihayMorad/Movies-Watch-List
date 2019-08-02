@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
-import firebase from '../../config/firebase';
-import { database } from '../../config/firebase';
+import firebase, { database } from '../../config/firebase';
 
 import Movie from '../Movie/Movie';
 import UserMenu from '../UserMenu/UserMenu';
@@ -9,7 +8,6 @@ import InformationDialog from './InformationDialog/InformationDialog';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
-
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
 
@@ -64,13 +62,13 @@ class MoviesContainer extends PureComponent {
     handleUserAccountLinking = () => {
         firebase.auth().currentUser.linkWithPopup(this.state.googleAuthProvider)
             .then((result) => { this.handleInformationDialogTitle(`You guest account was successfully linked with your Google account '${result.user.email}'.`); }) // Accounts successfully linked.
-            .catch((error) => { this.handleInformationDialogTitle(`Error! Cannot link with Google account '${error.email}' because you've probably logged in with it before. Please log in with your '${error.email}' Google account.`); }); // Error while linking accounts.
+            .catch((error) => { this.handleInformationDialogTitle(`Error! Cannot link with Google account '${error.email}' because you've probably used it before. Please log in with your '${error.email}' Google account.`); }); // Error while linking accounts.
     }
 
     handleUserSignOut = () => {
         const relevantAccountMessage = firebase.auth().currentUser.isAnonymous
-            ? "guest account ? please note that you data will be lost! (you may link it to your Google account)."
-            : "account '" + firebase.auth().currentUser.email + "' ?";
+            ? "guest account ?\n Please pay attention that you your data will be lost! You can link it to your Google account to save it."
+            : `account '${firebase.auth().currentUser.email}' ?`;
         if (window.confirm(`Are you sure you want to logout from your ${relevantAccountMessage} `)) {
             firebase.auth().signOut()
                 .then((result) => { this.handleInformationDialogTitle("You are now logged out."); }) // Sign-out successfully.
@@ -78,33 +76,17 @@ class MoviesContainer extends PureComponent {
         }
     }
 
-    toggleInformationDialog = () => { this.setState({ showInformationDialog: !this.state.showInformationDialog }, () => { setTimeout(() => { this.setState({ showInformationDialog: false }) }, 3000) }); }
+    toggleInformationDialog = () => {
+        this.setState(state => { return { showInformationDialog: !state.showInformationDialog } },
+            () => setTimeout(() => { this.setState({ showInformationDialog: false }) }, 3000));
+    }
 
     handleInformationDialogTitle = title => { this.setState({ informationDialogTitle: title }, () => { this.toggleInformationDialog(); }); }
 
-    handleMovieDelete = movieID => {
-        let deletedMovieDetails = "";
-        let updatedMoviesData = this.state.moviesData.slice(); // same as ES6: [...this.state.moviesData]
-        console.log('updatedMoviesData: ', updatedMoviesData);
-
-        updatedMoviesData = updatedMoviesData.filter(movie => {
-            if (movieID === movie.key) {
-                deletedMovieDetails = `${movie.props.nameEng} (${movie.props.releaseYear})`;
-                return false;
-            }
-            return true;
-        });
-
-        database.ref('/mymovies/' + firebase.auth().currentUser.uid + "/" + movieID).remove()
-            .then((result) => { this.handleInformationDialogTitle(`'${deletedMovieDetails}' deleted successfully`); this.setState({ moviesData: updatedMoviesData }); })
-            .catch((error) => { this.handleInformationDialogTitle(`Error! Cannot remove '${deletedMovieDetails}'`); console.error("remove movie error: ", error); })
-    }
-
     handleMovieAdd = details => {
         const Year = parseInt(details.Year);
-        const movieToBeAdded = { ...details, Year };
-        delete movieToBeAdded.movieSearchResults;
-        delete movieToBeAdded.loading;
+        const { NameEng, NameHeb, imdbID, Comments } = details;
+        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year };
 
         database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, () => {
             this.handleInformationDialogTitle(`'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully`);
@@ -114,6 +96,23 @@ class MoviesContainer extends PureComponent {
 
     toggleMovieAddModal = () => { this.setState({ addingMovie: !this.state.addingMovie }); }
 
+    handleMovieDelete = movieID => {
+        let deletedMovieDetails = "";
+        let updatedMoviesData = [...this.state.moviesData];
+
+        updatedMoviesData = updatedMoviesData.filter(movie => {
+            if (movieID === movie.key) {
+                deletedMovieDetails = `${movie.props.nameEng} (${movie.props.releaseYear})`;
+                return false;
+            }
+            return true;
+        });
+
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${movieID}`).remove()
+            .then((result) => { this.handleInformationDialogTitle(`'${deletedMovieDetails}' deleted successfully`); this.setState({ moviesData: updatedMoviesData }); })
+            .catch((error) => { this.handleInformationDialogTitle(`Error! Cannot delete '${deletedMovieDetails}'`); console.error("remove movie error: ", error); })
+    }
+
     getMoviesToWatch = (filter = "releaseYear", order = "descending", year = "All", maxResults = this.state.maxResults) => {
 
         const filterToShow = filter === "releaseYear" ? "Year" : filter.charAt(0).toUpperCase() + filter.slice(1); // for matching DB's keys: nameEng > NameEng
@@ -122,10 +121,14 @@ class MoviesContainer extends PureComponent {
             const userID = firebase.auth().currentUser.uid;
             if (year === "All") {
                 database.ref('/mymovies/' + userID).orderByChild(filterToShow).limitToLast(this.state.maxResults)
-                    .on('value', response => { this.handleFirebaseData(response, filterToShow, order, year); }, error => { console.log(error); })
+                    .on('value',
+                        response => { this.handleFirebaseData(response, filterToShow, order, year); },
+                        error => { console.log(error); })
             } else {
                 database.ref('/mymovies/' + userID).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
-                    .on('value', response => { this.handleFirebaseData(response, filterToShow, order, year); }, error => { console.log(error); });
+                    .on('value',
+                        response => { this.handleFirebaseData(response, filterToShow, order, year); },
+                        error => { console.log(error); });
             }
         });
     }
@@ -134,7 +137,7 @@ class MoviesContainer extends PureComponent {
         let sortedMovies = [];
 
         if (year !== "All") {
-            sortedMovies = this.sortMoviesofTheSameYear(response.val(), filter, order); // sort movies of the same year by filter
+            sortedMovies = this.sortMoviesOfTheSameYear(response.val(), filter, order);
         } else {
             order === "descending"
                 ? response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
@@ -146,9 +149,9 @@ class MoviesContainer extends PureComponent {
 
     setMoviesToWatch = moviesData => {
 
-        let years = [];
-        const movies = moviesData.map(movie => { // .slice(0, this.state.maxResults)
-            years.push(movie['Year']);
+        let years = new Set([...this.state.years]);
+        const movies = moviesData.map(movie => {
+            years.add(movie['Year']);
             return <Movie
                 key={movie['key']}
                 dbID={movie['key']}
@@ -163,11 +166,10 @@ class MoviesContainer extends PureComponent {
                 delete={this.handleMovieDelete} />
         });
 
-        years = new Set([...years]); // [...this.state.years, ...years]
-        this.setState({ moviesData: movies, years: years, loading: false });
+        this.setState({ moviesData: movies, years: [...years].sort((a, b) => b - a), loading: false });
     }
 
-    sortMoviesofTheSameYear = (responseData, filter, order) => {
+    sortMoviesOfTheSameYear = (responseData, filter, order) => {
 
         let sortedMovies = [];
 
@@ -206,10 +208,7 @@ class MoviesContainer extends PureComponent {
 
         if (isLoggedIn) {
             signInOutButton = <Button
-                color="primary"
-                variant="contained"
-                style={styles.loggedInBtn}
-                title="Logout"
+                color="primary" variant="contained" style={styles.loggedInBtn} title="Logout"
                 onClick={this.handleUserSignOut}>
                 Logged in as&nbsp;<span style={styles.loggedInName}>{firebaseUser.isAnonymous ? "a guest" : firebaseUser.displayName || firebaseUser.email}</span></Button>;
 
@@ -237,11 +236,7 @@ class MoviesContainer extends PureComponent {
                 : <MoviesSpinner />;
 
             scrollToMenu = <Fab
-                color="primary"
-                variant="extended"
-                style={styles.scrollToMenu}
-                size="small"
-                title=" Scroll to the top menu"
+                color="primary" variant="extended" style={styles.scrollToMenu} size="small" title=" Scroll to the top menu"
                 onClick={() => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }}><NavigationIcon /></Fab>;
         }
 

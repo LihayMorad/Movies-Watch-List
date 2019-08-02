@@ -14,18 +14,26 @@ import MovieAddModal from '../Movie/MovieAddModal/MovieAddModal';
 
 import './UserMenu.css';
 
+const styles = {
+    "sortBy": { width: '134px' },
+    "orderBy": { width: '116px' },
+    "year": { width: '70px' },
+    "results": { width: '52px' },
+    "addMovie": { marginTop: '10px' }
+};
+
 class UserMenu extends Component {
 
     state = {
         filter: "releaseYear",
         order: "descending",
         year: "All",
-        maxResults: ""
+        maxResults: this.props.maxResults || ""
     }
 
-    componentDidMount() { this.setState({ maxResults: this.props.maxResults }); }
+    handleChange = e => { this.setState({ [e.target.name]: e.target.value }); };
 
-    handleChange = event => { this.setState({ [event.target.name]: event.target.value }); };
+    search = () => { this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults); }
 
     render() {
 
@@ -35,7 +43,7 @@ class UserMenu extends Component {
 
             <form>
                 <div className={"Menu"}>
-                    <FormControl style={{ width: '134px' }} className={"MenuElement"} >
+                    <FormControl style={styles.sortBy} className={"MenuElement"} >
                         <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                         <Select
                             value={this.state.filter}
@@ -48,7 +56,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={{ width: '116px' }} className={"MenuElement"} >
+                    <FormControl style={styles.orderBy} className={"MenuElement"} >
                         <InputLabel htmlFor="orderBy">Order by</InputLabel>
                         <Select
                             value={this.state.order}
@@ -60,7 +68,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={{ width: '70px' }} className={"MenuElement"} >
+                    <FormControl style={styles.year} className={"MenuElement"} >
                         <InputLabel htmlFor="showYear">Year</InputLabel>
                         <Select
                             value={this.state.year}
@@ -73,9 +81,8 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={{ width: '52px' }} className={"MenuElement"} >
+                    <FormControl style={styles.results} className={"MenuElement"} >
                         <InputLabel htmlFor="maxResults">Results</InputLabel>
-
                         <Select
                             value={this.state.maxResults}
                             onChange={this.handleChange}
@@ -84,25 +91,24 @@ class UserMenu extends Component {
                             <MenuItem value={1000}>All</MenuItem>
                             <MenuItem value={5}><em>5</em></MenuItem>
                             <MenuItem value={10}>10</MenuItem>
-                            <MenuItem value={15}>15</MenuItem>
+                            <MenuItem value={10}>15</MenuItem>
                             <MenuItem value={20}>20</MenuItem>
-                            <MenuItem value={30}>30</MenuItem>
-                            <MenuItem value={40}>40</MenuItem>
+                            <MenuItem value={25}>25</MenuItem>
                             <MenuItem value={50}>50</MenuItem>
                         </Select>
                     </FormControl>
 
-                    <Button className={"MenuElement"} variant="contained" size="small"
-                        onClick={() => { this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults) }}><FilterList />&nbsp;Apply</Button>
+                    <Button className={"MenuElement"} variant="contained" size="small" onClick={this.search}>
+                        <FilterList />&nbsp;Apply
+                    </Button>
 
                 </div>
-                <Fab style={{ marginTop: '10px' }} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">
+                <Fab style={styles.addMovie} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">
                     <AddIcon />Add Movie
                 </Fab>
 
                 <MovieAddModal isOpen={this.props.isOpen} toggle={this.props.toggle}
                     addMovie={this.props.addMovie} handleInformationDialog={this.props.handleInformationDialog} />
-
             </form>
 
         );

@@ -14,16 +14,14 @@ const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 const informationDialog = props => {
 
     return (
-        <div>
-            <StyledDialog
-                // keepMounted
-                open={props.isOpen}
-                onClose={props.toggle}
-                TransitionComponent={Transition}>
-                <DialogTitle>{props.dialogTitle}</DialogTitle>
-                <DialogActions><Button color="primary" onClick={props.toggle}>Ok</Button></DialogActions>
-            </StyledDialog>
-        </div>
+        <StyledDialog
+            // keepMounted
+            open={props.isOpen}
+            onClose={props.toggle}
+            TransitionComponent={Transition}>
+            <DialogTitle>{props.dialogTitle}</DialogTitle>
+            <DialogActions><Button color="primary" onClick={props.toggle}>Ok</Button></DialogActions>
+        </StyledDialog>
     );
 }
 

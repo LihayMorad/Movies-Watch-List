@@ -5,15 +5,11 @@ import MoviesContainer from '../../components/MoviesContainer/MoviesContainer';
 
 import './Layout.css';
 
-const Layout = () => {
-
-    return (
-        <div>
-            <Header />
-            <MoviesContainer />
-        </div>
-    );
-
-}
+const Layout = () => (
+    <React.Fragment>
+        <Header />
+        <MoviesContainer />
+    </React.Fragment>
+);
 
 export default Layout;

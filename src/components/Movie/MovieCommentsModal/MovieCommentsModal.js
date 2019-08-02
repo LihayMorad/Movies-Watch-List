@@ -14,19 +14,16 @@ const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 class movieCommentsModal extends Component {
 
     state = {
-        comments: ""
+        comments: this.props.comments || ""
     }
 
-    handleChange = event => { this.setState({ comments: event.target.value }); }
-
-    modalOpened = () => { this.setState({ comments: this.props.comments }); }
+    handleChange = e => { this.setState({ comments: e.target.value }); }
 
     render() {
 
         return (
             <StyledDialog
                 open={this.props.isOpen}
-                onEnter={this.modalOpened}
                 onClose={this.props.toggle}
                 fullWidth
                 maxWidth="md">
@@ -36,10 +33,10 @@ class movieCommentsModal extends Component {
                 <DialogContent>
                     <DialogContentText>You can edit your personal note below.</DialogContentText>
                     <TextField
+                        id="comments"
                         multiline
                         autoFocus
                         margin="dense"
-                        id="comments"
                         type="text"
                         defaultValue={this.props.comments}
                         onChange={this.handleChange}
