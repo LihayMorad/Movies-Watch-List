@@ -5,17 +5,18 @@ import './MoviesResultsGrid.css';
 const moviesResultsGrid = props => {
 
     const moviesSearchResultList = props.results.map(elem => {
+        const hasPoster = elem.Poster !== "N/A";
+        const chosenMovie = props.imdbID === elem.imdbID;
         return (
             <li key={elem.imdbID}
-                className={props.imdbID === elem.imdbID ? "movieElem chosenMovie" : "movieElem"}
-                onClick={event => { props.updateCurrentMovie(elem.imdbID, elem.Title, elem.Year); }}>
+                className={`movieElem ${chosenMovie && 'chosenMovie'}`}
+                onClick={() => { props.updateCurrentMovie(elem.imdbID, elem.Title, elem.Year); }}>
 
-                <img src={elem.Poster} alt={elem.Poster !== "N/A" ? "Movie poster" : "Movie poster not found"} />
-                <div className={"overlay"}>
+                <img src={elem.Poster} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
+                <div className={`overlay ${!hasPoster && 'overlayBlack'}`}>
                     <h2>{elem.Title}</h2>
                     <h3>{elem.Year}</h3>
                 </div>
-
             </li>
         )
     });
@@ -27,6 +28,5 @@ const moviesResultsGrid = props => {
     );
 
 }
-
 
 export default moviesResultsGrid;

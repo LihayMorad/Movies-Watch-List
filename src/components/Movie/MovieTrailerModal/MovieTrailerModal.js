@@ -24,24 +24,24 @@ class MovieTrailerModal extends Component {
 		loading: false
 	}
 
-	getTrailer = async () => {
-
-		this.setState({ loading: true });
-		try {
-			const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);
-			if (youtubeSearchResponse.status === 200) {
-				this.setState({
-					trailerId: youtubeSearchResponse.data.items[0].id.videoId,
-					trailerTitle: this.props.searchParams + " Trailer",
-					loading: false
-				});
-			} else {
-				throw Error(youtubeSearchResponse);
+	getTrailer = () => {
+		this.setState({ loading: true }, async () => {
+			try {
+				const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);
+				if (youtubeSearchResponse.status === 200) {
+					this.setState({
+						trailerId: youtubeSearchResponse.data.items[0].id.videoId,
+						trailerTitle: this.props.searchParams + " Trailer",
+						loading: false
+					});
+				} else {
+					throw Error(youtubeSearchResponse);
+				}
+			} catch (error) {
+				this.setState({ searchError: error, loading: false });
+				console.error(error);
 			}
-		} catch (error) {
-			this.setState({ searchError: error, loading: false });
-			console.error(error);
-		}
+		});
 	}
 
 	render() {

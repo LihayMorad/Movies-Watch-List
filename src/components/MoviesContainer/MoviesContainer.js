@@ -14,10 +14,12 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
 import './MoviesContainer.css';
 
 const styles = {
-    "loggedInBtn": { margin: '6px auto 10px auto', backgroundColor: 'forestgreen' },
+    "loggedInBtn": { padding: '8px', position: 'absolute', top: '7px', right: '7px', backgroundColor: 'forestgreen' },
     "loggedInName": { textDecoration: 'underline' },
     "scrollToMenu": { margin: '15px', bottom: '1px', backgroundColor: 'black' },
-    "btnMargin": { margin: '6px 5px 10px 5px' }
+    "btnMargin": { margin: '6px 5px 10px 5px' },
+    "signIn": { padding: '8px', position: 'absolute', top: '7px', right: '7px' },
+    "signInOutAnonymously": { padding: '8px', position: 'absolute', top: '55px', right: '7px' }
 };
 
 class MoviesContainer extends PureComponent {
@@ -201,21 +203,23 @@ class MoviesContainer extends PureComponent {
         const firebaseUser = firebase.auth().currentUser;
         const isLoggedIn = Boolean(firebaseUser);
         let scrollToMenu = null;
-        let signInOutButton = <Button color="primary" variant="contained" style={styles.btnMargin} title={"Sign in with your Google account"}
+        let signInOutButton = <Button color="primary" variant="contained" style={styles.signIn} title={"Sign in with your Google account"}
             onClick={this.handleUserSignIn}><PersonIcon />&nbsp;Sign in</Button>;
-        let signInOutAnonymouslyButton = <Button color="primary" variant="contained" style={styles.btnMargin} title={"Sign in anonymously"}
+        let signInOutAnonymouslyButton = <Button color="primary" variant="contained" style={styles.signInOutAnonymously} title={"Sign in anonymously"}
             onClick={this.handleUserSignInAnonymously}><PersonOutlineIcon />&nbsp;Sign in as a guest</Button>;
 
         if (isLoggedIn) {
             signInOutButton = <Button
                 color="primary" variant="contained" style={styles.loggedInBtn} title="Logout"
                 onClick={this.handleUserSignOut}>
-                Logged in as&nbsp;<span style={styles.loggedInName}>{firebaseUser.isAnonymous ? "a guest" : firebaseUser.displayName || firebaseUser.email}</span></Button>;
+                {firebaseUser.isAnonymous ? <PersonOutlineIcon /> : <PersonIcon />}&nbsp;
+                <span style={styles.loggedInName}>{firebaseUser.isAnonymous ? "Guest" : firebaseUser.displayName || firebaseUser.email}</span>
+            </Button>;
 
             if (firebaseUser.isAnonymous) {
-                signInOutAnonymouslyButton = <Button color="primary" variant="contained" style={styles.btnMargin}
+                signInOutAnonymouslyButton = <Button color="primary" variant="contained" style={styles.signInOutAnonymously}
                     title="Link this guest account with your Google account to save your data"
-                    onClick={this.handleUserAccountLinking}>Link with Google account</Button>;
+                    onClick={this.handleUserAccountLinking}>Link with Google</Button>;
             } else {
                 signInOutAnonymouslyButton = null;
             }

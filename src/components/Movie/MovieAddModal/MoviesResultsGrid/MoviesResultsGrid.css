@@ -11,7 +11,7 @@
     width: 30%;
     min-width: 250px;
     min-height: 350px;
-    margin: 8px;
+    margin: 10px;
     border-radius: 5px;
     position: relative;
     text-align: center;
@@ -22,6 +22,18 @@
 
 .movieElem:hover {
     box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.2), 0 8px 28px 0 rgba(0, 0, 0, 0.19);
+}
+
+@media only screen and (max-width: 992px) {
+    .movieElem {
+        width: 45%;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .movieElem {
+        width: 100%;
+    }
 }
 
 .overlay {
@@ -38,6 +50,11 @@
     border-top: 1px solid #FFF;
 }
 
+.overlayBlack {
+    color: black;
+    border-color: black;
+}
+
 .movieElem img {
     height: 100%;
     width: 100%;
@@ -51,7 +68,7 @@
 }
 
 .chosenMovie {
-    border: 4px red solid;
+    border: 3px rgb(223, 14, 14) solid;
     box-sizing: border-box;
     box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.2), 0 8px 28px 0 rgba(0, 0, 0, 0.19);
 }

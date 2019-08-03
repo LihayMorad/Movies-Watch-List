@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -10,14 +11,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchResultsSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
-
-import axios from 'axios';
+import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
 import { withStyles } from '@material-ui/core/styles';
-
 import './MovieAddModal.css';
-
-import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
 const currYear = new Date().getFullYear();
 const initialState = {
@@ -26,59 +23,47 @@ const initialState = {
 };
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
-// const styles = {
-//     closeBtn: { position: 'absolute', right: '0', top: '0' },
-//     form: { display: 'contents' },
-//     searchBtn: { marginTop: '10px' },
-//     hebName: { direction: 'rtl' }
-// }
+const StyledDialogContent = withStyles({ root: { padding: '0 24px 12px !important' } })(DialogContent);
 
 class movieAddModal extends Component {
 
     state = { ...initialState }
 
-    componentDidMount() {
-        this.nameEngInput = React.createRef();
-        this.yearFieldInput = React.createRef();
-        this.personalNote = React.createRef();
-    }
+    componentDidMount() { this.personalNote = React.createRef(); } // for scrolling to bottom
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.isOpen !== this.props.isOpen)
-            this.setState({ ...initialState });
-    }
+    componentDidUpdate(prevProps) { if (prevProps.isOpen !== this.props.isOpen) this.setState({ ...initialState }); }
 
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
-    handleAddMovie = event => {
+    handleAddMovie = () => {
         this.state.imdbID
-            ? this.props.addMovie(this.state)
-            : alert("Please search and choose a movie from the search results.");
+        ? this.props.addMovie(this.state)
+        : alert("Please search and choose a movie from the search results.");
     }
 
     handleMovieSearch = () => {
         this.setState({ loading: true }, async () => {
             try {
-                const omdbResponse = await axios(`https://www.omdbapi.com/?s=${this.nameEngInput.current.value}&y=${this.yearFieldInput.current.value}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`);
                 let movieSearchResults = [];
-                if (omdbResponse.data.Response === "True") {
+                const searchURL = `https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
+                const omdbResponse = await axios(searchURL);
+                if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
                 } else { alert("Search error: " + omdbResponse.data.Error); }
                 this.setState({ loading: false, movieSearchResults, imdbID: "" });
             } catch (error) {
                 this.setState({ loading: false });
-                alert("Error: " + error);
+                alert("Something went wrong: " + error);
             }
         });
     }
 
     handleUpdateCurrentMovie = (imdbID, title, year) => {
-        this.setState({ imdbID: imdbID, NameEng: title, Year: year }, () => {
-            this.personalNote.current.scrollIntoView({behavior: "smooth"});
-        });
+        this.setState({ imdbID: imdbID, NameEng: title, Year: year }, () => { this.personalNote.current.scrollIntoView({ behavior: "smooth" }); });
     }
 
     render() {
+        const { imdbID, Year, movieSearchResults, loading } = this.state;
 
         return (
 
@@ -89,42 +74,44 @@ class movieAddModal extends Component {
                 fullWidth
                 disableBackdropClick>
 
-                <DialogTitle>Add a movie to your watch list<IconButton id={"movieAddModalCloseBtn"} onClick={this.props.toggle}><CloseIcon /></IconButton></DialogTitle>
+                <DialogTitle>Add a movie to your watch list
+                    <IconButton id={"movieAddModalCloseBtn"} onClick={this.props.toggle}><CloseIcon /></IconButton>
+                </DialogTitle>
 
                 <form id={"movieAddModalForm"} onSubmit={e => { e.preventDefault(); this.handleMovieSearch() }}>
 
-                    <DialogContent>
+                    <StyledDialogContent>
                         <DialogContentText>
-                            Search a movie by its english name and then choose it from the search results.<br></br>
-                            Yan can specify its hebrew name and personal note.<br></br>
+                            Search a movie by its english name and then choose it from the search results.<br />
+                            Yan can specify its hebrew name and personal note.<br />
                             When you done click 'Add' below.
                         </DialogContentText>
+                        <br />
                         <TextField
                             autoFocus required fullWidth
                             margin="dense" id="movieNameEng" type="text"
                             name="NameEng" label="Movie's English name"
                             placeholder="Enter english name"
-                            inputProps={{ min: "1950", max: currYear + 2, ref: this.nameEngInput }}
                             onChange={this.handleChange} />
                         <TextField
                             fullWidth
-                            margin="dense" id="movieReleaseYear (optional)" type="number"
+                            margin="dense" id="movieReleaseYear" type="number"
                             name="Year" label={"Movie's Release year"}
-                            defaultValue={this.state.Year}
+                            defaultValue={Year}
                             placeholder={"Enter release year"}
-                            inputProps={{ min: "1950", max: currYear + 2, ref: this.yearFieldInput }}
+                            inputProps={{ min: "1950", max: currYear + 2 }}
                             onChange={this.handleChange} />
 
                         <Button type="sumbit" color="secondary" variant="outlined" id={"movieAddModalSearchBtn"}>Search</Button>
 
-                        {!this.state.loading
+                        {!loading
                             ? <MoviesResultsGrid
-                                results={this.state.movieSearchResults}
-                                imdbID={this.state.imdbID}
+                                results={movieSearchResults}
+                                imdbID={imdbID}
                                 updateCurrentMovie={this.handleUpdateCurrentMovie} />
                             : <SearchResultsSpinner />}
 
-                        {this.state.imdbID && <>
+                        {imdbID && <>
                             <TextField
                                 fullWidth
                                 margin="dense" id="movieNameHeb" type="text"
@@ -136,14 +123,17 @@ class movieAddModal extends Component {
                                 margin="dense" id="movieComments" type="text"
                                 name="Comments" label={"Movie's Personal Note"}
                                 placeholder={"Enter Personal Note (optional)"}
-                                onChange={this.handleChange} inputProps={{ ref: this.personalNote }} /></>}
+                                onChange={this.handleChange}
+                                inputProps={{ ref: this.personalNote }} />
+                        </>}
 
-                    </DialogContent>
+                    </StyledDialogContent>
+
+                    {imdbID && <DialogActions>
+                        <Button color="primary" variant="contained" onClick={this.handleAddMovie}>Add</Button>
+                    </DialogActions>}
+
                 </form>
-                
-                {this.state.imdbID && <DialogActions>
-                    <Button color="primary" variant="contained" onClick={this.handleAddMovie}>Add</Button>
-                </DialogActions>}
 
             </StyledDialog >
         );

@@ -1,6 +1,5 @@
 .movieCard {
     width: 300px;
-    /* max-width: 300px; */
     margin: 20px 20px;
     /* background: linear-gradient(45deg, #2196F3 30%, #21CBF3 90%); */
 }
@@ -19,7 +18,9 @@
 #movieCardContentYouTubeImg {
     position: absolute;
     top: 445px;
-    left: 128px;
+    margin: auto;
+    left: 0;
+    right: 0;
     max-width: 15%;
 }
 
@@ -58,7 +59,7 @@
     display: inline-block;
 }
 
-.movieCardContentTextDiv h5{
+.movieCardContentTextDiv h5 {
     direction: rtl;
 }
 
@@ -70,7 +71,7 @@
     width: 100%;
 }
 
-#movieCardActions{
+#movieCardActions {
     padding: 7px;
 }
 

@@ -18,9 +18,10 @@ import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
 import MovieSpinner from '../Spinners/MovieSpinner/MovieSpinner';
 
+import youTubeIcon from '../../assets/youtube_social_icon_red.png';
+
 import './Movie.css';
 
-const youTubeIcon = "https://upload.wikimedia.org/wikipedia/commons/4/4c/YouTube_icon.png";
 const styles = { "cardContent": { padding: '0px' } };
 
 class Movie extends Component {
