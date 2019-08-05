@@ -1,21 +1,24 @@
 import React, { PureComponent } from 'react';
 import firebase, { database } from '../../config/firebase';
 
+import { connect } from 'react-redux'
+import * as actionTypes from '../../store/actions';
+
 import Movie from '../Movie/Movie';
 import UserMenu from '../UserMenu/UserMenu';
-import MoviesSpinner from '../Spinners/MoviesSpinner/MoviesSpinner';
 import InformationDialog from './InformationDialog/InformationDialog';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
-
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Fade from '@material-ui/core/Fade';
+import Snackbar from '../UI Elements/Snackbar/Snackbar';
+import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
 
 import './MoviesContainer.css';
 
@@ -201,6 +204,8 @@ class MoviesContainer extends PureComponent {
 
     handleCloseAccountMenu = e => { this.setState({ accountMenuAnchorEl: null }); }
 
+    scrollToMenu = () => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }
+
     render() {
 
         let userMenu = null;
@@ -261,14 +266,17 @@ class MoviesContainer extends PureComponent {
 
             scrollToMenu = <Fab
                 id="scrollToMenu" color="primary" variant="extended" size="small" title="Scroll to the top menu"
-                onClick={() => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }}><NavigationIcon /></Fab>;
+                onClick={this.scrollToMenu}><NavigationIcon />
+            </Fab>;
         }
 
         return (
             <div>
 
+                <Button onClick={() => this.props.onSnackbarToggle(true, "message")}>open snackbar</Button>
                 <React.Fragment>
-                    <IconButton id="accountMenu" color="primary" onClick={this.handleClickAccountMenu}>
+                    <IconButton id="accountMenu" color="primary" aria-owns={accountMenuAnchorEl ? 'simple-menu' : undefined} aria-haspopup="true"
+                        onClick={this.handleClickAccountMenu}>
                         <AccountCircle fontSize="large" />
                     </IconButton>
 
@@ -291,11 +299,19 @@ class MoviesContainer extends PureComponent {
                     isOpen={this.state.showInformationDialog}
                     toggle={this.toggleInformationDialog}
                     dialogTitle={this.state.informationDialogTitle} />
-            </div>
+
+                <Snackbar />
+            </div >
         );
 
     }
 
 }
 
-export default MoviesContainer;
+const mapStateToProps = state => state
+
+const mapDispatchToProps = dispatch => ({
+    onSnackbarToggle: (open, message) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message } })
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);

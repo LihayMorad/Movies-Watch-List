@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import LoadingSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
+import LoadingSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -40,7 +40,6 @@ class MovieTrailerModal extends Component {
 				}
 			} catch (error) {
 				this.setState({ searchError: error, loading: false });
-				console.error(error);
 			}
 		});
 	}

@@ -25,9 +25,9 @@
 }
 
 #scrollToMenu {
-    position: fixed;
+    position: sticky;
     margin: 15px auto;
-    bottom: 1px;
+    bottom: 15px;
     right: 0;
     left: 0;
     background-color: black;

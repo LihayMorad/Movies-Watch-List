@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+import { connect } from 'react-redux';
+import * as actionTypes from '../../../store/actions';
+
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,7 +13,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import SearchResultsSpinner from '../../Spinners/SearchResultsSpinner/SearchResultsSpinner';
+import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -39,7 +42,7 @@ class movieAddModal extends Component {
         const movieDetails = { ...this.state, Year: this.state.selectedYear, NameEng: this.state.selectedTitle };
         this.state.imdbID
             ? this.props.addMovie(movieDetails)
-            : alert("Please search and choose a movie from the search results.");
+            : this.props.onSnackbarToggle(true, "Please search and choose a movie from the search results.");
     }
 
     handleMovieSearch = () => {
@@ -51,12 +54,12 @@ class movieAddModal extends Component {
                 if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
                 } else {
-                    alert(omdbResponse.data.Error === "Too many results." ? "Please try to be more specific." : omdbResponse.data.Error);
+                    this.props.onSnackbarToggle(true, omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error);
                 }
                 this.setState({ loading: false, movieSearchResults, imdbID: "" });
             } catch (error) {
                 this.setState({ loading: false });
-                alert("Something went wrong: " + error.response.data.error);
+                this.props.onSnackbarToggle(true, "Something went wrong! " + error);
             }
         });
     }
@@ -145,4 +148,11 @@ class movieAddModal extends Component {
     }
 }
 
-export default movieAddModal;
+const mapStateToProps = state => state;
+
+const mapDispatchToProps = dispatch => ({
+    onSnackbarToggle: (open, message) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message } })
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(movieAddModal);

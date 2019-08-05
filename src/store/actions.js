@@ -1,0 +1,2 @@
+export const TOGGLE_SNACKBAR = "TOGGLE_SNACKBAR";
+export const ANOTHER = "ANOTHER";

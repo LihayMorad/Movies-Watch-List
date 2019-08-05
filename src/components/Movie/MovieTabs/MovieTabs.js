@@ -22,10 +22,10 @@ const subtitlesSites = [
 ];
 
 const styles = {
-	h6: { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
-	autoMg: { margin: 'auto' },
-	padding: { padding: '8px 10px' },
-	flexWrapPadding: { padding: '8px 10px', flexWrap: 'wrap' }
+	"h6": { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
+	"autoMg": { margin: 'auto' },
+	"padding": { padding: '8px 10px' },
+	"flexWrapPadding": { padding: '8px 10px', flexWrap: 'wrap' }
 }
 
 class MovieTabs extends PureComponent {

@@ -11,7 +11,6 @@ const moviesResultsGrid = props => {
             <li key={elem.imdbID}
                 className={`movieElem ${chosenMovie && 'chosenMovie'}`}
                 onClick={() => { props.updateCurrentMovie(elem.imdbID, elem.Title, elem.Year); }}>
-
                 <img src={elem.Poster} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
                 <div className={`overlay ${!hasPoster && 'overlayBlack'}`}>
                     <h2>{elem.Title}</h2>

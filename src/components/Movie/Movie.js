@@ -16,7 +16,7 @@ import MovieTrailerModal from './MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from './MovieCommentsModal/MovieCommentsModal'
 import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
-import MovieSpinner from '../Spinners/MovieSpinner/MovieSpinner';
+import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
 
 import youTubeIcon from '../../assets/youtube_social_icon_red.png';
 
