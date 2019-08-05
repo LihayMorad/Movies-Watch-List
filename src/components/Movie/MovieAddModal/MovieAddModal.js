@@ -36,9 +36,10 @@ class movieAddModal extends Component {
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
     handleAddMovie = () => {
+        const movieDetails = { ...this.state, Year: this.state.selectedYear, NameEng: this.state.selectedTitle };
         this.state.imdbID
-        ? this.props.addMovie(this.state)
-        : alert("Please search and choose a movie from the search results.");
+            ? this.props.addMovie(movieDetails)
+            : alert("Please search and choose a movie from the search results.");
     }
 
     handleMovieSearch = () => {
@@ -49,17 +50,20 @@ class movieAddModal extends Component {
                 const omdbResponse = await axios(searchURL);
                 if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
-                } else { alert("Search error: " + omdbResponse.data.Error); }
+                } else {
+                    alert(omdbResponse.data.Error === "Too many results." ? "Please try to be more specific." : omdbResponse.data.Error);
+                }
                 this.setState({ loading: false, movieSearchResults, imdbID: "" });
             } catch (error) {
                 this.setState({ loading: false });
-                alert("Something went wrong: " + error);
+                alert("Something went wrong: " + error.response.data.error);
             }
         });
     }
 
     handleUpdateCurrentMovie = (imdbID, title, year) => {
-        this.setState({ imdbID: imdbID, NameEng: title, Year: year }, () => { this.personalNote.current.scrollIntoView({ behavior: "smooth" }); });
+        this.setState({ imdbID: imdbID, selectedTitle: title, selectedYear: year },
+            () => { this.personalNote.current.scrollIntoView({ behavior: "smooth" }); });
     }
 
     render() {
@@ -83,8 +87,8 @@ class movieAddModal extends Component {
                     <StyledDialogContent>
                         <DialogContentText>
                             Search a movie by its english name and then choose it from the search results.<br />
-                            Yan can specify its hebrew name and personal note.<br />
-                            When you done click 'Add' below.
+                            You may specify its hebrew name and your personal note below.<br />
+                            When you're done click 'Add' below.
                         </DialogContentText>
                         <br />
                         <TextField

@@ -27,7 +27,8 @@ class MovieTrailerModal extends Component {
 	getTrailer = () => {
 		this.setState({ loading: true }, async () => {
 			try {
-				const youtubeSearchResponse = await axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);
+				const searchURL = `https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`;
+				const youtubeSearchResponse = await axios(searchURL);
 				if (youtubeSearchResponse.status === 200) {
 					this.setState({
 						trailerId: youtubeSearchResponse.data.items[0].id.videoId,

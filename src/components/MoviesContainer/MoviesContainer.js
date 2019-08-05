@@ -11,16 +11,13 @@ import NavigationIcon from '@material-ui/icons/Navigation';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
 
-import './MoviesContainer.css';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Fade from '@material-ui/core/Fade';
 
-const styles = {
-    "loggedInBtn": { padding: '8px', position: 'absolute', top: '7px', right: '7px', backgroundColor: 'forestgreen' },
-    "loggedInName": { textDecoration: 'underline' },
-    "scrollToMenu": { margin: '15px', bottom: '1px', backgroundColor: 'black' },
-    "btnMargin": { margin: '6px 5px 10px 5px' },
-    "signIn": { padding: '8px', position: 'absolute', top: '7px', right: '7px' },
-    "signInOutAnonymously": { padding: '8px', position: 'absolute', top: '55px', right: '7px' }
-};
+import './MoviesContainer.css';
 
 class MoviesContainer extends PureComponent {
 
@@ -32,7 +29,8 @@ class MoviesContainer extends PureComponent {
         loading: false,
         showInformationDialog: false,
         informationDialogTitle: "",
-        googleAuthProvider: new firebase.auth.GoogleAuthProvider()
+        googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
+        accountMenuAnchorEl: null
     }
 
     componentDidMount() {
@@ -44,21 +42,16 @@ class MoviesContainer extends PureComponent {
         });
     }
 
-    componentDidUpdate() {
-        // this.state.moviesData.forEach(elem => { console.log(elem.key) });
-        // console.log('[componentDidUpdate] this.state.moviesData: ', this.state.moviesData);
-    }
-
     handleUserSignIn = () => {
         firebase.auth().signInWithPopup(this.state.googleAuthProvider)
             .then((result) => { this.handleInformationDialogTitle(`Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`); }) // Sign-in successfully.
-            .catch((error) => { this.handleInformationDialogTitle('Sign in error: ' + error); console.log('Sign in error: ', error); }); // Sign-in failed.
+            .catch((error) => { this.handleInformationDialogTitle('Sign in error: ' + error); }); // Sign-in failed.
     }
 
     handleUserSignInAnonymously = () => {
         firebase.auth().signInAnonymously()
             .then((result) => { this.handleInformationDialogTitle(`Hi, you are now logged in as a guest user.`); }) // Sign-in anonymously successfully.
-            .catch((error) => { this.handleInformationDialogTitle(`Error! cannot sign in as a guest user.`); console.log('errorCode: ', error); }); // Sign-in anonymously failed.
+            .catch((error) => { this.handleInformationDialogTitle(`Error! cannot sign in as a guest user.`); }); // Sign-in anonymously failed.
     }
 
     handleUserAccountLinking = () => {
@@ -69,17 +62,17 @@ class MoviesContainer extends PureComponent {
 
     handleUserSignOut = () => {
         const relevantAccountMessage = firebase.auth().currentUser.isAnonymous
-            ? "guest account ?\n Please pay attention that you your data will be lost! You can link it to your Google account to save it."
+            ? "guest account ?\nPlease pay attention that you your data will be lost! You can link it to your Google account to save it."
             : `account '${firebase.auth().currentUser.email}' ?`;
         if (window.confirm(`Are you sure you want to logout from your ${relevantAccountMessage} `)) {
             firebase.auth().signOut()
-                .then((result) => { this.handleInformationDialogTitle("You are now logged out."); }) // Sign-out successfully.
-                .catch((error) => { this.handleInformationDialogTitle('Sign out error: ' + error); console.log('Sign out error: ', error); }); // Sign-out failed.
+                .then((result) => { this.handleInformationDialogTitle("You are now logged out"); }) // Sign-out successfully.
+                .catch((error) => { this.handleInformationDialogTitle(`Sign out error: ${error}`); }); // Sign-out failed.
         }
     }
 
     toggleInformationDialog = () => {
-        this.setState(state => { return { showInformationDialog: !state.showInformationDialog } },
+        this.setState(state => ({ showInformationDialog: !state.showInformationDialog }),
             () => setTimeout(() => { this.setState({ showInformationDialog: false }) }, 3000));
     }
 
@@ -90,13 +83,16 @@ class MoviesContainer extends PureComponent {
         const { NameEng, NameHeb, imdbID, Comments } = details;
         const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year };
 
-        database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, () => {
-            this.handleInformationDialogTitle(`'${movieToBeAdded.NameEng} (${movieToBeAdded.Year})' added successfully`);
+        database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, (error) => {
+            const message = !error
+                ? `${movieToBeAdded.NameEng} (${movieToBeAdded.Year}) added successfully`
+                : `There was an error adding ${movieToBeAdded.NameEng} (${movieToBeAdded.Year})`;
+            this.handleInformationDialogTitle(message);
             this.toggleMovieAddModal();
         });
     }
 
-    toggleMovieAddModal = () => { this.setState({ addingMovie: !this.state.addingMovie }); }
+    toggleMovieAddModal = () => { this.setState(state => ({ addingMovie: !state.addingMovie })) }
 
     handleMovieDelete = movieID => {
         let deletedMovieDetails = "";
@@ -111,8 +107,13 @@ class MoviesContainer extends PureComponent {
         });
 
         database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${movieID}`).remove()
-            .then((result) => { this.handleInformationDialogTitle(`'${deletedMovieDetails}' deleted successfully`); this.setState({ moviesData: updatedMoviesData }); })
-            .catch((error) => { this.handleInformationDialogTitle(`Error! Cannot delete '${deletedMovieDetails}'`); console.error("remove movie error: ", error); })
+            .then(() => {
+                this.handleInformationDialogTitle(`'${deletedMovieDetails}' deleted successfully`);
+                this.setState({ moviesData: updatedMoviesData });
+            })
+            .catch((error) => {
+                this.handleInformationDialogTitle(`Error! Cannot delete '${deletedMovieDetails}'`);
+            })
     }
 
     getMoviesToWatch = (filter = "releaseYear", order = "descending", year = "All", maxResults = this.state.maxResults) => {
@@ -125,12 +126,12 @@ class MoviesContainer extends PureComponent {
                 database.ref('/mymovies/' + userID).orderByChild(filterToShow).limitToLast(this.state.maxResults)
                     .on('value',
                         response => { this.handleFirebaseData(response, filterToShow, order, year); },
-                        error => { console.log(error); })
+                        error => { })
             } else {
                 database.ref('/mymovies/' + userID).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
                     .on('value',
                         response => { this.handleFirebaseData(response, filterToShow, order, year); },
-                        error => { console.log(error); });
+                        error => { });
             }
         });
     }
@@ -196,30 +197,49 @@ class MoviesContainer extends PureComponent {
         return sortedMovies;
     }
 
+    handleClickAccountMenu = e => { this.setState({ accountMenuAnchorEl: e.currentTarget }); }
+
+    handleCloseAccountMenu = e => { this.setState({ accountMenuAnchorEl: null }); }
+
     render() {
 
         let userMenu = null;
         let moviesC = null;
         const firebaseUser = firebase.auth().currentUser;
-        const isLoggedIn = Boolean(firebaseUser);
+        const isLoggedIn = !!firebaseUser;
+        const { accountMenuAnchorEl } = this.state;
+        const isAccountMenuOpen = !!accountMenuAnchorEl;
         let scrollToMenu = null;
-        let signInOutButton = <Button color="primary" variant="contained" style={styles.signIn} title={"Sign in with your Google account"}
-            onClick={this.handleUserSignIn}><PersonIcon />&nbsp;Sign in</Button>;
-        let signInOutAnonymouslyButton = <Button color="primary" variant="contained" style={styles.signInOutAnonymously} title={"Sign in anonymously"}
-            onClick={this.handleUserSignInAnonymously}><PersonOutlineIcon />&nbsp;Sign in as a guest</Button>;
+
+        let signInOutButton = <MenuItem>
+            <Button
+                id="signInWithGoogle" color="primary" variant="contained" title={"Sign in with your Google account"}
+                onClick={this.handleUserSignIn}><PersonIcon />&nbsp;Sign in</Button>
+        </MenuItem>;
+        let signInOutAnonymouslyButton = <MenuItem>
+            <Button
+                className="btnPadding" color="default" variant="contained" title={"Sign in anonymously"}
+                onClick={this.handleUserSignInAnonymously}><PersonOutlineIcon />&nbsp;Login as a guest</Button>
+        </MenuItem>;
 
         if (isLoggedIn) {
-            signInOutButton = <Button
-                color="primary" variant="contained" style={styles.loggedInBtn} title="Logout"
+            signInOutButton = <MenuItem
+                title="Logout"
                 onClick={this.handleUserSignOut}>
-                {firebaseUser.isAnonymous ? <PersonOutlineIcon /> : <PersonIcon />}&nbsp;
-                <span style={styles.loggedInName}>{firebaseUser.isAnonymous ? "Guest" : firebaseUser.displayName || firebaseUser.email}</span>
-            </Button>;
+                <Button id="loggedInBtn" color="primary" variant="contained" title="Sign out">
+                    {firebaseUser.isAnonymous
+                        ? <><PersonOutlineIcon />&nbsp;Guest</>
+                        : <><PersonIcon />&nbsp;{firebaseUser.displayName || firebaseUser.email}</>}
+                </Button>
+            </MenuItem >;
 
             if (firebaseUser.isAnonymous) {
-                signInOutAnonymouslyButton = <Button color="primary" variant="contained" style={styles.signInOutAnonymously}
-                    title="Link this guest account with your Google account to save your data"
-                    onClick={this.handleUserAccountLinking}>Link with Google</Button>;
+                signInOutAnonymouslyButton = <MenuItem
+                    onClick={this.handleUserAccountLinking}>
+                    <Button className="btnPadding" color="primary" variant="outlined"
+                        title="Link this guest account with your Google account to save your data">Link with Google
+                    </Button>
+                </MenuItem>;
             } else {
                 signInOutAnonymouslyButton = null;
             }
@@ -240,14 +260,29 @@ class MoviesContainer extends PureComponent {
                 : <MoviesSpinner />;
 
             scrollToMenu = <Fab
-                color="primary" variant="extended" style={styles.scrollToMenu} size="small" title=" Scroll to the top menu"
+                id="scrollToMenu" color="primary" variant="extended" size="small" title="Scroll to the top menu"
                 onClick={() => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }}><NavigationIcon /></Fab>;
         }
 
         return (
             <div>
-                {signInOutButton}
-                {signInOutAnonymouslyButton}
+
+                <React.Fragment>
+                    <IconButton id="accountMenu" color="primary" onClick={this.handleClickAccountMenu}>
+                        <AccountCircle fontSize="large" />
+                    </IconButton>
+
+                    <Menu
+                        anchorEl={accountMenuAnchorEl}
+                        open={isAccountMenuOpen}
+                        onClose={this.handleCloseAccountMenu}
+                        TransitionComponent={Fade}
+                        keepMounted>
+                        {signInOutButton}
+                        {signInOutAnonymouslyButton}
+                    </Menu>
+                </React.Fragment>
+
                 {userMenu}
                 {moviesC}
                 {scrollToMenu}

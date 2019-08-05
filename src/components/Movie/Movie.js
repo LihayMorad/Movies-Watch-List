@@ -28,40 +28,49 @@ class Movie extends Component {
 
 	state = {
 		nameHeb: "", nameEng: "", releaseYear: "", comments: "", dbID: "",
-		Response: "", Error: "",
-		watchingTrailer: false, editingComments: false, loading: true
+		loading: true, Error: false,
+		watchingTrailer: false, editingComments: false
 	}
 
 	componentDidMount() { this.setState({ ...this.props }, this.getMovieDb); }
 
-	getMovieDb = async () => {
-		try {
-			const omdbResponse = await axios(`https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
-			const omdbData = omdbResponse.data;
-			omdbData.Response === "True"
-				? this.setState({ ...omdbData, loading: false })
-				: this.setState({ Response: omdbData.Response, Error: omdbData.Error, loading: false });
-		} catch (error) {
-			console.error('error: ', error);
-		}
+	getMovieDb = () => {
+		this.setState({ loading: true }, async () => {
+			try {
+				const searchURL = `https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
+				const omdbResponse = await axios(searchURL);
+				let movieData = {}
+				let error = false;
+				if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
+					movieData = omdbResponse.data;
+				} else {
+					error = omdbResponse.data.Error;
+				}
+				this.setState({ loading: false, ...movieData, Error: error });
+			} catch (error) {
+				this.setState({ loading: false, Error: true });
+			}
+		});
 	}
 
-	toggleWatchTrailer = () => { this.setState({ watchingTrailer: !this.state.watchingTrailer }); }
+	toggleWatchTrailer = () => { this.setState(state => ({ watchingTrailer: !state.watchingTrailer })) };
 
-	toggleEditingComments = () => { this.setState({ editingComments: !this.state.editingComments }); }
+	toggleEditComments = () => { this.setState(state => ({ editingComments: !state.editingComments })) };
 
 	handleComments = comments => {
-		database.ref(`/mymovies/${this.props.userID}/${this.props.dbID}`).update({ Comments: comments }, () => {
-			this.setState({ comments: comments, editingComments: false }, () => {
-				this.props.handleInformationDialog("Comments saved successfully");
-			});
+		database.ref(`/mymovies/${this.props.userID}/${this.props.dbID}`).update({ Comments: comments }, (error) => {
+			const message = !error
+				? "Personal note saved successfully"
+				: "There was an error saving the note";
+			this.setState({ comments: comments, editingComments: false },
+				() => { this.props.handleInformationDialog(message); });
 		});
 	}
 
 	render() {
 
 		const movieDBError = this.state.Error;
-		const loading = this.state.loading;
+		const { loading } = this.state;
 
 		return (
 
@@ -78,8 +87,8 @@ class Movie extends Component {
 										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"} />
 									</React.Fragment>
 									: <div id={"movieCardContentImgDivError"}>
-										<img src={MovieNotFound} alt={movieDBError} />
-										<h1>Database error: {movieDBError}</h1>
+										<img src={MovieNotFound} alt={movieDBError === true ? "Error" : movieDBError} />
+										<h1>Database error {movieDBError}</h1>
 									</div>
 								: <MovieSpinner />
 							}
@@ -128,7 +137,7 @@ class Movie extends Component {
 						: `${this.state.nameEng} ${this.state.releaseYear}`} />
 
 				<Fab id={"movieCardFab1"} color="primary" title={"Add/Edit movie's personal note"} size="small"
-					onClick={this.toggleEditingComments} >
+					onClick={this.toggleEditComments} >
 					<Icon>edit_icon</Icon>
 				</Fab>
 
@@ -139,7 +148,7 @@ class Movie extends Component {
 
 				<MovieCommentsModal
 					isOpen={this.state.editingComments}
-					toggle={this.toggleEditingComments}
+					toggle={this.toggleEditComments}
 					handleComments={this.handleComments}
 					comments={this.state.comments} />
 

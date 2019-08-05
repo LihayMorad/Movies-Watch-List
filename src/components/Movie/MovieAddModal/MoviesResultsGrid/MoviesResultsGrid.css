@@ -13,15 +13,25 @@
     min-height: 350px;
     margin: 10px;
     border-radius: 5px;
+    box-shadow: 0px 0px 1px 1px black;
     position: relative;
     text-align: center;
     cursor: pointer;
     color: white;
-    transition: all 0.4s;
+    transition: all 0.2s;
+}
+
+.movieElem img {
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+    filter: brightness(0.7);
+    -webkit-filter: brightness(0.7);
 }
 
 .movieElem:hover {
-    box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.2), 0 8px 28px 0 rgba(0, 0, 0, 0.19);
+    /* box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.2), 0 8px 28px 0 rgba(0, 0, 0, 0.19); */
+    opacity: 0.8;
 }
 
 @media only screen and (max-width: 992px) {
@@ -55,20 +65,11 @@
     border-color: black;
 }
 
-.movieElem img {
-    height: 100%;
-    width: 100%;
-    border-radius: inherit;
-    filter: brightness(0.7);
-    -webkit-filter: brightness(0.7);
-}
-
 .overlay h3, .overlay h2 {
     margin: 5px auto;
 }
 
 .chosenMovie {
-    border: 3px rgb(223, 14, 14) solid;
     box-sizing: border-box;
-    box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.2), 0 8px 28px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0px 0px 3px 5px #000000;
 }
