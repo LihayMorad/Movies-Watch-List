@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { database } from '../../config/firebase';
 
+import { connect } from 'react-redux';
+import * as actionTypes from '../../store/actions';
+
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
@@ -63,7 +66,7 @@ class Movie extends Component {
 				? "Personal note saved successfully"
 				: "There was an error saving the note";
 			this.setState({ comments: comments, editingComments: false },
-				() => { this.props.handleInformationDialog(message); });
+				() => { this.props.onSnackbarToggle(true, message, !error ? "success" : "error"); });
 		});
 	}
 
@@ -160,4 +163,10 @@ class Movie extends Component {
 
 }
 
-export default Movie;
+const mapStateToProps = state => state;
+
+const mapDispatchToProps = dispatch => ({
+	onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Movie);

@@ -54,7 +54,7 @@ class movieAddModal extends Component {
                 if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
                 } else {
-                    this.props.onSnackbarToggle(true, omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error, "error");
+                    this.props.onSnackbarToggle(true, omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error, "warning");
                 }
                 this.setState({ loading: false, movieSearchResults, imdbID: "" });
             } catch (error) {
@@ -151,7 +151,7 @@ class movieAddModal extends Component {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-    onSnackbarToggle: (open, message) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message } })
+    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
 })
 
 

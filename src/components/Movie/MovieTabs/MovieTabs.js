@@ -52,7 +52,8 @@ class MovieTabs extends PureComponent {
 		const imdbRating = <a href={`https://www.imdb.com/title/${this.props.imdbId}`} target={"_blank"} rel="noopener noreferrer">
 			{this.props.imdbRating === "N/A"
 				? "N/A"
-				: `IMDb: ${this.props.imdbRating}`}</a>;
+				: `IMDb: ${this.props.imdbRating}`}
+		</a>;
 
 		const torrents = torrentsSites.map(site => {
 			let attributes = "";
@@ -80,11 +81,12 @@ class MovieTabs extends PureComponent {
 
 		const actors = this.props.actors.split(',').map(actor => {
 			return <a key={actor.trim()} className={"actorsList"} href={`https://en.wikipedia.org/wiki/${actor}`} target="_blank" rel="noopener noreferrer"
-				onClick={e => e.stopPropagation()}> {actor.trim()}</a >
+				onClick={e => e.stopPropagation()}> {actor.trim()}</a>
 		});
 
 		const mainActor = actors[0];
-		const fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbId}/fullcredits/`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>more</a>;
+		const fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbId}/fullcredits/`} target="_blank" rel="noopener noreferrer"
+			onClick={e => e.stopPropagation()}>more</a>;
 
 		return (
 			<div>

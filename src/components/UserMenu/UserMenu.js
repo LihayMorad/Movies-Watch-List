@@ -107,8 +107,7 @@ class UserMenu extends Component {
                     <AddIcon />Add Movie
                 </Fab>
 
-                <MovieAddModal isOpen={this.props.isOpen} toggle={this.props.toggle}
-                    addMovie={this.props.addMovie} handleInformationDialog={this.props.handleInformationDialog} />
+                <MovieAddModal isOpen={this.props.isOpen} toggle={this.props.toggle} addMovie={this.props.addMovie} />
             </form>
 
         );

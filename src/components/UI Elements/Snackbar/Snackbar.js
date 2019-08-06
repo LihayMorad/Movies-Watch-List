@@ -19,7 +19,7 @@ import { grey, green, red, blue, amber } from '@material-ui/core/colors';
 const snackbarStyles = {
     "default": {
         "color": grey[900],
-        "icon": <ErrorIcon />
+        "icon": null
     },
     "error": {
         "color": red[700],
@@ -41,7 +41,7 @@ const snackbarStyles = {
 
 const simpleSnackbar = props => {
 
-    const handleClose = () => { props.onSnackbarToggle(false, "", "default") };
+    const handleClose = () => { props.onSnackbarToggle(false, "", "default"); };
 
     const color = props.snackbarType ? snackbarStyles[props.snackbarType].color : snackbarStyles['default'].color;
     const icon = props.snackbarType ? snackbarStyles[props.snackbarType].icon : snackbarStyles['default'].icon;
@@ -55,8 +55,7 @@ const simpleSnackbar = props => {
             onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             autoHideDuration={4000}
-            TransitionComponent={Fade}
-        >
+            TransitionComponent={Fade}>
             <SnackbarContent
                 style={{ backgroundColor: color }}
                 message={<span style={{ display: 'flex', alignItems: 'center' }}>{icon}&nbsp;{message}</span>}
@@ -67,8 +66,7 @@ const simpleSnackbar = props => {
                         onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
-                ]}
-            />
+                ]}/>
         </Snackbar>
 
     );

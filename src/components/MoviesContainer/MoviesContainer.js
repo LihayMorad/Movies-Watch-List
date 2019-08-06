@@ -19,6 +19,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Fade from '@material-ui/core/Fade';
 import Snackbar from '../UI Elements/Snackbar/Snackbar';
 import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
+import TrackVisibility from 'react-on-screen';
 
 import './MoviesContainer.css';
 
@@ -33,7 +34,8 @@ class MoviesContainer extends PureComponent {
         showInformationDialog: false,
         informationDialogTitle: "",
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
-        accountMenuAnchorEl: null
+        accountMenuAnchorEl: null,
+        showScrollToMenuButton: false
     }
 
     componentDidMount() {
@@ -47,20 +49,20 @@ class MoviesContainer extends PureComponent {
 
     handleUserSignIn = () => {
         firebase.auth().signInWithPopup(this.state.googleAuthProvider)
-            .then((result) => { this.handleInformationDialogTitle(`Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`); }) // Sign-in successfully.
-            .catch((error) => { this.handleInformationDialogTitle('Sign in error: ' + error); }); // Sign-in failed.
+            .then((result) => { this.props.onSnackbarToggle(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information"); }) // Sign-in successfully.
+            .catch((error) => { this.props.onSnackbarToggle(true, `Sign in error: ${error}`, "error"); }); // Sign-in failed.
     }
 
     handleUserSignInAnonymously = () => {
         firebase.auth().signInAnonymously()
-            .then((result) => { this.handleInformationDialogTitle(`Hi, you are now logged in as a guest user.`); }) // Sign-in anonymously successfully.
-            .catch((error) => { this.handleInformationDialogTitle(`Error! cannot sign in as a guest user.`); }); // Sign-in anonymously failed.
+            .then((result) => { this.props.onSnackbarToggle(true, `Hi, you are now logged in as a guest user.`, "information"); }) // Sign-in anonymously successfully.
+            .catch((error) => { this.props.onSnackbarToggle(true, `Error! cannot sign in as a guest user.`, "error"); }); // Sign-in anonymously failed.
     }
 
     handleUserAccountLinking = () => {
         firebase.auth().currentUser.linkWithPopup(this.state.googleAuthProvider)
-            .then((result) => { this.handleInformationDialogTitle(`You guest account was successfully linked with your Google account '${result.user.email}'.`); }) // Accounts successfully linked.
-            .catch((error) => { this.handleInformationDialogTitle(`Error! Cannot link with Google account '${error.email}' because you've probably used it before. Please log in with your '${error.email}' Google account.`); }); // Error while linking accounts.
+            .then((result) => { this.props.onSnackbarToggle(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information"); }) // Accounts linking succeeded.
+            .catch((error) => { this.props.onSnackbarToggle(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login with your '${error.email}' Google account.`, "error"); }); // Accounts linking failed.
     }
 
     handleUserSignOut = () => {
@@ -69,8 +71,8 @@ class MoviesContainer extends PureComponent {
             : `account '${firebase.auth().currentUser.email}' ?`;
         if (window.confirm(`Are you sure you want to logout from your ${relevantAccountMessage} `)) {
             firebase.auth().signOut()
-                .then((result) => { this.handleInformationDialogTitle("You are now logged out"); }) // Sign-out successfully.
-                .catch((error) => { this.handleInformationDialogTitle(`Sign out error: ${error}`); }); // Sign-out failed.
+                .then((result) => { this.props.onSnackbarToggle(true, "You are now logged out", "information"); }) // Sign-out successfully.
+                .catch((error) => { this.props.onSnackbarToggle(true, `Sign out error: ${error}`, "error"); }); // Sign-out failed.
         }
     }
 
@@ -90,7 +92,7 @@ class MoviesContainer extends PureComponent {
             const message = !error
                 ? `${movieToBeAdded.NameEng} (${movieToBeAdded.Year}) added successfully`
                 : `There was an error adding ${movieToBeAdded.NameEng} (${movieToBeAdded.Year})`;
-            this.handleInformationDialogTitle(message);
+            this.props.onSnackbarToggle(true, message, !error ? "success" : "error");
             this.toggleMovieAddModal();
         });
     }
@@ -111,11 +113,11 @@ class MoviesContainer extends PureComponent {
 
         database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${movieID}`).remove()
             .then(() => {
-                this.handleInformationDialogTitle(`'${deletedMovieDetails}' deleted successfully`);
+                this.props.onSnackbarToggle(true, `'${deletedMovieDetails}' deleted successfully`, "success");
                 this.setState({ moviesData: updatedMoviesData });
             })
-            .catch((error) => {
-                this.handleInformationDialogTitle(`Error! Cannot delete '${deletedMovieDetails}'`);
+            .catch(() => {
+                this.props.onSnackbarToggle(true, `Error! Cannot delete '${deletedMovieDetails}'`, "error");
             })
     }
 
@@ -168,7 +170,6 @@ class MoviesContainer extends PureComponent {
                 userID={firebase.auth().currentUser.uid}
                 userEmail={firebase.auth().currentUser.email}
                 comments={movie['Comments']}
-                handleInformationDialog={this.handleInformationDialogTitle}
                 delete={this.handleMovieDelete} />
         });
 
@@ -208,13 +209,13 @@ class MoviesContainer extends PureComponent {
 
     render() {
 
-        let userMenu = null;
         let moviesC = null;
         const firebaseUser = firebase.auth().currentUser;
         const isLoggedIn = !!firebaseUser;
-        const { accountMenuAnchorEl } = this.state;
+        const { accountMenuAnchorEl, showScrollToMenuButton, showInformationDialog, informationDialogTitle } = this.state;
         const isAccountMenuOpen = !!accountMenuAnchorEl;
         let scrollToMenu = null;
+        let userMenu = null;
 
         let signInOutButton = <MenuItem>
             <Button
@@ -249,19 +250,26 @@ class MoviesContainer extends PureComponent {
                 signInOutAnonymouslyButton = null;
             }
 
-            userMenu = <div className={"UserMenu"} ref={this.topMenuRef}>
-                <UserMenu
-                    isOpen={this.state.addingMovie}
-                    toggle={this.toggleMovieAddModal}
-                    addMovie={details => { this.handleMovieAdd(details) }}
-                    getMovies={this.getMoviesToWatch}
-                    years={this.state.years}
-                    maxResults={this.state.maxResults}
-                    handleInformationDialog={this.handleInformationDialogTitle} />
-            </div>;
+            userMenu = ({ isVisible }) => {
+                setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
+
+                return <div className={"UserMenu"} ref={this.topMenuRef}>
+                    <UserMenu
+                        isOpen={this.state.addingMovie}
+                        toggle={this.toggleMovieAddModal}
+                        addMovie={details => { this.handleMovieAdd(details) }}
+                        getMovies={this.getMoviesToWatch}
+                        years={this.state.years}
+                        maxResults={this.state.maxResults} />
+                </div>;
+            }
 
             moviesC = !this.state.loading
-                ? <div className="MoviesGallery">{this.state.moviesData}</div>
+                ? <div className="MoviesGallery">
+                    {this.state.moviesData.length === 0
+                        ? <h3>Your list is empty.</h3>
+                        : this.state.moviesData}
+                </div>
                 : <MoviesSpinner />;
 
             scrollToMenu = <Fab
@@ -273,7 +281,6 @@ class MoviesContainer extends PureComponent {
         return (
             <div>
 
-                <Button onClick={() => this.props.onSnackbarToggle(true, "message", "default")}>Open snackbar</Button>
                 <React.Fragment>
                     <IconButton id="accountMenu" color="primary" aria-owns={accountMenuAnchorEl ? 'simple-menu' : undefined} aria-haspopup="true"
                         onClick={this.handleClickAccountMenu}>
@@ -291,14 +298,17 @@ class MoviesContainer extends PureComponent {
                     </Menu>
                 </React.Fragment>
 
-                {userMenu}
+                {userMenu && <TrackVisibility partialVisibility>
+                    {userMenu}
+                </TrackVisibility>}
+
                 {moviesC}
-                {scrollToMenu}
+                {showScrollToMenuButton && scrollToMenu}
 
                 <InformationDialog
-                    isOpen={this.state.showInformationDialog}
+                    isOpen={showInformationDialog}
                     toggle={this.toggleInformationDialog}
-                    dialogTitle={this.state.informationDialogTitle} />
+                    dialogTitle={informationDialogTitle} />
 
                 <Snackbar />
             </div >
