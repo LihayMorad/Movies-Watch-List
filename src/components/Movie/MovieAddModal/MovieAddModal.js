@@ -39,7 +39,7 @@ class movieAddModal extends Component {
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
     handleAddMovie = () => {
-        const movieDetails = { ...this.state, Year: this.state.selectedYear, NameEng: this.state.selectedTitle };
+        const movieDetails = { ...this.state, Year: this.state.selectedYear, NameEng: this.state.selectedTitle, Watched: false };
         this.state.imdbID
             ? this.props.addMovie(movieDetails)
             : this.props.onSnackbarToggle(true, "Please search and choose a movie from the search results.", "information");

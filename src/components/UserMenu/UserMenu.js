@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+import { connect } from 'react-redux';
+import * as actionTypes from '../../store/actions';
+
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -9,18 +12,11 @@ import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import FilterList from '@material-ui/icons/FilterList';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import MovieAddModal from '../Movie/MovieAddModal/MovieAddModal';
 
 import './UserMenu.css';
-
-const styles = {
-    "sortBy": { width: '134px' },
-    "orderBy": { width: '116px' },
-    "year": { width: '70px' },
-    "results": { width: '52px' },
-    "addMovie": { marginTop: '10px' }
-};
 
 class UserMenu extends Component {
 
@@ -33,6 +29,8 @@ class UserMenu extends Component {
 
     handleChange = e => { this.setState({ [e.target.name]: e.target.value }); };
 
+    toggleWatchedMovies = () => { this.props.onToggleWatchedMovies(); }
+
     search = () => { this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults); }
 
     render() {
@@ -43,7 +41,7 @@ class UserMenu extends Component {
 
             <form>
                 <div className={"Menu"}>
-                    <FormControl style={styles.sortBy} className={"MenuElement"} >
+                    <FormControl id="sortByFilter" className={"MenuElement"} >
                         <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                         <Select
                             value={this.state.filter}
@@ -56,7 +54,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={styles.orderBy} className={"MenuElement"} >
+                    <FormControl id="orderByFilter" className={"MenuElement"} >
                         <InputLabel htmlFor="orderBy">Order by</InputLabel>
                         <Select
                             value={this.state.order}
@@ -68,7 +66,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={styles.year} className={"MenuElement"} >
+                    <FormControl id="menuYear" className={"MenuElement"} >
                         <InputLabel htmlFor="showYear">Year</InputLabel>
                         <Select
                             value={this.state.year}
@@ -81,7 +79,7 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl style={styles.results} className={"MenuElement"} >
+                    <FormControl id="menuMaxResults" className={"MenuElement"} >
                         <InputLabel htmlFor="maxResults">Results</InputLabel>
                         <Select
                             value={this.state.maxResults}
@@ -98,12 +96,27 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <Button className={"MenuElement"} variant="contained" size="small" onClick={this.search}>
+                    <FormControl id="showWatchedMovies" className="MenuElement">
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="showWatchedMovies"
+                                    color="primary"
+                                    checked={this.props.showWatchedMovies}
+                                    onChange={this.toggleWatchedMovies} />
+                            }
+                            label="Show watched movies"
+                            labelPlacement="end"
+                        />
+                    </FormControl>
+
+
+                    <Button className={"MenuElement"} variant="contained" size="small" title="Apply filters" onClick={this.search}>
                         <FilterList />&nbsp;Apply
                     </Button>
 
                 </div>
-                <Fab style={styles.addMovie} color="primary" variant="extended" onClick={this.props.toggle} title="Add Movie" size="large">
+                <Fab id="menuAddMovie" color="primary" variant="extended" size="large" title="Add Movie" onClick={this.props.toggle} >
                     <AddIcon />Add Movie
                 </Fab>
 
@@ -116,4 +129,10 @@ class UserMenu extends Component {
 
 };
 
-export default UserMenu;
+const mapStateToProps = state => state;
+
+const mapDispatchToProps = dispatch => ({
+    onToggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES })
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

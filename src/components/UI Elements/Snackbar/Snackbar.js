@@ -11,7 +11,6 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
-
 import Fade from '@material-ui/core/Fade';
 
 import { grey, green, red, blue, amber } from '@material-ui/core/colors';

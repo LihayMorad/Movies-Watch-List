@@ -85,8 +85,8 @@ class MoviesContainer extends PureComponent {
 
     handleMovieAdd = details => {
         const Year = parseInt(details.Year);
-        const { NameEng, NameHeb, imdbID, Comments } = details;
-        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year };
+        const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
+        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year, Watched };
 
         database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, (error) => {
             const message = !error
@@ -158,6 +158,10 @@ class MoviesContainer extends PureComponent {
     setMoviesToWatch = moviesData => {
 
         let years = new Set([...this.state.years]);
+        if (!this.props.showWatchedMovies) {
+            moviesData = moviesData.filter(movie => !movie.Watched);
+        }
+
         const movies = moviesData.map(movie => {
             years.add(movie['Year']);
             return <Movie
@@ -170,6 +174,7 @@ class MoviesContainer extends PureComponent {
                 userID={firebase.auth().currentUser.uid}
                 userEmail={firebase.auth().currentUser.email}
                 comments={movie['Comments']}
+                watched={movie['Watched']}
                 delete={this.handleMovieDelete} />
         });
 

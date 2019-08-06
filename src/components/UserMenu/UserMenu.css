@@ -1,5 +1,4 @@
 .Menu {
-    /* margin: 20px auto; */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -9,4 +8,34 @@
 
 .MenuElement {
     margin: 10px !important;
+}
+
+#sortByFilter {
+    width: 134px;
+}
+
+#orderByFilter {
+    width: 116px;
+}
+
+#menuYear {
+    width: 70px
+}
+
+#menuMaxResults {
+    width: 52px;
+}
+
+#menuAddMovie {
+    margin-top: 10px;
+}
+
+#showWatchedMovies {
+    max-width: 100px;
+    padding: 3px 0 3px 7px;
+}
+
+#showWatchedMovies:hover {
+    background-color: rgba(63, 81, 181, 0.08);
+    border-radius: 5px
 }

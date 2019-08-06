@@ -13,13 +13,15 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Icon from '@material-ui/core/Icon';
-
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieTrailerModal from './MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from './MovieCommentsModal/MovieCommentsModal'
 import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
+import Checkbox from '@material-ui/core/Checkbox';
+import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
+import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
 
 import youTubeIcon from '../../assets/youtube_social_icon_red.png';
 
@@ -30,7 +32,7 @@ const styles = { "cardContent": { padding: '0px' } };
 class Movie extends Component {
 
 	state = {
-		nameHeb: "", nameEng: "", releaseYear: "", comments: "", dbID: "",
+		nameHeb: "", nameEng: "", releaseYear: "", comments: "", dbID: "", watched: false,
 		loading: true, Error: false,
 		watchingTrailer: false, editingComments: false
 	}
@@ -67,6 +69,17 @@ class Movie extends Component {
 				: "There was an error saving the note";
 			this.setState({ comments: comments, editingComments: false },
 				() => { this.props.onSnackbarToggle(true, message, !error ? "success" : "error"); });
+		});
+	}
+
+	toggleMovieWatched = e => {
+		const { checked } = e.target;
+		database.ref(`/mymovies/${this.props.userID}/${this.props.dbID}`).update({ Watched: checked }, (error) => {
+			const message = !error
+				? `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`
+				: "There was an error marking the movie as watched";
+			this.setState({ watched: checked },
+				() => { this.props.onSnackbarToggle(true, message, !error ? "information" : "error"); });
 		});
 	}
 
@@ -139,14 +152,21 @@ class Movie extends Component {
 						? `${this.state.Title} ${this.state.Year}`
 						: `${this.state.nameEng} ${this.state.releaseYear}`} />
 
-				<Fab id={"movieCardFab1"} color="primary" title={"Add/Edit movie's personal note"} size="small"
+				<Fab className="movieCardFab" color="primary" title={"Add/Edit movie's personal note"} size="small"
 					onClick={this.toggleEditComments} >
 					<Icon>edit_icon</Icon>
 				</Fab>
 
-				<Fab id={"movieCardFab2"} color="secondary" title={"Delete movie"} size="small"
+				<Fab className="movieCardFab" color="secondary" title={"Delete movie"} size="small"
 					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID); } }} >
 					<DeleteIcon />
+				</Fab>
+
+				<Fab className="movieCardFab" color="default" size="small">
+					<Checkbox style={{ height: 'inherit' }} checked={this.state.watched} title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}
+						icon={< RemoveRedEyeOutlined fontSize="large" color="action" />}
+						checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
+						onChange={this.toggleMovieWatched} />
 				</Fab>
 
 				<MovieCommentsModal

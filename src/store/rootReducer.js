@@ -3,7 +3,8 @@ import * as actionTypes from './actions';
 const initialState = {
     isSnackbarOpen: false,
     snackbarMessage: "",
-    snackbarType: "default"
+    snackbarType: "default",
+    showWatchedMovies: false
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -18,8 +19,11 @@ const rootReducer = (state = initialState, action) => {
                 snackbarType: action.payload.type
             };
 
-        case actionTypes.ANOTHER:
-            return { ...state };
+        case actionTypes.TOGGLE_WATCHED_MOVIES:
+            return {
+                ...state,
+                showWatchedMovies: !state.showWatchedMovies
+            };
 
         default:
             return { ...state };

@@ -75,6 +75,10 @@
     padding: 7px;
 }
 
-#movieCardFab1, #movieCardFab2 {
-    margin: 0px 10px 7px 10px;
+.movieCardFab {
+    margin: 0px 10px 7px 10px !important;
+}
+
+.movieCardFab span {
+    position: absolute;
 }
