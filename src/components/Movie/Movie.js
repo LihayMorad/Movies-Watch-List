@@ -78,9 +78,9 @@ class Movie extends Component {
 			const message = !error
 				? `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`
 				: "There was an error marking the movie as watched";
-			this.setState({ watched: checked },
-				() => { this.props.onSnackbarToggle(true, message, !error ? "information" : "error"); });
-		});
+			this.props.onSnackbarToggle(true, message, !error ? "information" : "error");
+			this.setState({ watched: checked });
+		})
 	}
 
 	render() {

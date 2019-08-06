@@ -156,11 +156,9 @@ class MoviesContainer extends PureComponent {
     }
 
     setMoviesToWatch = moviesData => {
-
         let years = new Set([...this.state.years]);
-        if (!this.props.showWatchedMovies) {
-            moviesData = moviesData.filter(movie => !movie.Watched);
-        }
+
+        if (!this.props.showWatchedMovies) { moviesData = moviesData.filter(movie => !movie.Watched); }
 
         const movies = moviesData.map(movie => {
             years.add(movie['Year']);
@@ -272,7 +270,7 @@ class MoviesContainer extends PureComponent {
             moviesC = !this.state.loading
                 ? <div className="MoviesGallery">
                     {this.state.moviesData.length === 0
-                        ? <h3>Your list is empty.</h3>
+                        ? <h3>No results.</h3>
                         : this.state.moviesData}
                 </div>
                 : <MoviesSpinner />;
