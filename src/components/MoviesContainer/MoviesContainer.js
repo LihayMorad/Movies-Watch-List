@@ -273,7 +273,7 @@ class MoviesContainer extends PureComponent {
         return (
             <div>
 
-                <Button onClick={() => this.props.onSnackbarToggle(true, "message")}>open snackbar</Button>
+                <Button onClick={() => this.props.onSnackbarToggle(true, "message", "default")}>Open snackbar</Button>
                 <React.Fragment>
                     <IconButton id="accountMenu" color="primary" aria-owns={accountMenuAnchorEl ? 'simple-menu' : undefined} aria-haspopup="true"
                         onClick={this.handleClickAccountMenu}>
@@ -311,7 +311,7 @@ class MoviesContainer extends PureComponent {
 const mapStateToProps = state => state
 
 const mapDispatchToProps = dispatch => ({
-    onSnackbarToggle: (open, message) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message } })
+    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);

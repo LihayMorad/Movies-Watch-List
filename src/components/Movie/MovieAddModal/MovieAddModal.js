@@ -42,7 +42,7 @@ class movieAddModal extends Component {
         const movieDetails = { ...this.state, Year: this.state.selectedYear, NameEng: this.state.selectedTitle };
         this.state.imdbID
             ? this.props.addMovie(movieDetails)
-            : this.props.onSnackbarToggle(true, "Please search and choose a movie from the search results.");
+            : this.props.onSnackbarToggle(true, "Please search and choose a movie from the search results.", "information");
     }
 
     handleMovieSearch = () => {
@@ -54,12 +54,12 @@ class movieAddModal extends Component {
                 if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
                 } else {
-                    this.props.onSnackbarToggle(true, omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error);
+                    this.props.onSnackbarToggle(true, omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error, "error");
                 }
                 this.setState({ loading: false, movieSearchResults, imdbID: "" });
             } catch (error) {
                 this.setState({ loading: false });
-                this.props.onSnackbarToggle(true, "Something went wrong! " + error);
+                this.props.onSnackbarToggle(true, "Something went wrong! " + error, "error");
             }
         });
     }
