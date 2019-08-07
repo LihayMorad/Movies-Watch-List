@@ -79,7 +79,7 @@ class Movie extends Component {
 				? `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`
 				: "There was an error marking the movie as watched";
 			this.props.onSnackbarToggle(true, message, !error ? "information" : "error");
-			this.setState({ watched: checked });
+			if (!(!this.props.showWatchedMovies && checked)) this.setState({ watched: checked }); // prevent setState on unmounted component
 		})
 	}
 
@@ -98,10 +98,10 @@ class Movie extends Component {
 						<div className={"movieCardContentImgDiv"}>
 							{!loading
 								? !movieDBError
-									? <React.Fragment>
+									? <>
 										<img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"} />
 										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"} />
-									</React.Fragment>
+									</>
 									: <div id={"movieCardContentImgDivError"}>
 										<img src={MovieNotFound} alt={movieDBError === true ? "Error" : movieDBError} />
 										<h1>Database error {movieDBError}</h1>
@@ -157,16 +157,16 @@ class Movie extends Component {
 					<Icon>edit_icon</Icon>
 				</Fab>
 
-				<Fab className="movieCardFab" color="secondary" title={"Delete movie"} size="small"
-					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID); } }} >
-					<DeleteIcon />
-				</Fab>
-
-				<Fab className="movieCardFab" color="default" size="small">
-					<Checkbox style={{ height: 'inherit' }} checked={this.state.watched} title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}
+				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}>
+					<Checkbox style={{ height: 'inherit' }} checked={this.state.watched}
 						icon={< RemoveRedEyeOutlined fontSize="large" color="action" />}
 						checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
 						onChange={this.toggleMovieWatched} />
+				</Fab>
+
+				<Fab className="movieCardFab" color="secondary" title={"Delete movie"} size="small"
+					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID); } }} >
+					<DeleteIcon />
 				</Fab>
 
 				<MovieCommentsModal

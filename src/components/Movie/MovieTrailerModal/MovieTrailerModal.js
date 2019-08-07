@@ -8,9 +8,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import LoadingSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
+import Zoom from '@material-ui/core/Zoom';
 
 import { withStyles } from '@material-ui/core/styles';
-
 import './MovieTrailerModal.css';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
@@ -52,6 +52,7 @@ class MovieTrailerModal extends Component {
 			<StyledDialog
 				fullWidth
 				maxWidth="lg"
+				TransitionComponent={Zoom}
 				open={this.props.isOpen}
 				onEnter={this.getTrailer}
 				onClose={this.props.toggle}>

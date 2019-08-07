@@ -260,7 +260,7 @@ class MoviesContainer extends PureComponent {
                     <UserMenu
                         isOpen={this.state.addingMovie}
                         toggle={this.toggleMovieAddModal}
-                        addMovie={details => { this.handleMovieAdd(details) }}
+                        addMovie={this.handleMovieAdd}
                         getMovies={this.getMoviesToWatch}
                         years={this.state.years}
                         maxResults={this.state.maxResults} />
@@ -268,11 +268,10 @@ class MoviesContainer extends PureComponent {
             }
 
             moviesC = !this.state.loading
-                ? <div className="MoviesGallery">
-                    {this.state.moviesData.length === 0
-                        ? <h3>No results.</h3>
-                        : this.state.moviesData}
-                </div>
+                ? this.state.moviesData.length === 0
+                    ? <><h3 id="noResultsH3">No results</h3>
+                        <h4 id="noResultsH4">Add a movie or change list filters</h4></>
+                    : <div className="MoviesGallery">{this.state.moviesData}</div>
                 : <MoviesSpinner />;
 
             scrollToMenu = <Fab
@@ -284,7 +283,7 @@ class MoviesContainer extends PureComponent {
         return (
             <div>
 
-                <React.Fragment>
+                <>
                     <IconButton id="accountMenu" color="primary" aria-owns={accountMenuAnchorEl ? 'simple-menu' : undefined} aria-haspopup="true"
                         onClick={this.handleClickAccountMenu}>
                         <AccountCircle fontSize="large" />
@@ -299,7 +298,7 @@ class MoviesContainer extends PureComponent {
                         {signInOutButton}
                         {signInOutAnonymouslyButton}
                     </Menu>
-                </React.Fragment>
+                </>
 
                 {userMenu && <TrackVisibility partialVisibility>
                     {userMenu}

@@ -5,7 +5,7 @@
     max-height: 64px;
     background-color: transparent;
     border-radius: 50%;
-    border-left: 1px solid black;
+    border-left: 1px solid #3f51b5;
     animation: rotate 0.5s infinite linear;
     -webkit-animation: rotate 0.5s infinite linear;
 }

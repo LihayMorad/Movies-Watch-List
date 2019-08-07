@@ -7,23 +7,7 @@
 }
 
 .MenuElement {
-    margin: 10px !important;
-}
-
-#sortByFilter {
-    width: 134px;
-}
-
-#orderByFilter {
-    width: 116px;
-}
-
-#menuYear {
-    width: 70px
-}
-
-#menuMaxResults {
-    width: 52px;
+    margin: 10px 8px !important;
 }
 
 #menuAddMovie {
@@ -32,10 +16,15 @@
 
 #showWatchedMovies {
     max-width: 100px;
-    padding: 3px 0 3px 7px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    transition: border-color 0.2s ease-out;
 }
 
 #showWatchedMovies:hover {
-    background-color: rgba(63, 81, 181, 0.08);
-    border-radius: 5px
+    border-color: rgba(0, 0, 0, 0.87);
+}
+
+#showWatchedMovies button {
+    padding: 3px 0 3px 7px;
 }

@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
 
-import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -15,8 +14,20 @@ import FilterList from '@material-ui/icons/FilterList';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import MovieAddModal from '../Movie/MovieAddModal/MovieAddModal';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import ButtonBase from '@material-ui/core/ButtonBase';
 
+import { withStyles } from '@material-ui/core/styles';
 import './UserMenu.css';
+
+const StyledFormControlLabel = withStyles({
+    root: { maxWidth: '100px', marginRight: '0' },
+    label: { fontSize: '0.7rem', fontWeight: '500' }
+})(FormControlLabel);
+
+const StyledCheckbox = withStyles({
+    root: { padding: '12px 0px 12px 14px' },
+})(Checkbox);
 
 class UserMenu extends Component {
 
@@ -41,12 +52,16 @@ class UserMenu extends Component {
 
             <form>
                 <div className={"Menu"}>
-                    <FormControl id="sortByFilter" className={"MenuElement"} >
+                    <FormControl id="sortByFilter" className={"MenuElement"} variant="outlined">
                         <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                         <Select
                             value={this.state.filter}
                             onChange={this.handleChange}
-                            input={<Input name="filter" id="sortFilter" />}
+                            input={<OutlinedInput
+                                labelWidth={52}
+                                name="filter"
+                                id="sortFilter"
+                            />}
                             autoWidth >
                             <MenuItem value={"releaseYear"}><em>Year</em></MenuItem>
                             <MenuItem value={"nameEng"}>English Name</MenuItem>
@@ -54,24 +69,30 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl id="orderByFilter" className={"MenuElement"} >
+                    <FormControl id="orderByFilter" className={"MenuElement"} variant="outlined">
                         <InputLabel htmlFor="orderBy">Order by</InputLabel>
                         <Select
                             value={this.state.order}
                             onChange={this.handleChange}
-                            input={<Input name="order" id="orderBy" />}
+                            input={<OutlinedInput
+                                labelWidth={60}
+                                name="order" id="orderBy"
+                            />}
                             autoWidth >
                             <MenuItem value={"descending"}><em>Descending</em></MenuItem>
                             <MenuItem value={"ascending"}>Ascending</MenuItem>
                         </Select>
                     </FormControl>
 
-                    <FormControl id="menuYear" className={"MenuElement"} >
+                    <FormControl id="menuYear" className={"MenuElement"} variant="outlined">
                         <InputLabel htmlFor="showYear">Year</InputLabel>
                         <Select
                             value={this.state.year}
                             onChange={this.handleChange}
-                            input={<Input name="year" id="showYear" />}
+                            input={<OutlinedInput
+                                labelWidth={33}
+                                name="year" id="showYear"
+                            />}
                             autoWidth >
                             <MenuItem value={"All"}><em>{"All"}</em></MenuItem>
                             {years}
@@ -79,13 +100,21 @@ class UserMenu extends Component {
                         </Select>
                     </FormControl>
 
-                    <FormControl id="menuMaxResults" className={"MenuElement"} >
+                    <FormControl id="menuMaxResults" className={"MenuElement"} variant="outlined">
                         <InputLabel htmlFor="maxResults">Results</InputLabel>
                         <Select
                             value={this.state.maxResults}
                             onChange={this.handleChange}
                             name="maxResults"
-                            inputProps={{ id: 'maxResults' }} >
+                            inputProps={{ id: 'maxResults' }}
+                            input={
+                                <OutlinedInput
+                                    labelWidth={54}
+                                    name="filter"
+                                    id="sortFilter"
+                                />
+                            }
+                        >
                             <MenuItem value={1000}>All</MenuItem>
                             <MenuItem value={5}><em>5</em></MenuItem>
                             <MenuItem value={10}>10</MenuItem>
@@ -97,17 +126,19 @@ class UserMenu extends Component {
                     </FormControl>
 
                     <FormControl id="showWatchedMovies" className="MenuElement">
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="showWatchedMovies"
-                                    color="primary"
-                                    checked={this.props.showWatchedMovies}
-                                    onChange={this.toggleWatchedMovies} />
-                            }
-                            label="Show watched movies"
-                            labelPlacement="end"
-                        />
+                        <ButtonBase>
+                            <StyledFormControlLabel
+                                control={
+                                    <StyledCheckbox
+                                        name="showWatchedMovies"
+                                        color="primary"
+                                        checked={this.props.showWatchedMovies}
+                                        onChange={this.toggleWatchedMovies} />
+                                }
+                                label="Show watched movies"
+                                labelPlacement="end"
+                            />
+                        </ButtonBase>
                     </FormControl>
 
 

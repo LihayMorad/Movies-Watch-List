@@ -1,12 +1,6 @@
-/* html {
-    height: 100%;
-} */
-
 .moviesLoading {
     margin: 50px auto;
     position: relative;
-    /* top: calc(50% - 64px); */
-    /* left: calc(50% - 64px); */
     width: 128px;
     height: 128px;
     border-radius: 50%;
@@ -25,21 +19,21 @@
     left: 0%;
     top: 0%;
     animation: rotate-one 1s linear infinite;
-    border-bottom: 3px solid black;
+    border-bottom: 3px solid #3f51b5;
 }
 
 .inner.two {
     right: 0%;
     top: 0%;
     animation: rotate-two 1s linear infinite;
-    border-right: 3px solid black;
+    border-right: 3px solid #3f51b5;
 }
 
 .inner.three {
     right: 0%;
     bottom: 0%;
     animation: rotate-three 1s linear infinite;
-    border-top: 3px solid black;
+    border-top: 3px solid #3f51b5;
 }
 
 @keyframes rotate-one {

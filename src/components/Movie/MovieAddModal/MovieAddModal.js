@@ -15,6 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
+import Zoom from '@material-ui/core/Zoom';
 
 import { withStyles } from '@material-ui/core/styles';
 import './MovieAddModal.css';
@@ -54,12 +55,13 @@ class movieAddModal extends Component {
                 if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
                 } else {
-                    this.props.onSnackbarToggle(true, omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error, "warning");
+                    const message = omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error;
+                    this.props.onSnackbarToggle(true, message, "warning");
                 }
                 this.setState({ loading: false, movieSearchResults, imdbID: "" });
             } catch (error) {
-                this.setState({ loading: false });
                 this.props.onSnackbarToggle(true, "Something went wrong! " + error, "error");
+                this.setState({ loading: false, movieSearchResults: [], imdbID: "" });
             }
         });
     }
@@ -79,6 +81,7 @@ class movieAddModal extends Component {
                 onClose={this.props.toggle}
                 maxWidth="md"
                 fullWidth
+                TransitionComponent={Zoom}
                 disableBackdropClick>
 
                 <DialogTitle>Add a movie to your watch list
@@ -95,21 +98,21 @@ class movieAddModal extends Component {
                         </DialogContentText>
                         <br />
                         <TextField
-                            autoFocus required fullWidth
-                            margin="dense" id="movieNameEng" type="text"
+                            fullWidth variant="outlined"
+                            autoFocus required
+                            margin="dense" id="movieNameEng"
                             name="NameEng" label="Movie's English name"
-                            placeholder="Enter english name"
+                            inputProps={{ type: "text", placeholder: "Enter english name", pattern: '[A-Za-z]+', title: "English letters only" }}
                             onChange={this.handleChange} />
                         <TextField
-                            fullWidth
-                            margin="dense" id="movieReleaseYear" type="number"
-                            name="Year" label={"Movie's Release year"}
+                            fullWidth variant="outlined"
+                            margin="dense" id="movieReleaseYear"
+                            name="Year" label="Movie's Release year"
                             defaultValue={Year}
-                            placeholder={"Enter release year"}
-                            inputProps={{ min: "1950", max: currYear + 2 }}
+                            inputProps={{ type: "number", placeholder: "Enter release year", min: "1950", max: currYear + 2 }}
                             onChange={this.handleChange} />
 
-                        <Button type="sumbit" color="secondary" variant="outlined" id={"movieAddModalSearchBtn"}>Search</Button>
+                        <Button type="sumbit" color="secondary" variant="outlined" id="movieAddModalSearchBtn">Search</Button>
 
                         {!loading
                             ? <MoviesResultsGrid
@@ -120,18 +123,19 @@ class movieAddModal extends Component {
 
                         {imdbID && <>
                             <TextField
-                                fullWidth
-                                margin="dense" id="movieNameHeb" type="text"
-                                name="NameHeb" label={"Movie's Hebrew name"}
-                                placeholder={"Enter hebrew name (optional)"}
+                                fullWidth variant="outlined"
+                                margin="dense" id="movieNameHeb"
+                                name="NameHeb" label="Movie's Hebrew name"
+                                placeholder="Enter hebrew name (optional)"
+                                inputProps={{ type: "text" }}
                                 onChange={this.handleChange} />
                             <TextField
-                                fullWidth multiline
-                                margin="dense" id="movieComments" type="text"
-                                name="Comments" label={"Movie's Personal Note"}
-                                placeholder={"Enter Personal Note (optional)"}
+                                fullWidth variant="outlined" multiline
+                                margin="normal" id="movieComments"
+                                name="Comments" label="Movie's Personal Note"
+                                placeholder="Enter Personal Note (optional)"
                                 onChange={this.handleChange}
-                                inputProps={{ ref: this.personalNote }} />
+                                inputProps={{ type: "text", ref: this.personalNote }} />
                         </>}
 
                     </StyledDialogContent>

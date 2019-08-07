@@ -36,3 +36,11 @@
 #btnPadding {
     padding: 8px;
 }
+
+#noResultsH3 {
+    margin: 20px auto 5px auto;
+}
+
+#noResultsH4 {
+    margin: 0px auto;
+}
