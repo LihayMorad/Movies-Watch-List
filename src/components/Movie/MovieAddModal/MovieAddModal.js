@@ -102,7 +102,7 @@ class movieAddModal extends Component {
                             autoFocus required
                             margin="dense" id="movieNameEng"
                             name="NameEng" label="Movie's English name"
-                            inputProps={{ type: "text", placeholder: "Enter english name", pattern: '[A-Za-z]+', title: "English letters only" }}
+                            inputProps={{ type: "text", placeholder: "Enter english name" }}
                             onChange={this.handleChange} />
                         <TextField
                             fullWidth variant="outlined"
