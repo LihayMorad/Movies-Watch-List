@@ -10,7 +10,7 @@ import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import FilterList from '@material-ui/icons/FilterList';
+import MovieFilterIcon from '@material-ui/icons/MovieFilter';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import MovieAddModal from '../Movie/MovieAddModal/MovieAddModal';
@@ -143,7 +143,7 @@ class UserMenu extends Component {
 
 
                     <Button className={"MenuElement"} variant="contained" size="small" title="Apply filters" onClick={this.search}>
-                        <FilterList />&nbsp;Apply
+                        <MovieFilterIcon />&nbsp;Apply
                     </Button>
 
                 </div>

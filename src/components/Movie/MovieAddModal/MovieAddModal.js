@@ -13,6 +13,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import SearchIcon from '@material-ui/icons/Search';
 import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 import Zoom from '@material-ui/core/Zoom';
@@ -112,7 +113,7 @@ class movieAddModal extends Component {
                             inputProps={{ type: "number", placeholder: "Enter release year", min: "1950", max: currYear + 2 }}
                             onChange={this.handleChange} />
 
-                        <Button type="sumbit" color="secondary" variant="outlined" id="movieAddModalSearchBtn">Search</Button>
+                        <Button type="sumbit" color="secondary" variant="outlined" id="movieAddModalSearchBtn"><SearchIcon/>Search</Button>
 
                         {!loading
                             ? <MoviesResultsGrid

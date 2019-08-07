@@ -19,7 +19,6 @@
 }
 
 #loggedInBtn {
-    padding: 8px;
     color: white;
     background-color: forestgreen;
 }
@@ -33,14 +32,14 @@
     background-color: black;
 }
 
-#btnPadding {
-    padding: 8px;
+.btnPadding {
+    padding: 6px 8px !important;
 }
 
-#noResultsH3 {
+.noResultsH3 {
     margin: 20px auto 5px auto;
 }
 
-#noResultsH4 {
+.noResultsH4 {
     margin: 0px auto;
 }

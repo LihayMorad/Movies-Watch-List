@@ -12,6 +12,7 @@ import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -49,19 +50,28 @@ class MoviesContainer extends PureComponent {
 
     handleUserSignIn = () => {
         firebase.auth().signInWithPopup(this.state.googleAuthProvider)
-            .then((result) => { this.props.onSnackbarToggle(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information"); }) // Sign-in successfully.
+            .then((result) => { // Sign-in successfully.
+                this.props.onSnackbarToggle(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information");
+                this.handleCloseAccountMenu();
+            })
             .catch((error) => { this.props.onSnackbarToggle(true, `Sign in error: ${error}`, "error"); }); // Sign-in failed.
     }
 
     handleUserSignInAnonymously = () => {
         firebase.auth().signInAnonymously()
-            .then((result) => { this.props.onSnackbarToggle(true, `Hi, you are now logged in as a guest user.`, "information"); }) // Sign-in anonymously successfully.
+            .then((result) => { // Sign-in anonymously successfully.
+                this.props.onSnackbarToggle(true, `Hi, you are now logged in as a guest user.`, "information");
+                this.handleCloseAccountMenu();
+            })
             .catch((error) => { this.props.onSnackbarToggle(true, `Error! cannot sign in as a guest user.`, "error"); }); // Sign-in anonymously failed.
     }
 
     handleUserAccountLinking = () => {
         firebase.auth().currentUser.linkWithPopup(this.state.googleAuthProvider)
-            .then((result) => { this.props.onSnackbarToggle(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information"); }) // Accounts linking succeeded.
+            .then((result) => { // Accounts linking succeeded.
+                this.props.onSnackbarToggle(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information");
+                this.handleCloseAccountMenu();
+            })
             .catch((error) => { this.props.onSnackbarToggle(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login with your '${error.email}' Google account.`, "error"); }); // Accounts linking failed.
     }
 
@@ -71,7 +81,10 @@ class MoviesContainer extends PureComponent {
             : `account '${firebase.auth().currentUser.email}' ?`;
         if (window.confirm(`Are you sure you want to logout from your ${relevantAccountMessage} `)) {
             firebase.auth().signOut()
-                .then((result) => { this.props.onSnackbarToggle(true, "You are now logged out", "information"); }) // Sign-out successfully.
+                .then((result) => { // Sign-out successfully.
+                    this.props.onSnackbarToggle(true, "You are now logged out", "information");
+                    this.handleCloseAccountMenu();
+                })
                 .catch((error) => { this.props.onSnackbarToggle(true, `Sign out error: ${error}`, "error"); }); // Sign-out failed.
         }
     }
@@ -219,10 +232,11 @@ class MoviesContainer extends PureComponent {
         const isAccountMenuOpen = !!accountMenuAnchorEl;
         let scrollToMenu = null;
         let userMenu = null;
+        let loggedOutMessage = null;
 
         let signInOutButton = <MenuItem>
             <Button
-                id="signInWithGoogle" color="primary" variant="contained" title={"Sign in with your Google account"}
+                id="signInWithGoogle" className="btnPadding" color="primary" variant="contained" title="Sign in with your Google account"
                 onClick={this.handleUserSignIn}><PersonIcon />&nbsp;Sign in</Button>
         </MenuItem>;
         let signInOutAnonymouslyButton = <MenuItem>
@@ -235,9 +249,9 @@ class MoviesContainer extends PureComponent {
             signInOutButton = <MenuItem
                 title="Logout"
                 onClick={this.handleUserSignOut}>
-                <Button id="loggedInBtn" color="primary" variant="contained" title="Sign out">
+                <Button id="loggedInBtn" className="btnPadding" color="primary" variant="contained" title="Sign out">
                     {firebaseUser.isAnonymous
-                        ? <><PersonOutlineIcon />&nbsp;Guest</>
+                        ? <><PersonOutlineIcon />&nbsp;&nbsp;Guest</>
                         : <><PersonIcon />&nbsp;{firebaseUser.displayName || firebaseUser.email}</>}
                 </Button>
             </MenuItem >;
@@ -245,8 +259,8 @@ class MoviesContainer extends PureComponent {
             if (firebaseUser.isAnonymous) {
                 signInOutAnonymouslyButton = <MenuItem
                     onClick={this.handleUserAccountLinking}>
-                    <Button className="btnPadding" color="primary" variant="outlined"
-                        title="Link this guest account with your Google account to save your data">Link with Google
+                    <Button className="btnPadding" color="primary" variant="outlined" title="Link this guest account with your Google account to save your data">
+                        <CloudUploadIcon />&nbsp;&nbsp;Link with Google
                     </Button>
                 </MenuItem>;
             } else {
@@ -269,8 +283,8 @@ class MoviesContainer extends PureComponent {
 
             moviesC = !this.state.loading
                 ? this.state.moviesData.length === 0
-                    ? <><h3 id="noResultsH3">No results</h3>
-                        <h4 id="noResultsH4">Add a movie or change list filters</h4></>
+                    ? <><h3 className="noResultsH3">No results</h3>
+                        <h4 className="noResultsH4">Add a movie or change list filters</h4></>
                     : <div className="MoviesGallery">{this.state.moviesData}</div>
                 : <MoviesSpinner />;
 
@@ -278,6 +292,11 @@ class MoviesContainer extends PureComponent {
                 id="scrollToMenu" color="primary" variant="extended" size="small" title="Scroll to the top menu"
                 onClick={this.scrollToMenu}><NavigationIcon />
             </Fab>;
+        } else {
+            loggedOutMessage = <><br />
+                <h3 className="noResultsH3">Please login to edit your list</h3>
+                <h4 className="noResultsH4">(You can login as a guest)</h4>
+            </>
         }
 
         return (
@@ -299,6 +318,8 @@ class MoviesContainer extends PureComponent {
                         {signInOutAnonymouslyButton}
                     </Menu>
                 </>
+
+                {loggedOutMessage}
 
                 {userMenu && <TrackVisibility partialVisibility>
                     {userMenu}
