@@ -12,7 +12,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import Switch from '@material-ui/core/Switch';
 import MovieAddModal from '../Movie/MovieAddModal/MovieAddModal';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -25,10 +25,6 @@ const StyledFormControlLabel = withStyles({
     label: { fontSize: '0.7rem', fontWeight: '500' }
 })(FormControlLabel);
 
-const StyledCheckbox = withStyles({
-    root: { padding: '12px 0px 12px 14px' },
-})(Checkbox);
-
 class UserMenu extends Component {
 
     state = {
@@ -38,11 +34,9 @@ class UserMenu extends Component {
         maxResults: this.props.maxResults || ""
     }
 
-    handleChange = e => { this.setState({ [e.target.name]: e.target.value }); };
+    handleFilterChange = e => { this.setState({ [e.target.name]: e.target.value }); };
 
-    toggleWatchedMovies = () => { this.props.onToggleWatchedMovies(); }
-
-    search = () => { this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults); }
+    handleMovieSearch = () => { this.props.getMovies(this.state.filter, this.state.order, this.state.year, this.state.maxResults); };
 
     render() {
 
@@ -56,7 +50,7 @@ class UserMenu extends Component {
                         <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                         <Select
                             value={this.state.filter}
-                            onChange={this.handleChange}
+                            onChange={this.handleFilterChange}
                             input={<OutlinedInput
                                 labelWidth={52}
                                 name="filter"
@@ -73,7 +67,7 @@ class UserMenu extends Component {
                         <InputLabel htmlFor="orderBy">Order by</InputLabel>
                         <Select
                             value={this.state.order}
-                            onChange={this.handleChange}
+                            onChange={this.handleFilterChange}
                             input={<OutlinedInput
                                 labelWidth={60}
                                 name="order" id="orderBy"
@@ -88,7 +82,7 @@ class UserMenu extends Component {
                         <InputLabel htmlFor="showYear">Year</InputLabel>
                         <Select
                             value={this.state.year}
-                            onChange={this.handleChange}
+                            onChange={this.handleFilterChange}
                             input={<OutlinedInput
                                 labelWidth={33}
                                 name="year" id="showYear"
@@ -104,7 +98,7 @@ class UserMenu extends Component {
                         <InputLabel htmlFor="maxResults">Results</InputLabel>
                         <Select
                             value={this.state.maxResults}
-                            onChange={this.handleChange}
+                            onChange={this.handleFilterChange}
                             name="maxResults"
                             inputProps={{ id: 'maxResults' }}
                             input={
@@ -129,12 +123,12 @@ class UserMenu extends Component {
                         <ButtonBase>
                             <StyledFormControlLabel
                                 control={
-                                    <StyledCheckbox
+                                    <Switch
                                         name="showWatchedMovies"
                                         color="primary"
                                         checked={this.props.showWatchedMovies}
-                                        onChange={this.toggleWatchedMovies} />
-                                }
+                                        onChange={this.props.onToggleWatchedMovies}
+                                    />}
                                 label="Show watched movies"
                                 labelPlacement="end"
                             />
@@ -142,7 +136,7 @@ class UserMenu extends Component {
                     </FormControl>
 
 
-                    <Button className={"MenuElement"} variant="contained" size="small" title="Apply filters" onClick={this.search}>
+                    <Button className={"MenuElement"} variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
                         <MovieFilterIcon />&nbsp;Apply
                     </Button>
 
