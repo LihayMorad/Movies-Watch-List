@@ -90,19 +90,19 @@ class Movie extends Component {
 
 		return (
 
-			<Card className={"movieCard"} >
+			<Card className="movieCard" >
 
 				<CardActionArea>
 
-					<CardContent style={styles.cardContent} title={"Click to open trailer"} onClick={this.toggleWatchTrailer}>
-						<div className={"movieCardContentImgDiv"}>
+					<CardContent style={styles.cardContent} title="Click to open trailer" onClick={this.toggleWatchTrailer}>
+						<div className="movieCardContentImgDiv">
 							{!loading
 								? !movieDBError
 									? <>
-										<img src={this.state.Poster} id={"movieCardContentImgDivPoster"} alt={"Movie Poster Not Found"} />
-										<img src={youTubeIcon} id={"movieCardContentYouTubeImg"} alt={"YouTube icon"} />
+										<img src={this.state.Poster} id="movieCardContentImgDivPoster" alt="Movie Poster Not Found" />
+										<img src={youTubeIcon} id="movieCardContentYouTubeImg" alt="YouTube icon" />
 									</>
-									: <div id={"movieCardContentImgDivError"}>
+									: <div id="movieCardContentImgDivError">
 										<img src={MovieNotFound} alt={movieDBError === true ? "Error" : movieDBError} />
 										<h1>Database error {movieDBError}</h1>
 									</div>
@@ -110,7 +110,7 @@ class Movie extends Component {
 							}
 						</div>
 						<Divider variant="middle"></Divider>
-						<div className={"movieCardContentTextDiv"}>
+						<div className="movieCardContentTextDiv">
 							{!loading
 								? <div>
 									<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.nameEng} </Typography>
@@ -119,7 +119,7 @@ class Movie extends Component {
 										? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
 										: <p>{this.state.releaseYear}</p>}
 									{this.state.comments
-										? <p>Personal note: <span id={"commentsSpan"}>{this.state.comments}</span></p>
+										? <p>Personal note: <span id="commentsSpan">{this.state.comments}</span></p>
 										: ""}
 								</div>
 								: <MovieSpinner />
@@ -129,7 +129,7 @@ class Movie extends Component {
 
 				</CardActionArea>
 
-				<CardActions id={"movieCardActions"}>
+				<CardActions id="movieCardActions">
 					{!loading
 						? !movieDBError && <MovieTabs
 							title={this.state.Title}
@@ -152,7 +152,7 @@ class Movie extends Component {
 						? `${this.state.Title} ${this.state.Year}`
 						: `${this.state.nameEng} ${this.state.releaseYear}`} />
 
-				<Fab className="movieCardFab" color="primary" title={"Add/Edit movie's personal note"} size="small"
+				<Fab className="movieCardFab" color="primary" title="Add/Edit movie's personal note" size="small"
 					onClick={this.toggleEditComments} >
 					<Icon>edit_icon</Icon>
 				</Fab>
@@ -164,7 +164,7 @@ class Movie extends Component {
 						onChange={this.toggleMovieWatched} />
 				</Fab>
 
-				<Fab className="movieCardFab" color="secondary" title={"Delete movie"} size="small"
+				<Fab className="movieCardFab" color="secondary" title="Delete movie" size="small"
 					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID); } }} >
 					<DeleteIcon />
 				</Fab>

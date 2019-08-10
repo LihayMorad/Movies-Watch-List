@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
 
+import { withStyles } from '@material-ui/core/styles';
 import './MovieTabs.css';
 
 const torrentsSites = [
@@ -15,14 +16,19 @@ const torrentsSites = [
 	{ "name": "1337X", "url": "https://1337x.to/category-search/", "urlExt": "/Movies/1/" },
 	{ "name": "KickassTorrents", "url": " https://kat.rip/usearch/", "urlExt": " category:movies/" }
 ];
+
 const subtitlesSites = [
 	{ "name": "Subcenter", "url": "http://www.subscenter.biz/he/subtitle/search/?q=" },
 	{ "name": "ScrewZira", "url": "https://www.screwzira.com/Search.aspx?q=" },
 	{ "name": "Wizdom", "url": "https://wizdom.xyz/#/movies/" }
 ];
 
+const StyledExpansionPanel = withStyles({ root: { color: 'inherit' } })(ExpansionPanel);
+const StyledExpansionPanelDetails = withStyles({ root: { color: 'inherit' } })(ExpansionPanelDetails);
+const StyledExpansionPanelSummary = withStyles({ content: { color: 'inherit' }, expanded: { color: 'inherit' }, expandIcon: { color: 'inherit' } })(ExpansionPanelSummary);
+
 const styles = {
-	"h6": { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
+	"h6": { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0', color: 'white' },
 	"autoMg": { margin: 'auto' },
 	"padding": { padding: '8px 10px' },
 	"flexWrapPadding": { padding: '8px 10px', flexWrap: 'wrap' }
@@ -91,42 +97,42 @@ class MovieTabs extends PureComponent {
 		return (
 			<div>
 
-				<ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')} className={"tabsPanel"}>
-					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={styles.h6} variant={'h6'}>Plot</Typography>
-						<Typography style={styles.autoMg} variant={'subtitle2'}>{this.props.genre}</Typography>
-					</ExpansionPanelSummary>
-					<ExpansionPanelDetails style={styles.padding}>{this.props.plot ? this.props.plot : ""}</ExpansionPanelDetails>
-				</ExpansionPanel>
+				<StyledExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')} className={"tabsPanel"}>
+					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography color="inherit" style={styles.h6} variant={'h6'}>Plot</Typography>
+						<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>{this.props.genre}</Typography>
+					</StyledExpansionPanelSummary>
+					<StyledExpansionPanelDetails style={styles.padding}>{this.props.plot ? this.props.plot : ""}</StyledExpansionPanelDetails>
+				</StyledExpansionPanel>
 
-				<ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')} className={"tabsPanel"}>
-					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={styles.h6} variant={'h6'}>Cast</Typography>
-						<Typography style={styles.autoMg} variant={'subtitle2'}>{mainActor}& {fullcast}</Typography>
-					</ExpansionPanelSummary>
-					<ExpansionPanelDetails style={styles.padding}>
-						<Typography style={styles.autoMg} variant={'body2'}>{actors.splice(1)}</Typography>
-					</ExpansionPanelDetails>
-				</ExpansionPanel>
+				<StyledExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')} className={"tabsPanel"}>
+					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography color="inherit" style={styles.h6} variant={'h6'}>Cast</Typography>
+						<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>{mainActor}& {fullcast}</Typography>
+					</StyledExpansionPanelSummary>
+					<StyledExpansionPanelDetails style={styles.padding}>
+						<Typography color="inherit" style={styles.autoMg} variant={'body2'}>{actors.splice(1)}</Typography>
+					</StyledExpansionPanelDetails>
+				</StyledExpansionPanel>
 
-				<ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')} className={"tabsPanel"}>
-					<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography style={styles.h6} variant={'h6'}>Ratings</Typography>
-						<Typography style={styles.autoMg} variant={'subtitle2'}>{imdbRating}</Typography>
-					</ExpansionPanelSummary>
-					<ExpansionPanelDetails style={styles.padding}>{ratings}</ExpansionPanelDetails>
-				</ExpansionPanel>
+				<StyledExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')} className={"tabsPanel"}>
+					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography color="inherit" style={styles.h6} variant={'h6'}>Ratings</Typography>
+						<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>{imdbRating}</Typography>
+					</StyledExpansionPanelSummary>
+					<StyledExpansionPanelDetails style={styles.padding}>{ratings}</StyledExpansionPanelDetails>
+				</StyledExpansionPanel>
 
 				{userEmail === "m141084@gmail.com" &&
-					<ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')} className={"tabsPanel"}>
-						<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-							<Typography style={styles.h6} variant={'h6'}>Downloads</Typography>
-							<Typography style={styles.autoMg} variant={'subtitle2'}>Torrents & Subtitles</Typography>
-						</ExpansionPanelSummary>
-						<ExpansionPanelDetails style={styles.flexWrapPadding}>{torrents}</ExpansionPanelDetails>
+					<StyledExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')} className={"tabsPanel"}>
+						<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+							<Typography color="inherit" style={styles.h6} variant={'h6'}>Downloads</Typography>
+							<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>Torrents & Subtitles</Typography>
+						</StyledExpansionPanelSummary>
+						<StyledExpansionPanelDetails style={styles.flexWrapPadding}>{torrents}</StyledExpansionPanelDetails>
 						<Divider variant={'middle'}></Divider>
-						<ExpansionPanelDetails style={styles.flexWrapPadding}>{subtitles}</ExpansionPanelDetails>
-					</ExpansionPanel>}
+						<StyledExpansionPanelDetails style={styles.flexWrapPadding}>{subtitles}</StyledExpansionPanelDetails>
+					</StyledExpansionPanel>}
 
 			</div >
 		);

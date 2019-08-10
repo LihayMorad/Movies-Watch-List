@@ -10,21 +10,38 @@
     margin: 10px 8px !important;
 }
 
+.MenuElement label {
+    color: inherit;
+}
+
+.MenuElement div {
+    color: inherit;
+}
+
+.MenuElement fieldset {
+    border-color: #ffffffbf !important;
+}
+
+.MenuElement fieldset:hover {
+    border-color: white !important;
+}
+
 #menuAddMovie {
     margin-top: 10px;
 }
 
-#showWatchedMovies {
+#showWatchedMoviesSwitch {
+    color: inherit;
     max-width: 100px;
-    border: 1px solid rgba(0, 0, 0, 0.23);
+    border: 1px solid #ffffffbf;
     border-radius: 4px;
     transition: border-color 0.2s ease-out;
 }
 
-#showWatchedMovies:hover {
-    border-color: rgba(0, 0, 0, 0.87);
+#showWatchedMoviesSwitch:hover {
+    border-color: white;
 }
 
-#showWatchedMovies button {
-    padding: 3px 11px 3px 7px;;
+#showWatchedMoviesSwitch button {
+    padding: 3px 11px 3px 7px;
 }

@@ -1,6 +1,7 @@
 .ratingsText {
     margin: 0 auto !important;
     padding: 5px;
+    color: inherit !important;
 }
 
 .downloadSitesLinks {
@@ -14,8 +15,18 @@
 }
 
 .tabsPanel {
-    border-Top: solid 1px dodgerblue;
+    border: 1px solid #ffffff24;
+    border-top: solid 1px white;
     border-radius: 10px !important;
+    background-color: #0000001c !important;
+}
+
+.tabsPanel a {
+    color: #00e8c4ed;
+}
+
+.tabsPanel a:visited {
+    color: #d300ff;
 }
 
 .tabsPanel::before {

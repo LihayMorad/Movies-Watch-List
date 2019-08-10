@@ -1,17 +1,19 @@
 .movieCard {
     width: 300px;
     margin: 20px 20px;
-    /* background: linear-gradient(45deg, #2196F3 30%, #21CBF3 90%); */
+    box-shadow: 0px 1px 20px 5px rgba(0, 0, 0, 0.68) !important;
+    border-radius: 10px !important;
+    background-color: #00000026 !important;
+    transition-duration: 0.3s;
 }
 
-.MuiPaper-elevation1-58 {
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2), 0px 1px 2px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12) !important;
+.movieCard:hover, .movieCard:focus, .movieCard:active {
+    transform: scale(1.02);
 }
 
 .movieCardContentImgDiv {
     height: 460px;
     display: flex;
-    background: radial-gradient(ellipse at center, #21CBF3 10%, #2196F3 80%);
     border-radius: 0px 0px 15px 15px;
 }
 
@@ -36,7 +38,6 @@
     justify-content: space-evenly;
     min-height: 207px;
     padding: 8px 5px;
-    background: radial-gradient(ellipse at center, #21CBF3 10%, #2196F3 80%);
     border-radius: 15px;
 }
 
@@ -48,6 +49,15 @@
     flex: auto;
 }
 
+.movieCardContentTextDiv h4 {
+    color: inherit;
+}
+
+.movieCardContentTextDiv h5 {
+    color: inherit;
+    direction: rtl;
+}
+
 .movieCardContentTextDiv p {
     font-size: 14px;
     font-weight: 600;
@@ -57,10 +67,6 @@
 
 .movieCardContentTextDiv span {
     display: inline-block;
-}
-
-.movieCardContentTextDiv h5 {
-    direction: rtl;
 }
 
 .movieCardContentTextDiv #commentsSpan {
@@ -76,7 +82,7 @@
 }
 
 .movieCardFab {
-    margin: 0px 10px 7px 10px !important;
+    margin: 7px 10px 13px !important;
 }
 
 .movieCardFab span {

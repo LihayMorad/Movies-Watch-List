@@ -6,12 +6,12 @@ import * as actionTypes from '../../store/actions';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import MovieAddModal from '../Movie/MovieAddModal/MovieAddModal';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
@@ -22,8 +22,13 @@ import './UserMenu.css';
 
 const StyledFormControlLabel = withStyles({
     root: { maxWidth: '100px', marginRight: '0' },
-    label: { fontSize: '0.7rem', fontWeight: '500' }
+    label: { fontSize: '0.7rem', fontWeight: '500', color: 'white !important' }
 })(FormControlLabel);
+
+const StyledInputLabel = withStyles({ root: { color: 'inherit !important', '&:focus': { color: 'inherit !important' } } })(InputLabel);
+const StyledSelect = withStyles({ icon: { color: 'inherit' } })(Select);
+const StyledOutlinedInput = withStyles({ notchedOutline: { borderColor: '#ffffffbf !important', '&:focus': { borderColor: 'white !important' } } })(OutlinedInput);
+const StyledSwitch = withStyles({ switchBase: { color: 'grey' }, checked: { color: 'white' }, })(Switch);
 
 class UserMenu extends Component {
 
@@ -45,27 +50,27 @@ class UserMenu extends Component {
         return (
 
             <form>
-                <div className={"Menu"}>
-                    <FormControl id="sortByFilter" className={"MenuElement"} variant="outlined">
-                        <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
-                        <Select
+                <div className="Menu">
+                    <FormControl id="sortByFilter" className="MenuElement" variant="outlined">
+                        <StyledInputLabel htmlFor="sortFilter">Sort by</StyledInputLabel>
+                        <StyledSelect
                             value={this.state.filter}
                             onChange={this.handleFilterChange}
-                            input={<OutlinedInput
+                            input={<StyledOutlinedInput
                                 labelWidth={52}
                                 name="filter"
                                 id="sortFilter"
                             />}
                             autoWidth >
-                            <MenuItem value={"releaseYear"}><em>Year</em></MenuItem>
-                            <MenuItem value={"nameEng"}>English Name</MenuItem>
-                            <MenuItem value={"nameHeb"}>Hebrew Name</MenuItem>
-                        </Select>
+                            <MenuItem value="releaseYear"><em>Year</em></MenuItem>
+                            <MenuItem value="nameEng">English Name</MenuItem>
+                            <MenuItem value="nameHeb">Hebrew Name</MenuItem>
+                        </StyledSelect>
                     </FormControl>
 
-                    <FormControl id="orderByFilter" className={"MenuElement"} variant="outlined">
-                        <InputLabel htmlFor="orderBy">Order by</InputLabel>
-                        <Select
+                    <FormControl id="orderByFilter" className="MenuElement" variant="outlined">
+                        <StyledInputLabel htmlFor="orderBy">Order by</StyledInputLabel>
+                        <StyledSelect
                             value={this.state.order}
                             onChange={this.handleFilterChange}
                             input={<OutlinedInput
@@ -73,14 +78,14 @@ class UserMenu extends Component {
                                 name="order" id="orderBy"
                             />}
                             autoWidth >
-                            <MenuItem value={"descending"}><em>Descending</em></MenuItem>
-                            <MenuItem value={"ascending"}>Ascending</MenuItem>
-                        </Select>
+                            <MenuItem value="descending"><em>Descending</em></MenuItem>
+                            <MenuItem value="ascending">Ascending</MenuItem>
+                        </StyledSelect>
                     </FormControl>
 
-                    <FormControl id="menuYear" className={"MenuElement"} variant="outlined">
-                        <InputLabel htmlFor="showYear">Year</InputLabel>
-                        <Select
+                    <FormControl id="menuYear" className="MenuElement" variant="outlined">
+                        <StyledInputLabel htmlFor="showYear">Year</StyledInputLabel>
+                        <StyledSelect
                             value={this.state.year}
                             onChange={this.handleFilterChange}
                             input={<OutlinedInput
@@ -88,15 +93,15 @@ class UserMenu extends Component {
                                 name="year" id="showYear"
                             />}
                             autoWidth >
-                            <MenuItem value={"All"}><em>{"All"}</em></MenuItem>
+                            <MenuItem value="All"><em>"All"</em></MenuItem>
                             {years}
 
-                        </Select>
+                        </StyledSelect>
                     </FormControl>
 
-                    <FormControl id="menuMaxResults" className={"MenuElement"} variant="outlined">
-                        <InputLabel htmlFor="maxResults">Results</InputLabel>
-                        <Select
+                    <FormControl id="menuMaxResults" className="MenuElement" variant="outlined">
+                        <StyledInputLabel htmlFor="maxResults">Results</StyledInputLabel>
+                        <StyledSelect
                             value={this.state.maxResults}
                             onChange={this.handleFilterChange}
                             name="maxResults"
@@ -107,8 +112,7 @@ class UserMenu extends Component {
                                     name="filter"
                                     id="sortFilter"
                                 />
-                            }
-                        >
+                            }>
                             <MenuItem value={1000}>All</MenuItem>
                             <MenuItem value={5}><em>5</em></MenuItem>
                             <MenuItem value={10}>10</MenuItem>
@@ -116,16 +120,16 @@ class UserMenu extends Component {
                             <MenuItem value={20}>20</MenuItem>
                             <MenuItem value={25}>25</MenuItem>
                             <MenuItem value={50}>50</MenuItem>
-                        </Select>
+                        </StyledSelect>
                     </FormControl>
 
-                    <FormControl id="showWatchedMovies" className="MenuElement">
+                    <FormControl id="showWatchedMoviesSwitch" className="MenuElement">
                         <ButtonBase>
                             <StyledFormControlLabel
                                 control={
-                                    <Switch
-                                        name="showWatchedMovies"
-                                        color="primary"
+                                    <StyledSwitch
+                                        name="showWatchedMoviesSwitch"
+                                        color="default"
                                         checked={this.props.showWatchedMovies}
                                         onChange={this.props.onToggleWatchedMovies}
                                     />}
@@ -136,7 +140,7 @@ class UserMenu extends Component {
                     </FormControl>
 
 
-                    <Button className={"MenuElement"} variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
+                    <Button className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
                         <MovieFilterIcon />&nbsp;Apply
                     </Button>
 
