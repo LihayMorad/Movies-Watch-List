@@ -1,6 +1,7 @@
 .DialogTitleDiv {
     display: flex;
     margin: auto;
+    color: black;
 }
 
 .DialogTitleDiv button {
@@ -20,10 +21,15 @@
 }
 
 #TrailerModalActions {
-    margin: 0;
+    margin: 10px;
+    color: black;
+}
+
+#TrailerModalActions span {
+    margin: 0 auto 0 10px;
 }
 
 #TrailerModalActions button {
-    margin: 0;
-    padding: 10px;
+    float: right;
+    padding: 1px 0 0 0;
 }

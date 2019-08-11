@@ -57,7 +57,7 @@ class MovieTrailerModal extends Component {
 				onEnter={this.getTrailer}
 				onClose={this.props.toggle}>
 
-				<div className={"DialogTitleDiv"}>
+				<div className="DialogTitleDiv">
 					<DialogTitle id="scroll-dialog-title">{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>
 					<IconButton color="inherit" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
 				</div>
@@ -66,7 +66,7 @@ class MovieTrailerModal extends Component {
 					? <div className={"DialogContentYoutubeDivWrapper"}>
 						<iframe
 							src={`https://www.youtube.com/embed/${trailerId}?autoplay=0`}
-							allow={"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"}
+							allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
 							allowFullScreen
 							frameBorder="0"
 							title="Movie Trailer">
@@ -75,8 +75,9 @@ class MovieTrailerModal extends Component {
 					: <LoadingSpinner />
 				}
 
-				<DialogActions id={"TrailerModalActions"}>
-					<Button color="inherit" onClick={this.props.toggle}>Close</Button>
+				<DialogActions id="TrailerModalActions">
+					<span>based on Youtube search results</span>
+					<Button onClick={this.props.toggle}>Close</Button>
 				</DialogActions>
 
 			</StyledDialog>

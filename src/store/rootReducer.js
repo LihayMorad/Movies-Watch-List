@@ -4,7 +4,8 @@ const initialState = {
     isSnackbarOpen: false,
     snackbarMessage: "",
     snackbarType: "default",
-    showWatchedMovies: false
+    showWatchedMovies: false,
+    loadingMovies: false
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -24,6 +25,20 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 showWatchedMovies: !state.showWatchedMovies
             };
+
+        case actionTypes.TOGGLE_LOADING_MOVIES:
+            return {
+                ...state,
+                loadingMovies: action.payload
+            };
+
+        case actionTypes.SAVE_MOVIES:
+            return {
+                ...state,
+                movies: action.payload,
+                loadingMovies: false
+            };
+
 
         default:
             return { ...state };

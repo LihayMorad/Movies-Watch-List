@@ -32,7 +32,7 @@ const styles = { "cardContent": { padding: '0px' } };
 class Movie extends Component {
 
 	state = {
-		nameHeb: "", nameEng: "", releaseYear: "", comments: "", dbID: "", watched: false,
+		nameHeb: "", nameEng: "", Year: "", comments: "", dbMovieID: "", watched: false,
 		loading: true, Error: false,
 		watchingTrailer: false, editingComments: false
 	}
@@ -63,7 +63,7 @@ class Movie extends Component {
 	toggleEditComments = () => { this.setState(state => ({ editingComments: !state.editingComments })) };
 
 	handleComments = comments => {
-		database.ref(`/mymovies/${this.props.userID}/${this.props.dbID}`).update({ Comments: comments }, (error) => {
+		database.ref(`/mymovies/${this.props.userID}/${this.props.dbMovieID}`).update({ Comments: comments }, (error) => {
 			const message = !error
 				? "Personal note saved successfully"
 				: "There was an error saving the note";
@@ -74,7 +74,7 @@ class Movie extends Component {
 
 	toggleMovieWatched = e => {
 		const { checked } = e.target;
-		database.ref(`/mymovies/${this.props.userID}/${this.props.dbID}`).update({ Watched: checked }, (error) => {
+		database.ref(`/mymovies/${this.props.userID}/${this.props.dbMovieID}`).update({ Watched: checked }, (error) => {
 			const message = !error
 				? `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`
 				: "There was an error marking the movie as watched";
@@ -117,7 +117,7 @@ class Movie extends Component {
 									<Typography variant="h5"> {this.state.nameHeb} </Typography>
 									{!movieDBError
 										? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
-										: <p>{this.state.releaseYear}</p>}
+										: <p>{this.state.Year}</p>}
 									{this.state.comments
 										? <p>Personal note: <span id="commentsSpan">{this.state.comments}</span></p>
 										: ""}
@@ -145,29 +145,30 @@ class Movie extends Component {
 					}
 				</CardActions>
 
-				<MovieTrailerModal
-					isOpen={this.state.watchingTrailer}
-					toggle={this.toggleWatchTrailer}
-					searchParams={!movieDBError
-						? `${this.state.Title} ${this.state.Year}`
-						: `${this.state.nameEng} ${this.state.releaseYear}`} />
-
-				<Fab className="movieCardFab" color="primary" title="Add/Edit movie's personal note" size="small"
+				<Fab className="movieCardFab" color="primary" size="small" title="Add/Edit movie's personal note"
 					onClick={this.toggleEditComments} >
 					<Icon>edit_icon</Icon>
 				</Fab>
 
 				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}>
-					<Checkbox style={{ height: 'inherit' }} checked={this.state.watched}
+					<Checkbox style={{ height: 'inherit' }}
+						checked={this.state.watched || false}
 						icon={< RemoveRedEyeOutlined fontSize="large" color="action" />}
 						checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
 						onChange={this.toggleMovieWatched} />
 				</Fab>
 
-				<Fab className="movieCardFab" color="secondary" title="Delete movie" size="small"
-					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbID); } }} >
+				<Fab className="movieCardFab" color="secondary" size="small" title="Delete movie"
+					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID); } }} >
 					<DeleteIcon />
 				</Fab>
+
+				<MovieTrailerModal
+					isOpen={this.state.watchingTrailer}
+					toggle={this.toggleWatchTrailer}
+					searchParams={!movieDBError
+						? `${this.state.Title} ${this.state.Year}`
+						: `${this.state.nameEng} ${this.state.Year}`} />
 
 				<MovieCommentsModal
 					isOpen={this.state.editingComments}

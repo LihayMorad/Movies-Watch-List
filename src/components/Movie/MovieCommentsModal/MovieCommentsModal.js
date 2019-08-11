@@ -14,12 +14,14 @@ const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 class movieCommentsModal extends Component {
 
     state = {
-        comments: this.props.comments || ""
+        comments: this.props.comments || "",
+        commentsChanged: false
     }
 
-    handleChange = e => { this.setState({ comments: e.target.value }); }
+    handleChange = e => { this.setState({ comments: e.target.value, commentsChanged: true }); }
 
     render() {
+        const { commentsChanged } = this.state;
 
         return (
             <StyledDialog
@@ -31,7 +33,7 @@ class movieCommentsModal extends Component {
                 <DialogTitle>Movie note</DialogTitle>
 
                 <DialogContent>
-                    <DialogContentText>You can edit your personal note below.</DialogContentText>
+                    <DialogContentText>Edit your personal note below.</DialogContentText>
                     <TextField
                         id="comments"
                         multiline
@@ -44,7 +46,7 @@ class movieCommentsModal extends Component {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button color="primary" onClick={() => { this.props.handleComments(this.state.comments) }}>Save</Button>
+                    <Button color="primary" onClick={() => { this.props.handleComments(commentsChanged ? this.state.comments : this.props.comments) }}>Save</Button>
                 </DialogActions>
 
             </StyledDialog>

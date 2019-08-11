@@ -22,10 +22,6 @@
     border-color: #ffffffbf !important;
 }
 
-.MenuElement fieldset:hover {
-    border-color: white !important;
-}
-
 #menuAddMovie {
     margin-top: 10px;
 }
@@ -40,4 +36,37 @@
 
 #showWatchedMoviesSwitch button {
     padding: 3px 11px 3px 7px;
+}
+
+@media only screen and (max-width: 700px) {
+    #accountMenu #loggedInName {
+        display: none;
+    }
+}
+
+#accountMenu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 30px;
+    cursor: pointer;
+    color: inherit;
+}
+
+#loggedInBtn {
+    color: white;
+    background-color: forestgreen;
+}
+
+#scrollToMenu {
+    position: sticky;
+    margin: 15px auto;
+    bottom: 15px;
+    right: 0;
+    left: 0;
+    background-color: black;
+}
+
+.btnPadding {
+    padding: 6px 8px !important;
 }
