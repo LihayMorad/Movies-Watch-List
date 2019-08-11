@@ -17,6 +17,7 @@
     right: 0;
     font-size: 30px;
     cursor: pointer;
+    color: inherit;
 }
 
 #loggedInBtn {

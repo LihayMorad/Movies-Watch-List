@@ -37,6 +37,7 @@
     flex-direction: column;
     justify-content: space-evenly;
     min-height: 207px;
+    margin: 8px auto;
     padding: 8px 5px;
     border-radius: 15px;
 }
@@ -51,6 +52,8 @@
 
 .movieCardContentTextDiv h4 {
     color: inherit;
+    font-size: 2.425rem;
+    word-break: break-word;
 }
 
 .movieCardContentTextDiv h5 {

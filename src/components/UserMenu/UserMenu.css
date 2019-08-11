@@ -38,10 +38,6 @@
     transition: border-color 0.2s ease-out;
 }
 
-#showWatchedMoviesSwitch:hover {
-    border-color: white;
-}
-
 #showWatchedMoviesSwitch button {
     padding: 3px 11px 3px 7px;
 }
