@@ -11,9 +11,11 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
-import Fade from '@material-ui/core/Fade';
+import Grow from '@material-ui/core/Grow';
 
 import { grey, green, red, blue, amber } from '@material-ui/core/colors';
+
+import './Snackbar.css';
 
 const snackbarStyles = {
     "default": {
@@ -54,18 +56,19 @@ const simpleSnackbar = props => {
             onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             autoHideDuration={4000}
-            TransitionComponent={Fade}>
+            TransitionComponent={Grow}>
             <SnackbarContent
                 style={{ backgroundColor: color }}
-                message={<span style={{ display: 'flex', alignItems: 'center' }}>{icon}&nbsp;{message}</span>}
+                message={<span id="snackbarMessage" >{icon}&nbsp;{message}</span>}
                 action={[
                     <IconButton
+                        id="snackbarCloseBtn"
                         key="close"
                         color="inherit"
                         onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
-                ]}/>
+                ]} />
         </Snackbar>
 
     );

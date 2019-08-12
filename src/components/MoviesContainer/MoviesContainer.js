@@ -108,9 +108,7 @@ class MoviesContainer extends PureComponent {
 
 }
 
-const mapStateToProps = state => {
-    return state;
-}
+const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
     onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),

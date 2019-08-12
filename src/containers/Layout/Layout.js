@@ -9,8 +9,6 @@ import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
 import TrackVisibility from 'react-on-screen';
 
-import './Layout.css';
-
 class Layout extends Component {
 
     state = {

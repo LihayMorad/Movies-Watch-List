@@ -21,15 +21,15 @@
 }
 
 #TrailerModalActions {
-    margin: 10px;
+    margin: 4px;
     color: black;
 }
 
-#TrailerModalActions span {
-    margin: 0 auto 0 10px;
+#TrailerModalActions p {
+    margin: 2px auto 0px 8px;
 }
 
 #TrailerModalActions button {
-    float: right;
+    margin: 0;
     padding: 1px 0 0 0;
 }

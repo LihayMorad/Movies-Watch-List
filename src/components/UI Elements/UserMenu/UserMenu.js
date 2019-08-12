@@ -37,8 +37,8 @@ const StyledFormControlLabel = withStyles({
 })(FormControlLabel);
 
 const StyledInputLabel = withStyles({ root: { color: 'inherit !important', '&:focus': { color: 'inherit !important' } } })(InputLabel);
-const StyledSelect = withStyles({ root: { paddingRight: '15px !important' }, icon: { color: 'inherit' } })(Select);
-const StyledOutlinedInput = withStyles({ notchedOutline: { borderColor: '#ffffffbf !important', '&:focus': { borderColor: 'white !important' } } })(OutlinedInput);
+const StyledSelect = withStyles({ icon: { color: 'inherit' } })(Select);
+const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 12px' }, notchedOutline: { borderColor: '#ffffffbf !important', '&:focus': { borderColor: 'white !important' }, } })(OutlinedInput);
 const StyledSwitch = withStyles({ switchBase: { color: 'grey' }, checked: { color: 'white' }, })(Switch);
 
 class UserMenu extends Component {
@@ -47,7 +47,6 @@ class UserMenu extends Component {
         filter: "releaseYear",
         order: "descending",
         year: "All",
-
         maxResults: 5,
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
         accountMenuAnchorEl: null,
@@ -113,23 +112,18 @@ class UserMenu extends Component {
             const user = firebase.auth().currentUser;
             const userID = user.uid;
             const isLoggedIn = !!user;
-            if (year === "All") {
-                database.ref('/mymovies/' + userID).orderByChild(filterToShow).limitToLast(this.state.maxResults)
-                    .on('value',
-                        response => { this.handleFirebaseData(response, filterToShow, order, year); },
-                        error => {
-                            this.props.toggleLoadingMovies(false);
-                            isLoggedIn && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
-                        })
-            } else {
-                database.ref('/mymovies/' + userID).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
-                    .on('value',
-                        response => { this.handleFirebaseData(response, filterToShow, order, year); },
-                        error => {
-                            this.props.toggleLoadingMovies(false);
-                            isLoggedIn && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
-                        });
-            }
+            let onValue = null;
+
+            year === "All"
+                ? onValue = database.ref('/mymovies/' + userID).orderByChild(filterToShow).limitToLast(this.state.maxResults)
+                : onValue = database.ref('/mymovies/' + userID).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
+
+            onValue.on('value',
+                response => { this.handleFirebaseData(response, filterToShow, order, year); },
+                error => {
+                    this.props.toggleLoadingMovies(false);
+                    isLoggedIn && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
+                })
         });
     }
 
@@ -149,6 +143,7 @@ class UserMenu extends Component {
 
     setMoviesToWatch = moviesData => {
         let years = new Set([...this.state.years]);
+        moviesData.forEach(movie => { years.add(movie['Year']); })
 
         if (!this.props.showWatchedMovies) { moviesData = moviesData.filter(movie => !movie.Watched); }
 
@@ -286,7 +281,7 @@ class UserMenu extends Component {
                             <StyledSelect
                                 value={this.state.order}
                                 onChange={this.handleFilterChange}
-                                input={<OutlinedInput labelWidth={60} name="order" id="orderBy" />}
+                                input={<StyledOutlinedInput labelWidth={60} name="order" id="orderBy" />}
                                 autoWidth >
                                 <MenuItem value="descending"><em>Descending</em></MenuItem>
                                 <MenuItem value="ascending">Ascending</MenuItem>
@@ -298,11 +293,10 @@ class UserMenu extends Component {
                             <StyledSelect
                                 value={this.state.year}
                                 onChange={this.handleFilterChange}
-                                input={<OutlinedInput labelWidth={33} name="year" id="showYear" />}
+                                input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
                                 autoWidth >
                                 <MenuItem value="All"><em>All</em></MenuItem>
                                 {years}
-
                             </StyledSelect>
                         </FormControl>
 
@@ -311,14 +305,12 @@ class UserMenu extends Component {
                             <StyledSelect
                                 value={this.state.maxResults}
                                 onChange={this.handleFilterChange}
-                                name="maxResults"
-                                inputProps={{ id: 'maxResults' }}
-                                input={<OutlinedInput labelWidth={54} name="filter" id="sortFilter" />}
+                                input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
                                 autoWidth>
                                 <MenuItem value={1000}>All</MenuItem>
                                 <MenuItem value={5}><em>5</em></MenuItem>
                                 <MenuItem value={10}>10</MenuItem>
-                                <MenuItem value={10}>15</MenuItem>
+                                <MenuItem value={15}>15</MenuItem>
                                 <MenuItem value={20}>20</MenuItem>
                                 <MenuItem value={25}>25</MenuItem>
                                 <MenuItem value={50}>50</MenuItem>
@@ -342,7 +334,7 @@ class UserMenu extends Component {
 
                         <Button className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
                             <MovieFilterIcon />&nbsp;Apply
-                            </Button>
+                        </Button>
 
                     </div>
 
@@ -364,10 +356,7 @@ class UserMenu extends Component {
 
 };
 
-const mapStateToProps = state => {
-    // console.log("User Menu store ", state);
-    return state;
-}
+const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
     saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),

@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import LoadingSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
@@ -76,7 +77,7 @@ class MovieTrailerModal extends Component {
 				}
 
 				<DialogActions id="TrailerModalActions">
-					<span>based on Youtube search results</span>
+					<Typography variant="body1" align="left">*based on Youtube search results</Typography>
 					<Button onClick={this.props.toggle}>Close</Button>
 				</DialogActions>
 
