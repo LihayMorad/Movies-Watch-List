@@ -46,8 +46,8 @@ class MovieTrailerModal extends Component {
 	}
 
 	handleClose = () => {
-		this.setState({ trailerId: "", trailerTitle: "", });
-		this.props.toggle("");
+		this.setState({ trailerId: "", trailerTitle: "" });
+		this.props.toggle();
 	}
 
 	render() {

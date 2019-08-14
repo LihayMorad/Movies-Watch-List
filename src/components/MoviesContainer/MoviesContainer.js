@@ -6,6 +6,7 @@ import * as actionTypes from '../../store/actions';
 
 import Movie from '../Movie/Movie';
 import MovieTrailerModal from '../UI Elements/MovieTrailerModal/MovieTrailerModal';
+import MovieCommentsModal from '../UI Elements/MovieCommentsModal/MovieCommentsModal';
 import InformationDialog from './InformationDialog/InformationDialog';
 import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
 
@@ -16,6 +17,7 @@ class MoviesContainer extends PureComponent {
     state = {
         showInformationDialog: false, informationDialogTitle: "",
         watchingTrailer: false, searchParams: "",
+        editingComments: false, comments: ""
     }
 
     toggleInformationDialog = () => {
@@ -47,11 +49,25 @@ class MoviesContainer extends PureComponent {
             })
     }
 
-    toggleWatchTrailer = searchParams => { this.setState(state => ({ searchParams, watchingTrailer: !state.watchingTrailer })); };
+    toggleWatchTrailer = (searchParams = "") => { this.setState(state => ({ searchParams, watchingTrailer: !state.watchingTrailer })); };
+
+    toggleEditComments = (comments = "", userID = "", dbMovieID = "") => {
+        this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments }))
+    };
+
+    handleEditComments = comments => {
+        database.ref(`/mymovies/${this.state.userID}/${this.state.dbMovieID}`).update({ Comments: comments }, (error) => {
+            const message = !error
+                ? "Personal note saved successfully"
+                : "There was an error saving the note";
+            this.setState({ comments: comments, editingComments: false },
+                () => { this.props.onSnackbarToggle(true, message, !error ? "information" : "error"); });
+        });
+    }
 
     render() {
-        const { showInformationDialog, informationDialogTitle } = this.state;
 
+        const { showInformationDialog, informationDialogTitle } = this.state;
         let moviesContainer = null;
         let loggedOutMessage = null;
         const firebaseUser = firebase.auth().currentUser;
@@ -73,7 +89,8 @@ class MoviesContainer extends PureComponent {
                     comments={movie['Comments']}
                     watched={movie['Watched']}
                     delete={this.handleMovieDelete}
-                    toggleWatchTrailer={this.toggleWatchTrailer} />
+                    toggleWatchTrailer={this.toggleWatchTrailer}
+                    toggleEditComments={this.toggleEditComments} />
             ));
 
             moviesContainer = !loadingMovies
@@ -108,6 +125,12 @@ class MoviesContainer extends PureComponent {
                     isOpen={this.state.watchingTrailer}
                     toggle={this.toggleWatchTrailer}
                     searchParams={this.state.searchParams} />
+
+                <MovieCommentsModal
+                    isOpen={this.state.editingComments}
+                    toggle={this.toggleEditComments}
+                    comments={this.state.comments}
+                    handleEditComments={this.handleEditComments} />
 
             </div >
         );

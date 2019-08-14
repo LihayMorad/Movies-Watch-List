@@ -18,17 +18,25 @@ class movieCommentsModal extends Component {
         commentsChanged: false
     }
 
+    componentDidUpdate(prevProps) { if (prevProps.comments !== this.props.comments) this.setState({ comments: this.props.comments }); }
+
     handleChange = e => { this.setState({ comments: e.target.value, commentsChanged: true }); }
 
+    handleClose = () => {
+        this.setState({ commentsChanged: false });
+        this.props.toggle();
+    }
+
     render() {
+
         const { commentsChanged } = this.state;
 
         return (
             <StyledDialog
                 open={this.props.isOpen}
-                onClose={this.props.toggle}
+                onClose={this.handleClose}
                 fullWidth
-                maxWidth="md">
+                maxWidth="md" >
 
                 <DialogTitle>Movie note</DialogTitle>
 
@@ -40,13 +48,14 @@ class movieCommentsModal extends Component {
                         autoFocus
                         margin="dense"
                         type="text"
-                        defaultValue={this.props.comments}
+                        value={commentsChanged ? this.state.comments : this.props.comments}
                         onChange={this.handleChange}
                         fullWidth />
                 </DialogContent>
 
                 <DialogActions>
-                    <Button color="primary" onClick={() => { this.props.handleComments(commentsChanged ? this.state.comments : this.props.comments) }}>Save</Button>
+                    <Button color="primary"
+                        onClick={() => { this.props.handleEditComments(commentsChanged ? this.state.comments : this.props.comments) }}>Save</Button>
                 </DialogActions>
 
             </StyledDialog>

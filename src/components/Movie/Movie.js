@@ -14,7 +14,6 @@ import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Icon from '@material-ui/core/Icon';
 import MovieTabs from './MovieTabs/MovieTabs';
-import MovieCommentsModal from './MovieCommentsModal/MovieCommentsModal'
 import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
@@ -30,11 +29,12 @@ class Movie extends Component {
 
 	state = {
 		nameHeb: "", nameEng: "", Year: "", comments: "", dbMovieID: "", watched: false,
-		loading: true, Error: false,
-		editingComments: false
+		loading: true, Error: false
 	}
 
 	componentDidMount() { this.setState({ ...this.props }, this.getMovieDb); }
+
+	componentDidUpdate(prevProps) { if (prevProps.comments !== this.props.comments) this.setState({ comments: this.props.comments }); }
 
 	getMovieDb = () => {
 		this.setState({ loading: true }, async () => {
@@ -52,18 +52,6 @@ class Movie extends Component {
 			} catch (error) {
 				this.setState({ loading: false, Error: true });
 			}
-		});
-	}
-
-	toggleEditComments = () => { this.setState(state => ({ editingComments: !state.editingComments })) };
-
-	handleComments = comments => {
-		database.ref(`/mymovies/${this.props.userID}/${this.props.dbMovieID}`).update({ Comments: comments }, (error) => {
-			const message = !error
-				? "Personal note saved successfully"
-				: "There was an error saving the note";
-			this.setState({ comments: comments, editingComments: false },
-				() => { this.props.onSnackbarToggle(true, message, !error ? "information" : "error"); });
 		});
 	}
 
@@ -142,7 +130,7 @@ class Movie extends Component {
 				</CardActions>
 
 				<Fab className="movieCardFab" color="primary" size="small" title="Add/Edit movie's personal note"
-					onClick={this.toggleEditComments} >
+					onClick={() => { this.props.toggleEditComments(this.state.comments, this.state.userID, this.state.dbMovieID); }} >
 					<Icon>edit_icon</Icon>
 				</Fab>
 
@@ -158,12 +146,6 @@ class Movie extends Component {
 					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID); } }} >
 					<DeleteIcon />
 				</Fab>
-
-				<MovieCommentsModal
-					isOpen={this.state.editingComments}
-					toggle={this.toggleEditComments}
-					handleComments={this.handleComments}
-					comments={this.state.comments} />
 
 			</Card>
 

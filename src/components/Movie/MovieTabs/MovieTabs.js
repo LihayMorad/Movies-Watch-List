@@ -102,7 +102,7 @@ class MovieTabs extends PureComponent {
 						<StyledTypographyMg color="inherit" variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
 					</StyledExpansionPanelSummary>
 					<StyledExpansionPanelDetails>
-						<StyledTypographyMg color="inherit" variant="body2">{actors.splice(1)}</StyledTypographyMg>
+						<StyledTypographyMg color="inherit" variant="body2">{actors.slice(1)}</StyledTypographyMg>
 					</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 

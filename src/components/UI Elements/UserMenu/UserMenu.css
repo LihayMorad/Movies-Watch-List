@@ -25,6 +25,7 @@
 #showWatchedMoviesSwitch {
     color: inherit;
     max-width: 100px;
+    box-sizing: border-box;
     border: 1px solid #ffffffbf;
     border-radius: 4px;
     transition: border-color 0.2s ease-out;
