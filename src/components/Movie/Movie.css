@@ -11,6 +11,10 @@
     transform: scale(1.02);
 }
 
+#movieCardContent { 
+    padding: 0px;
+}
+
 .movieCardContentImgDiv {
     height: 460px;
     display: flex;

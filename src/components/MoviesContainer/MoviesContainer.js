@@ -25,12 +25,12 @@ class MoviesContainer extends PureComponent {
     handleInformationDialogTitle = title => { this.setState({ informationDialogTitle: title }, () => { this.toggleInformationDialog(); }); }
 
     handleMovieDelete = movieID => {
-        let deletedMovieDetails = "";
+        let movieDetails = "";
         let updatedMovies = [...this.props.movies];
 
         updatedMovies = updatedMovies.filter(movie => {
             if (movieID === movie.key) {
-                deletedMovieDetails = `${movie.NameEng} (${movie.Year})`;
+                movieDetails = `${movie.NameEng} (${movie.Year})`;
                 return false;
             }
             return true;
@@ -38,11 +38,11 @@ class MoviesContainer extends PureComponent {
 
         database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${movieID}`).remove()
             .then(() => {
-                this.props.onSnackbarToggle(true, `'${deletedMovieDetails}' deleted successfully`, "success");
+                this.props.onSnackbarToggle(true, `The movie '${movieDetails}' deleted successfully`, "success");
                 this.props.saveMovies(updatedMovies);
             })
             .catch(() => {
-                this.props.onSnackbarToggle(true, `Error! Cannot delete '${deletedMovieDetails}'`, "error");
+                this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieDetails}'`, "error");
             })
     }
 

@@ -27,8 +27,6 @@ import youTubeIcon from '../../assets/youtube_social_icon_red.png';
 
 import './Movie.css';
 
-const styles = { "cardContent": { padding: '0px' } };
-
 class Movie extends Component {
 
 	state = {
@@ -94,7 +92,7 @@ class Movie extends Component {
 
 				<CardActionArea>
 
-					<CardContent style={styles.cardContent} title="Click to open trailer" onClick={this.toggleWatchTrailer}>
+					<CardContent id="movieCardContent" title="Click to open trailer" onClick={this.toggleWatchTrailer}>
 						<div className="movieCardContentImgDiv">
 							{!loading
 								? !movieDBError
