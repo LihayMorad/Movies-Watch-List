@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions';
 
 import Movie from '../Movie/Movie';
+import MovieTrailerModal from '../UI Elements/MovieTrailerModal/MovieTrailerModal';
 import InformationDialog from './InformationDialog/InformationDialog';
 import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
 
@@ -13,8 +14,8 @@ import './MoviesContainer.css';
 class MoviesContainer extends PureComponent {
 
     state = {
-        showInformationDialog: false,
-        informationDialogTitle: "",
+        showInformationDialog: false, informationDialogTitle: "",
+        watchingTrailer: false, searchParams: "",
     }
 
     toggleInformationDialog = () => {
@@ -46,8 +47,9 @@ class MoviesContainer extends PureComponent {
             })
     }
 
-    render() {
+    toggleWatchTrailer = searchParams => { this.setState(state => ({ searchParams, watchingTrailer: !state.watchingTrailer })); };
 
+    render() {
         const { showInformationDialog, informationDialogTitle } = this.state;
 
         let moviesContainer = null;
@@ -70,7 +72,8 @@ class MoviesContainer extends PureComponent {
                     userEmail={firebase.auth().currentUser.email}
                     comments={movie['Comments']}
                     watched={movie['Watched']}
-                    delete={this.handleMovieDelete} />
+                    delete={this.handleMovieDelete}
+                    toggleWatchTrailer={this.toggleWatchTrailer} />
             ));
 
             moviesContainer = !loadingMovies
@@ -100,6 +103,11 @@ class MoviesContainer extends PureComponent {
                     isOpen={showInformationDialog}
                     toggle={this.toggleInformationDialog}
                     dialogTitle={informationDialogTitle} /> */}
+
+                <MovieTrailerModal
+                    isOpen={this.state.watchingTrailer}
+                    toggle={this.toggleWatchTrailer}
+                    searchParams={this.state.searchParams} />
 
             </div >
         );

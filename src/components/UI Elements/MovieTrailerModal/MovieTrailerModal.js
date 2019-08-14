@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import LoadingSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
+import LoadingSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 import Zoom from '@material-ui/core/Zoom';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -33,7 +33,7 @@ class MovieTrailerModal extends Component {
 				if (youtubeSearchResponse.status === 200) {
 					this.setState({
 						trailerId: youtubeSearchResponse.data.items[0].id.videoId,
-						trailerTitle: this.props.searchParams + " Trailer",
+						trailerTitle: `${this.props.searchParams} Trailer`,
 						loading: false
 					});
 				} else {
@@ -43,6 +43,11 @@ class MovieTrailerModal extends Component {
 				this.setState({ searchError: error, loading: false });
 			}
 		});
+	}
+
+	handleClose = () => {
+		this.setState({ trailerId: "", trailerTitle: "", });
+		this.props.toggle("");
 	}
 
 	render() {
@@ -56,7 +61,7 @@ class MovieTrailerModal extends Component {
 				TransitionComponent={Zoom}
 				open={this.props.isOpen}
 				onEnter={this.getTrailer}
-				onClose={this.props.toggle}>
+				onClose={this.handleClose}>
 
 				<div className="DialogTitleDiv">
 					<DialogTitle id="scroll-dialog-title">{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>
@@ -64,7 +69,7 @@ class MovieTrailerModal extends Component {
 				</div>
 
 				{!loading
-					? <div className={"DialogContentYoutubeDivWrapper"}>
+					? <div className="DialogContentYoutubeDivWrapper">
 						<iframe
 							src={`https://www.youtube.com/embed/${trailerId}?autoplay=0`}
 							allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"

@@ -24,15 +24,11 @@ const subtitlesSites = [
 ];
 
 const StyledExpansionPanel = withStyles({ root: { color: 'inherit' } })(ExpansionPanel);
-const StyledExpansionPanelDetails = withStyles({ root: { color: 'inherit' } })(ExpansionPanelDetails);
+const StyledExpansionPanelDetails = withStyles({ root: { color: 'inherit', padding: '8px 10px' } })(ExpansionPanelDetails);
+const StyledExpansionPanelDetailsFlexWrap = withStyles({ root: { color: 'inherit', padding: '8px 10px', flexWrap: 'wrap' } })(ExpansionPanelDetails);
 const StyledExpansionPanelSummary = withStyles({ content: { color: 'inherit' }, expanded: { color: 'inherit' }, expandIcon: { color: 'inherit' } })(ExpansionPanelSummary);
-
-const styles = {
-	"h6": { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0', color: 'white' },
-	"autoMg": { margin: 'auto' },
-	"padding": { padding: '8px 10px' },
-	"flexWrapPadding": { padding: '8px 10px', flexWrap: 'wrap' }
-}
+const StyledTypographyH6 = withStyles({ root: { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0', color: 'white' } })(Typography);
+const StyledTypographyMg = withStyles({ root: { margin: 'auto' } })(Typography);
 
 class MovieTabs extends PureComponent {
 
@@ -44,22 +40,17 @@ class MovieTabs extends PureComponent {
 
 	render() {
 		const { expanded } = this.state;
-		let ratings = "";
-		const searchParams = `${this.props.title}+${this.props.year}`;
 		const { userEmail } = this.props;
+		const searchParams = `${this.props.title}+${this.props.year}`;
+		let ratings = "";
 
 		if (this.props.ratings) {
-			ratings = this.props.ratings.map(rating => (
-				<Typography key={rating.Source} className={"ratingsText"} variant={'body2'} >
-					{rating.Source}: {rating.Value}
-				</Typography>));
+			ratings = this.props.ratings.map(rating => <Typography key={rating.Source} className="ratingsText" variant="body2">
+				{rating.Source}: {rating.Value}</Typography>);
 		}
 
-		const imdbRating = <a href={`https://www.imdb.com/title/${this.props.imdbId}`} target={"_blank"} rel="noopener noreferrer">
-			{this.props.imdbRating === "N/A"
-				? "N/A"
-				: `IMDb: ${this.props.imdbRating}`}
-		</a>;
+		const imdbRating = <a href={`https://www.imdb.com/title/${this.props.imdbID}`} target="_blank" rel="noopener noreferrer">
+			IMDb: {this.props.imdbRating === "N/A" ? "N/A" : this.props.imdbRating}</a>;
 
 		const torrents = torrentsSites.map(site => {
 			let attributes = "";
@@ -71,7 +62,7 @@ class MovieTabs extends PureComponent {
 				case "KickassTorrents": attributes = `${site.url}${this.props.title} ${this.props.year}${site.urlExt}`; break;
 				default: return <p></p>;
 			}
-			return <a key={site.name} className={"downloadSitesLinks"} href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
+			return <a key={site.name} className="downloadSitesLinks" href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
 		});
 
 		const subtitles = subtitlesSites.map(site => {
@@ -79,59 +70,59 @@ class MovieTabs extends PureComponent {
 			switch (site.name) {
 				case "Subcenter":
 				case "ScrewZira": attributes = `${site.url}${this.props.title}`; break;
-				case "Wizdom": attributes = `${site.url}${this.props.imdbId}`; break;
+				case "Wizdom": attributes = `${site.url}${this.props.imdbID}`; break;
 				default: return <p></p>;
 			}
-			return <a key={site.name} className={"downloadSitesLinks"} href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
+			return <a key={site.name} className="downloadSitesLinks" href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
 		});
 
-		const actors = this.props.actors.split(',').map(actor => {
-			return <a key={actor.trim()} className={"actorsList"} href={`https://en.wikipedia.org/wiki/${actor}`} target="_blank" rel="noopener noreferrer"
+		const actors = this.props.actors.split(',').map(actor => (
+			<a key={actor.trim()} className="actorsList" href={`https://en.wikipedia.org/wiki/${actor}`} target="_blank" rel="noopener noreferrer"
 				onClick={e => e.stopPropagation()}> {actor.trim()}</a>
-		});
+		));
 
 		const mainActor = actors[0];
-		const fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbId}/fullcredits/`} target="_blank" rel="noopener noreferrer"
+		const fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbID}/fullcredits/`} target="_blank" rel="noopener noreferrer"
 			onClick={e => e.stopPropagation()}>more</a>;
 
 		return (
 			<div>
 
-				<StyledExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')} className={"tabsPanel"}>
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handleChange("panel1")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography color="inherit" style={styles.h6} variant={'h6'}>Plot</Typography>
-						<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>{this.props.genre}</Typography>
+						<StyledTypographyH6 color="inherit" variant="h6">Plot</StyledTypographyH6>
+						<StyledTypographyMg color="inherit" variant="subtitle2">{this.props.genre}</StyledTypographyMg>
 					</StyledExpansionPanelSummary>
-					<StyledExpansionPanelDetails style={styles.padding}>{this.props.plot ? this.props.plot : ""}</StyledExpansionPanelDetails>
+					<StyledExpansionPanelDetails>{this.props.plot || ""}</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				<StyledExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')} className={"tabsPanel"}>
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handleChange("panel2")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography color="inherit" style={styles.h6} variant={'h6'}>Cast</Typography>
-						<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>{mainActor}& {fullcast}</Typography>
+						<StyledTypographyH6 color="inherit" variant="h6">Cast</StyledTypographyH6>
+						<StyledTypographyMg color="inherit" variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
 					</StyledExpansionPanelSummary>
-					<StyledExpansionPanelDetails style={styles.padding}>
-						<Typography color="inherit" style={styles.autoMg} variant={'body2'}>{actors.splice(1)}</Typography>
+					<StyledExpansionPanelDetails>
+						<StyledTypographyMg color="inherit" variant="body2">{actors.splice(1)}</StyledTypographyMg>
 					</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				<StyledExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')} className={"tabsPanel"}>
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handleChange("panel3")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography color="inherit" style={styles.h6} variant={'h6'}>Ratings</Typography>
-						<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>{imdbRating}</Typography>
+						<StyledTypographyH6 color="inherit" variant="h6">Ratings</StyledTypographyH6>
+						<StyledTypographyMg color="inherit" variant="subtitle2">{imdbRating}</StyledTypographyMg>
 					</StyledExpansionPanelSummary>
-					<StyledExpansionPanelDetails style={styles.padding}>{ratings}</StyledExpansionPanelDetails>
+					<StyledExpansionPanelDetails>{ratings}</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
 				{userEmail === "m141084@gmail.com" &&
-					<StyledExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')} className={"tabsPanel"}>
+					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handleChange("panel4")} >
 						<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-							<Typography color="inherit" style={styles.h6} variant={'h6'}>Downloads</Typography>
-							<Typography color="inherit" style={styles.autoMg} variant={'subtitle2'}>Torrents & Subtitles</Typography>
+							<StyledTypographyH6 color="inherit" variant="h6">Downloads</StyledTypographyH6>
+							<StyledTypographyMg color="inherit" variant="subtitle2">Torrents & Subtitles</StyledTypographyMg>
 						</StyledExpansionPanelSummary>
-						<StyledExpansionPanelDetails style={styles.flexWrapPadding}>{torrents}</StyledExpansionPanelDetails>
-						<Divider variant={'middle'}></Divider>
-						<StyledExpansionPanelDetails style={styles.flexWrapPadding}>{subtitles}</StyledExpansionPanelDetails>
+						<StyledExpansionPanelDetailsFlexWrap>{torrents}</StyledExpansionPanelDetailsFlexWrap>
+						<Divider variant="middle"></Divider>
+						<StyledExpansionPanelDetailsFlexWrap>{subtitles}</StyledExpansionPanelDetailsFlexWrap>
 					</StyledExpansionPanel>}
 
 			</div >

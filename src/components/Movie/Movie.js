@@ -14,7 +14,6 @@ import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Icon from '@material-ui/core/Icon';
 import MovieTabs from './MovieTabs/MovieTabs';
-import MovieTrailerModal from './MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from './MovieCommentsModal/MovieCommentsModal'
 import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
@@ -32,7 +31,7 @@ class Movie extends Component {
 	state = {
 		nameHeb: "", nameEng: "", Year: "", comments: "", dbMovieID: "", watched: false,
 		loading: true, Error: false,
-		watchingTrailer: false, editingComments: false
+		editingComments: false
 	}
 
 	componentDidMount() { this.setState({ ...this.props }, this.getMovieDb); }
@@ -56,8 +55,6 @@ class Movie extends Component {
 		});
 	}
 
-	toggleWatchTrailer = () => { this.setState(state => ({ watchingTrailer: !state.watchingTrailer })) };
-
 	toggleEditComments = () => { this.setState(state => ({ editingComments: !state.editingComments })) };
 
 	handleComments = comments => {
@@ -66,7 +63,7 @@ class Movie extends Component {
 				? "Personal note saved successfully"
 				: "There was an error saving the note";
 			this.setState({ comments: comments, editingComments: false },
-				() => { this.props.onSnackbarToggle(true, message, !error ? "success" : "error"); });
+				() => { this.props.onSnackbarToggle(true, message, !error ? "information" : "error"); });
 		});
 	}
 
@@ -91,8 +88,8 @@ class Movie extends Component {
 			<Card className="movieCard" >
 
 				<CardActionArea>
-
-					<CardContent id="movieCardContent" title="Click to open trailer" onClick={this.toggleWatchTrailer}>
+					<CardContent id="movieCardContent" title="Click to watch trailer"
+						onClick={() => this.props.toggleWatchTrailer(!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.Year}`)}>
 						<div className="movieCardContentImgDiv">
 							{!loading
 								? !movieDBError
@@ -107,7 +104,9 @@ class Movie extends Component {
 								: <MovieSpinner />
 							}
 						</div>
+
 						<Divider variant="middle"></Divider>
+
 						<div className="movieCardContentTextDiv">
 							{!loading
 								? <div>
@@ -124,7 +123,6 @@ class Movie extends Component {
 							}
 						</div>
 					</CardContent>
-
 				</CardActionArea>
 
 				<CardActions id="movieCardActions">
@@ -134,7 +132,7 @@ class Movie extends Component {
 							year={this.state.Year}
 							ratings={this.state.Ratings}
 							imdbRating={this.state.imdbRating}
-							imdbId={this.state.imdbID}
+							imdbID={this.state.imdbID}
 							plot={this.state.Plot}
 							actors={this.state.Actors}
 							genre={this.state.Genre}
@@ -151,7 +149,7 @@ class Movie extends Component {
 				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}>
 					<Checkbox style={{ height: 'inherit' }}
 						checked={this.state.watched || false}
-						icon={< RemoveRedEyeOutlined fontSize="large" color="action" />}
+						icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
 						checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
 						onChange={this.toggleMovieWatched} />
 				</Fab>
@@ -160,13 +158,6 @@ class Movie extends Component {
 					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID); } }} >
 					<DeleteIcon />
 				</Fab>
-
-				<MovieTrailerModal
-					isOpen={this.state.watchingTrailer}
-					toggle={this.toggleWatchTrailer}
-					searchParams={!movieDBError
-						? `${this.state.Title} ${this.state.Year}`
-						: `${this.state.nameEng} ${this.state.Year}`} />
 
 				<MovieCommentsModal
 					isOpen={this.state.editingComments}
