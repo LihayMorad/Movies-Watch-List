@@ -28,7 +28,7 @@ import './Movie.css';
 class Movie extends Component {
 
 	state = {
-		nameHeb: "", nameEng: "", Year: "", comments: "", dbMovieID: "", watched: false,
+		NameHeb: "", NameEng: "", Year: "", comments: "", dbMovieID: "", watched: false,
 		loading: true, Error: false
 	}
 
@@ -39,7 +39,7 @@ class Movie extends Component {
 	getMovieDb = () => {
 		this.setState({ loading: true }, async () => {
 			try {
-				const searchURL = `https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
+				const searchURL = `https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
 				const omdbResponse = await axios(searchURL);
 				let movieData = {}
 				let error = false;
@@ -77,7 +77,7 @@ class Movie extends Component {
 
 				<CardActionArea>
 					<CardContent id="movieCardContent" title="Click to watch trailer"
-						onClick={() => this.props.toggleWatchTrailer(!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.nameEng} ${this.state.Year}`)}>
+						onClick={() => this.props.toggleWatchTrailer(!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.NameEng} ${this.state.Year}`)}>
 						<div className="movieCardContentImgDiv">
 							{!loading
 								? !movieDBError
@@ -98,8 +98,8 @@ class Movie extends Component {
 						<div className="movieCardContentTextDiv">
 							{!loading
 								? <div>
-									<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.nameEng} </Typography>
-									<Typography variant="h5"> {this.state.nameHeb} </Typography>
+									<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.NameEng} </Typography>
+									<Typography variant="h5"> {this.state.NameHeb} </Typography>
 									{!movieDBError
 										? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
 										: <p>{this.state.Year}</p>}

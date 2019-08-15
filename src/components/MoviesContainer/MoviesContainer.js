@@ -81,13 +81,13 @@ class MoviesContainer extends PureComponent {
                     key={movie['key']}
                     dbMovieID={movie['key']}
                     imdbID={movie['imdbID'] || null}
-                    nameHeb={movie['NameHeb']}
-                    nameEng={movie['NameEng']}
+                    NameHeb={movie['NameHeb']}
+                    NameEng={movie['NameEng']}
                     Year={movie['Year']}
-                    userID={firebase.auth().currentUser.uid}
-                    userEmail={firebase.auth().currentUser.email}
                     comments={movie['Comments']}
                     watched={movie['Watched']}
+                    userID={firebase.auth().currentUser.uid}
+                    userEmail={firebase.auth().currentUser.email}
                     delete={this.handleMovieDelete}
                     toggleWatchTrailer={this.toggleWatchTrailer}
                     toggleEditComments={this.toggleEditComments} />

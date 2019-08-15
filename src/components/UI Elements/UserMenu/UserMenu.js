@@ -106,7 +106,7 @@ class UserMenu extends Component {
     getMoviesToWatch = (filter = "releaseYear", order = "descending", year = "All", maxResults = this.state.maxResults) => {
         this.props.toggleLoadingMovies(true);
 
-        const filterToShow = filter === "releaseYear" ? "Year" : filter.charAt(0).toUpperCase() + filter.slice(1); // for matching DB's keys: nameEng > NameEng
+        const filterToShow = filter === "releaseYear" ? "Year" : filter;
 
         this.setState({ maxResults: maxResults, loading: true }, () => {
             const user = firebase.auth().currentUser;
@@ -192,10 +192,17 @@ class UserMenu extends Component {
         const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
         const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year, Watched };
 
-        database.ref('/mymovies/' + firebase.auth().currentUser.uid).push(movieToBeAdded, (error) => {
+        // check if movie already exists in user's list. best performance according to: https://nikitahl.com/how-to-find-an-item-in-a-javascript-array
+        for (let i = 0; i < this.props.movies.length; i++) {
+            if (this.props.movies[i].imdbID === imdbID) {
+                this.props.toggleSnackbar(true, `The movie ${NameEng} is already exists in your list!`, "warning"); return;
+            }
+        }
+
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}`).push(movieToBeAdded, (error) => {
             const message = !error
                 ? `${movieToBeAdded.NameEng} (${movieToBeAdded.Year}) added successfully`
-                : `There was an error adding ${movieToBeAdded.NameEng} (${movieToBeAdded.Year})`;
+                : `There was an error adding ${movieToBeAdded.NameEng} (${movieToBeAdded.Year}). ${error}`;
             this.props.toggleSnackbar(true, message, !error ? "success" : "error");
             this.toggleMovieAddModal();
         });
@@ -244,7 +251,6 @@ class UserMenu extends Component {
         }
 
         return (
-
             <>
                 <IconButton id="accountMenu" color="primary" aria-owns={accountMenuAnchorEl ? 'simple-menu' : undefined} aria-haspopup="true"
                     onClick={this.handleOpenAccountMenu}>
@@ -271,8 +277,8 @@ class UserMenu extends Component {
                                 input={<StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />}
                                 autoWidth >
                                 <MenuItem value="releaseYear"><em>Year</em></MenuItem>
-                                <MenuItem value="nameEng">English Name</MenuItem>
-                                <MenuItem value="nameHeb">Hebrew Name</MenuItem>
+                                <MenuItem value="NameEng">English Name</MenuItem>
+                                <MenuItem value="NameHeb">Hebrew Name</MenuItem>
                             </StyledSelect>
                         </FormControl>
 

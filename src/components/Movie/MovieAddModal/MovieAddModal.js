@@ -113,7 +113,7 @@ class movieAddModal extends Component {
                             inputProps={{ type: "number", placeholder: "Enter release year", min: "1950", max: currYear + 2 }}
                             onChange={this.handleChange} />
 
-                        <Button type="sumbit" color="secondary" variant="outlined" id="movieAddModalSearchBtn"><SearchIcon/>Search</Button>
+                        <Button type="sumbit" color="secondary" variant="outlined" id="movieAddModalSearchBtn"><SearchIcon />Search</Button>
 
                         {!loading
                             ? <MoviesResultsGrid
