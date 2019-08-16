@@ -130,8 +130,8 @@ class movieAddModal extends Component {
                     TransitionComponent={Zoom}
                     disableBackdropClick>
 
-                    <DialogTitle>Add a movie to your watch list
-                    <IconButton id="movieAddModalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
+                    <DialogTitle id="movieAddModalTitle">Add a movie to your watch list
+                        <IconButton id="movieAddModalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
                     </DialogTitle>
 
                     <form id="movieAddModalForm" onSubmit={e => { e.preventDefault(); this.handleMovieSearch(); }}>

@@ -1,3 +1,7 @@
+#movieAddModalTitle {
+    padding: 24px 45px 20px 24px;
+}
+
 #movieAddModalCloseBtn {
     position: absolute;
     right: 0;

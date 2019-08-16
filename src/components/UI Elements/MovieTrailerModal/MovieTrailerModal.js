@@ -64,7 +64,7 @@ class MovieTrailerModal extends Component {
 				onClose={this.handleClose}>
 
 				<div className="DialogTitleDiv">
-					<DialogTitle id="scroll-dialog-title">{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>
+					<DialogTitle>{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>
 					<IconButton color="inherit" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
 				</div>
 

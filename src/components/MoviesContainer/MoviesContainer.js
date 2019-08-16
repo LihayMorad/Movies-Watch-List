@@ -7,7 +7,7 @@ import * as actionTypes from '../../store/actions';
 import Movie from '../Movie/Movie';
 import MovieTrailerModal from '../UI Elements/MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from '../UI Elements/MovieCommentsModal/MovieCommentsModal';
-import InformationDialog from './InformationDialog/InformationDialog';
+// import InformationDialog from './InformationDialog/InformationDialog';
 import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
 
 import './MoviesContainer.css';
@@ -67,7 +67,7 @@ class MoviesContainer extends PureComponent {
 
     render() {
 
-        const { showInformationDialog, informationDialogTitle } = this.state;
+        // const { showInformationDialog, informationDialogTitle } = this.state;
         let moviesContainer = null;
         let loggedOutMessage = null;
         const firebaseUser = firebase.auth().currentUser;
