@@ -8,8 +8,13 @@
     display: contents;
 }
 
-#movieAddModalSearchBtn {
-    margin-top: 10px;
+.movieAddModalBtn {
+    margin: 10px 10px 0px 0px !important;
+    padding: 4px 7px 4px 5px !important;
+}
+
+#movieAddModalAddBtn {
+    padding: 5px 7px !important;
 }
 
 #movieNameHeb {

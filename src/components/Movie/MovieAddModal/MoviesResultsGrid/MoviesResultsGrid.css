@@ -25,11 +25,20 @@
     height: 100%;
     width: 100%;
     border-radius: inherit;
-    filter: brightness(0.7);
-    -webkit-filter: brightness(0.7);
+    filter: brightness(0.75);
+    -webkit-filter: brightness(0.75);
 }
 
-.movieElem:hover {
+.movieElem #youTubeIcon {
+    position: absolute;
+    right: 0;
+    max-width: 15%;
+    height: auto;
+    filter: drop-shadow(0px 0px 1px black);
+    -webkit-filter: drop-shadow(0px 0px 1px black);
+}
+
+.movieElem:hover, .movieElem #youTubeIcon:hover {
     opacity: 0.9;
 }
 
@@ -70,5 +79,5 @@
 
 .chosenMovie {
     box-sizing: border-box;
-    box-shadow: 0px 0px 3px 5px #000000;
+    box-shadow: 0px 0px 4px 4px #0e388d;
 }

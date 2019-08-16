@@ -14,9 +14,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
-import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
-import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
+import WhatshotIcon from '@material-ui/icons/Whatshot';
+
 import Zoom from '@material-ui/core/Zoom';
+import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
+import MovieTrailerModal from '../../UI Elements/MovieTrailerModal/MovieTrailerModal';
+import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
 import { withStyles } from '@material-ui/core/styles';
 import './MovieAddModal.css';
@@ -24,7 +27,8 @@ import './MovieAddModal.css';
 const currYear = new Date().getFullYear();
 const initialState = {
     NameHeb: "", NameEng: "", Year: currYear, Comments: "",
-    movieSearchResults: [], imdbID: "", loading: false
+    movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "", loading: false,
+    watchingTrailer: false, searchTrailerParams: "",
 };
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
@@ -51,103 +55,157 @@ class movieAddModal extends Component {
         this.setState({ loading: true }, async () => {
             try {
                 let movieSearchResults = [];
+                let resultsType = "";
                 const searchURL = `https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
                 const omdbResponse = await axios(searchURL);
                 if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
                     movieSearchResults = omdbResponse.data.Search;
+                    resultsType = "search";
                 } else {
                     const message = omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error;
-                    this.props.onSnackbarToggle(true, message, "warning");
+                    this.props.onSnackbarToggle(true, `Search error. ${message}`, "warning");
                 }
-                this.setState({ loading: false, movieSearchResults, imdbID: "" });
+                this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType });
             } catch (error) {
-                this.props.onSnackbarToggle(true, "Something went wrong! " + error, "error");
-                this.setState({ loading: false, movieSearchResults: [], imdbID: "" });
+                this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error");
+                this.setState({ loading: false, movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "" });
             }
         });
     }
 
-    handleUpdateCurrentMovie = (imdbID, title, year) => {
-        this.setState({ imdbID: imdbID, selectedTitle: title, selectedYear: year },
+    handleTrendingMovieSearch = () => {
+
+        this.setState({ loading: true }, async () => {
+            try {
+                let movieSearchResults = [];
+                let resultsType = "";
+                const trendingURL = `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_TMDB_API_KEY}`;
+                const tmdbResponse = await axios(trendingURL);
+                if (tmdbResponse.status === 200) {
+                    movieSearchResults = tmdbResponse.data.results;
+                    resultsType = "trending";
+                } else {
+                    this.props.onSnackbarToggle(true, "Search error. Something went wrong!", "warning");
+                }
+                this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType });
+            } catch (error) {
+                this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error");
+                this.setState({ loading: false, movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "" });
+            }
+        });
+    }
+
+    handleUpdateCurrentMovie = (imdbID, tmdbID, title, year) => {
+        this.setState({ imdbID, tmdbID, selectedTitle: title, selectedYear: year },
             () => { this.personalNote.current.scrollIntoView({ behavior: "smooth" }); });
     }
 
+    getIMDBID = async (tmdbID, movieTitle, movieYear) => {
+        try {
+            const searchURL = `https://api.themoviedb.org/3/movie/${tmdbID}/external_ids?api_key=${process.env.REACT_APP_TMDB_API_KEY}`;
+            const tmdbResponse = await axios(searchURL);
+            if (tmdbResponse.status === 200) {
+                this.handleUpdateCurrentMovie(tmdbResponse.data.imdb_id, tmdbID, movieTitle, movieYear);
+            } else {
+                this.props.onSnackbarToggle(true, "Something went wrong! can't get movie data", "warning");
+            }
+        } catch (error) {
+            this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error");
+        }
+    }
+
+    toggleWatchTrailer = (searchTrailerParams = "") => { this.setState(state => ({ searchTrailerParams, watchingTrailer: !state.watchingTrailer })); };
+
     render() {
-        const { imdbID, Year, movieSearchResults, loading } = this.state;
+        const { imdbID, tmdbID, Year, movieSearchResults, loading } = this.state;
 
         return (
+            <>
 
-            <StyledDialog
-                open={this.props.isOpen}
-                onClose={this.props.toggle}
-                maxWidth="md"
-                fullWidth
-                TransitionComponent={Zoom}
-                disableBackdropClick>
+                <StyledDialog
+                    open={this.props.isOpen}
+                    onClose={this.props.toggle}
+                    maxWidth="md"
+                    fullWidth
+                    TransitionComponent={Zoom}
+                    disableBackdropClick>
 
-                <DialogTitle>Add a movie to your watch list
-                    <IconButton id={"movieAddModalCloseBtn"} onClick={this.props.toggle}><CloseIcon /></IconButton>
-                </DialogTitle>
+                    <DialogTitle>Add a movie to your watch list
+                    <IconButton id="movieAddModalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
+                    </DialogTitle>
 
-                <form id={"movieAddModalForm"} onSubmit={e => { e.preventDefault(); this.handleMovieSearch() }}>
+                    <form id="movieAddModalForm" onSubmit={e => { e.preventDefault(); this.handleMovieSearch(); }}>
 
-                    <StyledDialogContent>
-                        <DialogContentText>
-                            Search a movie by its english name and then choose it from the search results.<br />
-                            You may specify its hebrew name and your personal note below.<br />
-                            When you're done click 'Add' below.
+                        <StyledDialogContent>
+                            <DialogContentText>
+                                Search a movie by its english name and then choose it from the search results.<br />
+                                You may specify its hebrew name and your personal note below.<br />
+                                When you're done click 'Add' below.
                         </DialogContentText>
-                        <br />
-                        <TextField
-                            fullWidth variant="outlined"
-                            autoFocus required
-                            margin="dense" id="movieNameEng"
-                            name="NameEng" label="Movie's English name"
-                            inputProps={{ type: "text", placeholder: "Enter english name" }}
-                            onChange={this.handleChange} />
-                        <TextField
-                            fullWidth variant="outlined"
-                            margin="dense" id="movieReleaseYear"
-                            name="Year" label="Movie's Release year"
-                            defaultValue={Year}
-                            inputProps={{ type: "number", placeholder: "Enter release year", min: "1950", max: currYear + 2 }}
-                            onChange={this.handleChange} />
-
-                        <Button type="sumbit" color="secondary" variant="outlined" id="movieAddModalSearchBtn"><SearchIcon />Search</Button>
-
-                        {!loading
-                            ? <MoviesResultsGrid
-                                results={movieSearchResults}
-                                imdbID={imdbID}
-                                updateCurrentMovie={this.handleUpdateCurrentMovie} />
-                            : <SearchResultsSpinner />}
-
-                        {imdbID && <>
+                            <br />
                             <TextField
                                 fullWidth variant="outlined"
-                                margin="dense" id="movieNameHeb"
-                                name="NameHeb" label="Movie's Hebrew name"
-                                placeholder="Enter hebrew name (optional)"
-                                inputProps={{ type: "text" }}
+                                autoFocus required
+                                margin="dense" id="movieNameEng"
+                                name="NameEng" label="Movie's English name"
+                                inputProps={{ type: "text", placeholder: "Enter english name" }}
                                 onChange={this.handleChange} />
                             <TextField
-                                fullWidth variant="outlined" multiline
-                                margin="normal" id="movieComments"
-                                name="Comments" label="Movie's Personal Note"
-                                placeholder="Enter Personal Note (optional)"
-                                onChange={this.handleChange}
-                                inputProps={{ type: "text", ref: this.personalNote }} />
-                        </>}
+                                fullWidth variant="outlined"
+                                margin="dense" id="movieReleaseYear"
+                                name="Year" label="Movie's Release year"
+                                defaultValue={Year}
+                                inputProps={{ type: "number", placeholder: "Enter release year", min: "1950", max: currYear + 2 }}
+                                onChange={this.handleChange} />
 
-                    </StyledDialogContent>
+                            <Button type="submit" color="primary" variant="outlined" className="movieAddModalBtn"><SearchIcon />Search</Button>
+                            <Button type="button" color="secondary" variant="outlined" className="movieAddModalBtn"
+                                onClick={this.handleTrendingMovieSearch}><WhatshotIcon />&nbsp;Trending Movies</Button>
 
-                    {imdbID && <DialogActions>
-                        <Button color="primary" variant="contained" onClick={this.handleAddMovie}>Add</Button>
-                    </DialogActions>}
+                            {!loading
+                                ? this.state.resultsType && <MoviesResultsGrid
+                                    results={movieSearchResults}
+                                    type={this.state.resultsType}
+                                    imdbID={imdbID}
+                                    tmdbID={tmdbID}
+                                    updateCurrentMovie={this.handleUpdateCurrentMovie}
+                                    toggleWatchTrailer={this.toggleWatchTrailer}
+                                    getIMDBID={this.getIMDBID} />
+                                : <SearchResultsSpinner />}
 
-                </form>
+                            {imdbID && <>
+                                <TextField
+                                    fullWidth variant="outlined"
+                                    margin="dense" id="movieNameHeb"
+                                    name="NameHeb" label="Movie's Hebrew name"
+                                    placeholder="Enter hebrew name (optional)"
+                                    inputProps={{ type: "text" }}
+                                    onChange={this.handleChange} />
+                                <TextField
+                                    fullWidth variant="outlined" multiline
+                                    margin="normal" id="movieComments"
+                                    name="Comments" label="Movie's Personal Note"
+                                    placeholder="Enter Personal Note (optional)"
+                                    onChange={this.handleChange}
+                                    inputProps={{ type: "text", ref: this.personalNote }} />
+                            </>}
 
-            </StyledDialog >
+                        </StyledDialogContent>
+
+                        {imdbID && <DialogActions>
+                            <Button color="primary" variant="contained" id="movieAddModalAddBtn" onClick={this.handleAddMovie}>Add</Button>
+                        </DialogActions>}
+
+                    </form>
+
+                </StyledDialog >
+
+                <MovieTrailerModal
+                    isOpen={this.state.watchingTrailer}
+                    toggle={this.toggleWatchTrailer}
+                    searchParams={this.state.searchTrailerParams} />
+
+            </>
         );
 
     }

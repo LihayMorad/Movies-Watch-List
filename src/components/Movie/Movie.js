@@ -21,7 +21,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
 
-import youTubeIcon from '../../assets/youtube_social_icon_red.png';
+import youTubeIcon from '../../assets/youtube_icon.png';
 
 import './Movie.css';
 

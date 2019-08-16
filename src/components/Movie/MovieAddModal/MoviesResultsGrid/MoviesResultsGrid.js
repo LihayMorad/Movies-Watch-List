@@ -1,30 +1,60 @@
 import React from 'react';
 
+import youTubeIcon from '../../../../assets/youtube_icon.png';
+
 import './MoviesResultsGrid.css';
 
 const moviesResultsGrid = props => {
+    let moviesSearchResultList = null;
 
-    const moviesSearchResultList = props.results.map(elem => {
-        const hasPoster = elem.Poster !== "N/A";
-        const chosenMovie = props.imdbID === elem.imdbID;
-        return (
-            <li key={elem.imdbID}
-                className={`movieElem ${chosenMovie && 'chosenMovie'}`}
-                onClick={() => { props.updateCurrentMovie(elem.imdbID, elem.Title, elem.Year); }}>
-                <img src={elem.Poster} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
-                <div className={`overlay ${!hasPoster && 'overlayBlack'}`}>
-                    <h2>{elem.Title}</h2>
-                    <h3>{elem.Year}</h3>
-                </div>
-            </li>
-        )
-    });
+    switch (props.type) {
+        
+        case "search":
+            moviesSearchResultList = props.results.map(elem => {
+                const hasPoster = elem.Poster && elem.Poster !== "N/A";
+                const chosenMovie = props.imdbID === elem.imdbID;
+                return (
+                    <li key={elem.imdbID}
+                        className={`movieElem ${chosenMovie && 'chosenMovie'}`}
+                        onClick={() => { props.updateCurrentMovie(elem.imdbID, "", elem.Title, elem.Year); }}>
+                        <img src={elem.Poster} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
+                        <div className={`overlay ${!hasPoster && 'overlayBlack'}`}>
+                            <h2>{elem.Title}</h2>
+                            <h3>{elem.Year}</h3>
+                        </div>
+                        <img src={youTubeIcon} id="youTubeIcon" alt="YouTube icon"
+                            onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.Title} ${elem.Year}`); }} />
+                    </li>
+                )
+            });
+            break;
 
-    return (
-        <ul id={"moviesSearchResults"}>
-            {moviesSearchResultList}
-        </ul>
-    );
+        case "trending":
+            moviesSearchResultList = props.results.map(elem => {
+                const hasPoster = elem.poster_path && elem.poster_path !== "N/A";
+                const chosenMovie = props.tmdbID === elem.id;
+                const releaseDate = elem.release_date && new Date(elem.release_date);
+                const year = releaseDate.getFullYear();
+                return (
+                    <li key={elem.id}
+                        className={`movieElem ${chosenMovie && 'chosenMovie'}`}
+                        onClick={() => { props.getIMDBID(elem.id, elem.title, year); }}>
+                        <img src={`http://image.tmdb.org/t/p/w300/${elem.poster_path}`} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
+                        <div className={`overlay ${!hasPoster && 'overlayBlack'}`}>
+                            <h2>{elem.title}</h2>
+                            <h3>{year}</h3>
+                        </div>
+                        <img src={youTubeIcon} id="youTubeIcon" alt="YouTube icon"
+                            onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.title} ${year}`); }} />
+                    </li>
+                )
+            });
+            break;
+
+        default: break;
+    }
+
+    return <ul id="moviesSearchResults">{moviesSearchResultList}</ul>;
 
 }
 
