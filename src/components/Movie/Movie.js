@@ -12,7 +12,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Icon from '@material-ui/core/Icon';
+import EditIcon from '@material-ui/icons/Edit';
 import MovieTabs from './MovieTabs/MovieTabs';
 import Divider from '@material-ui/core/Divider';
 import MovieNotFound from '../../assets/MovieNotFound.png';
@@ -131,7 +131,7 @@ class Movie extends Component {
 
 				<Fab className="movieCardFab" color="primary" size="small" title="Add/Edit movie's personal note"
 					onClick={() => { this.props.toggleEditComments(this.state.comments, this.state.userID, this.state.dbMovieID); }} >
-					<Icon>edit_icon</Icon>
+					<EditIcon />
 				</Fab>
 
 				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}>

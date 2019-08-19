@@ -105,13 +105,11 @@ class UserMenu extends Component {
 
     getMoviesToWatch = (filter = "releaseYear", order = "descending", year = "All", maxResults = this.state.maxResults) => {
         this.props.toggleLoadingMovies(true);
-
         const filterToShow = filter === "releaseYear" ? "Year" : filter;
 
         this.setState({ maxResults: maxResults, loading: true }, () => {
             const user = firebase.auth().currentUser;
             const userID = user.uid;
-            const isLoggedIn = !!user;
             let onValue = null;
 
             year === "All"
@@ -122,7 +120,7 @@ class UserMenu extends Component {
                 response => { this.handleFirebaseData(response, filterToShow, order, year); },
                 error => {
                     this.props.toggleLoadingMovies(false);
-                    isLoggedIn && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
+                    firebase.auth().currentUser && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
                 })
         });
     }
