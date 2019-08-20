@@ -67,17 +67,16 @@ class Movie extends Component {
 	}
 
 	render() {
-
 		const movieDBError = this.state.Error;
 		const { loading } = this.state;
 
 		return (
 
-			<Card className="movieCard" >
+			<Card className="movieCard">
 
 				<CardActionArea>
 					<CardContent id="movieCardContent" title="Click to watch trailer"
-						onClick={() => this.props.toggleWatchTrailer(!movieDBError ? `${this.state.Title} ${this.state.Year}` : `${this.state.NameEng} ${this.state.Year}`)}>
+						onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? this.state.Title : this.state.NameEng} ${this.state.Year}`), this.state.imdbID)}>
 						<div className="movieCardContentImgDiv">
 							{!loading
 								? !movieDBError

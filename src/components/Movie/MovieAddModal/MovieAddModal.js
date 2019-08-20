@@ -28,7 +28,7 @@ const currYear = new Date().getFullYear();
 const initialState = {
     NameHeb: "", NameEng: "", Year: currYear, Comments: "",
     movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "", loading: false,
-    watchingTrailer: false, searchTrailerParams: "",
+    watchingTrailer: false, searchTrailerParams: "", searchID: ""
 };
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
@@ -114,7 +114,7 @@ class movieAddModal extends Component {
         }
     }
 
-    toggleWatchTrailer = (searchTrailerParams = "") => { this.setState(state => ({ searchTrailerParams, watchingTrailer: !state.watchingTrailer })); };
+    toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
 
     render() {
         const { imdbID, tmdbID, Year, movieSearchResults, loading } = this.state;
@@ -203,7 +203,8 @@ class movieAddModal extends Component {
                 <MovieTrailerModal
                     isOpen={this.state.watchingTrailer}
                     toggle={this.toggleWatchTrailer}
-                    searchParams={this.state.searchTrailerParams} />
+                    searchParams={this.state.searchTrailerParams}
+                    searchID={this.state.searchID} />
 
             </>
         );

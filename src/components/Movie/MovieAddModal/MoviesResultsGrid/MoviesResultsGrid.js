@@ -4,11 +4,13 @@ import youTubeIcon from '../../../../assets/youtube_icon.png';
 
 import './MoviesResultsGrid.css';
 
+const POSTER_BASE_URL = "http://image.tmdb.org/t/p/w300/";
+
 const moviesResultsGrid = props => {
     let moviesSearchResultList = null;
 
     switch (props.type) {
-        
+
         case "search":
             moviesSearchResultList = props.results.map(elem => {
                 const hasPoster = elem.Poster && elem.Poster !== "N/A";
@@ -23,7 +25,7 @@ const moviesResultsGrid = props => {
                             <h3>{elem.Year}</h3>
                         </div>
                         <img src={youTubeIcon} id="youTubeIcon" alt="YouTube icon"
-                            onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.Title} ${elem.Year}`); }} />
+                            onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.Title} ${elem.Year}`, elem.imdbID); }} />
                     </li>
                 )
             });
@@ -39,13 +41,13 @@ const moviesResultsGrid = props => {
                     <li key={elem.id}
                         className={`movieElem ${chosenMovie && 'chosenMovie'}`}
                         onClick={() => { props.getIMDBID(elem.id, elem.title, year); }}>
-                        <img src={`http://image.tmdb.org/t/p/w300/${elem.poster_path}`} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
+                        <img src={POSTER_BASE_URL + elem.poster_path} alt={hasPoster ? "Movie poster" : "Movie poster not found"} />
                         <div className={`overlay ${!hasPoster && 'overlayBlack'}`}>
                             <h2>{elem.title}</h2>
                             <h3>{year}</h3>
                         </div>
                         <img src={youTubeIcon} id="youTubeIcon" alt="YouTube icon"
-                            onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.title} ${year}`); }} />
+                            onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.title} ${year}`, elem.id); }} />
                     </li>
                 )
             });

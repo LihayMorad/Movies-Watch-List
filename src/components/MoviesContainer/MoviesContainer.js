@@ -16,7 +16,7 @@ class MoviesContainer extends PureComponent {
 
     state = {
         showInformationDialog: false, informationDialogTitle: "",
-        watchingTrailer: false, searchTrailerParams: "",
+        watchingTrailer: false, searchTrailerParams: "", searchID: "",
         editingComments: false, comments: ""
     }
 
@@ -49,7 +49,7 @@ class MoviesContainer extends PureComponent {
             })
     }
 
-    toggleWatchTrailer = (searchTrailerParams = "") => { this.setState(state => ({ searchTrailerParams, watchingTrailer: !state.watchingTrailer })); };
+    toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
 
     toggleEditComments = (comments = "", userID = "", dbMovieID = "") => {
         this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments }))
@@ -124,7 +124,8 @@ class MoviesContainer extends PureComponent {
                 <MovieTrailerModal
                     isOpen={this.state.watchingTrailer}
                     toggle={this.toggleWatchTrailer}
-                    searchParams={this.state.searchTrailerParams} />
+                    searchParams={this.state.searchTrailerParams}
+                    searchID={this.state.searchID} />
 
                 <MovieCommentsModal
                     isOpen={this.state.editingComments}

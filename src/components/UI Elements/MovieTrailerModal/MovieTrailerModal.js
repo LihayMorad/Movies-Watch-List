@@ -18,35 +18,54 @@ const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 
 class MovieTrailerModal extends Component {
 
-	state = {
-		trailerId: "",
-		trailerTitle: "",
-		searchError: false,
-		loading: false
-	}
+	state = { trailerId: "", trailerTitle: "", searchError: false, loading: false }
 
-	getTrailer = () => {
-		this.setState({ loading: true }, async () => {
-			try {
-				const searchURL = `https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`;
-				const youtubeSearchResponse = await axios(searchURL);
-				if (youtubeSearchResponse.status === 200) {
+	getTrailer = () => { this.setState({ loading: true }, this.getTrailerFromTMDBAPI); } // if we get an error from TMDB, continue to YouTube search
+
+	getTrailerFromTMDBAPI = async () => {
+		try {
+			if (this.props.searchID) {
+				const searchURL = `https://api.themoviedb.org/3/movie/${this.props.searchID}/videos?api_key=${process.env.REACT_APP_TMDB_API_KEY}`;
+				const tmdbSearchResponse = await axios(searchURL);
+				if (tmdbSearchResponse.status === 200 && tmdbSearchResponse.statusText === "OK") {
+					const results = tmdbSearchResponse.data.results || [];
+					if (results.length === 0) throw Error({ message: "No results from TMDB" });
+					const youTubeTrailerID = results.find(movie => movie.site === "YouTube" && movie.type === "Trailer").key;
 					this.setState({
-						trailerId: youtubeSearchResponse.data.items[0].id.videoId,
+						trailerId: youTubeTrailerID || "",
 						trailerTitle: `${this.props.searchParams} Trailer`,
+						searchError: "",
 						loading: false
 					});
-				} else {
-					throw Error(youtubeSearchResponse);
-				}
-			} catch (error) {
-				this.setState({ searchError: error, loading: false });
-			}
-		});
+				} else { throw Error(tmdbSearchResponse); }
+			} else { throw Error({ message: "Search ID is missing" }); }
+		} catch (error) {
+			this.setState({ searchError: error.response ? error.response.statusText : error.message });
+			this.getTrailerFromYouTubeAPI();
+		}
+	}
+
+	getTrailerFromYouTubeAPI = async () => {
+		try {
+			if (this.props.searchParams) {
+				const searchURL = `https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=3&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`;
+				const youTubeSearchResponse = await axios(searchURL);
+				if (youTubeSearchResponse.status === 200) {
+					this.setState({
+						trailerId: youTubeSearchResponse.data.items[0].id.videoId,
+						trailerTitle: `${this.props.searchParams} Trailer`,
+						searchError: "",
+						loading: false
+					});
+				} else { throw Error(youTubeSearchResponse); }
+			} else { throw Error({ message: "Search parameters are missing" }); }
+		} catch (error) {
+			this.setState({ searchError: error.response ? error.response.data : error.message, loading: false });
+		}
 	}
 
 	handleClose = () => {
-		this.setState({ trailerId: "", trailerTitle: "" });
+		this.setState({ trailerId: "", trailerTitle: "", searchError: false, loading: false });
 		this.props.toggle();
 	}
 
@@ -64,7 +83,7 @@ class MovieTrailerModal extends Component {
 				onClose={this.handleClose}>
 
 				<div className="DialogTitleDiv">
-					<DialogTitle>{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>
+					{!loading && <DialogTitle>{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>}
 					<IconButton color="inherit" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
 				</div>
 
@@ -73,16 +92,14 @@ class MovieTrailerModal extends Component {
 						<iframe
 							src={`https://www.youtube.com/embed/${trailerId}?autoplay=0`}
 							allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-							allowFullScreen
-							frameBorder="0"
-							title="Movie Trailer">
+							allowFullScreen frameBorder="0" title="Movie Trailer">
 						</iframe>
 					</div>
 					: <LoadingSpinner />
 				}
 
 				<DialogActions id="TrailerModalActions">
-					<Typography variant="body1" align="left">*based on Youtube search results</Typography>
+					{!loading && <Typography variant="body1" align="left">*based on YouTube search results</Typography>}
 					<Button onClick={this.props.toggle}>Close</Button>
 				</DialogActions>
 
