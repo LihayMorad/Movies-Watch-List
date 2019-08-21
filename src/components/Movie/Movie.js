@@ -75,7 +75,7 @@ class Movie extends Component {
 			<Card className="movieCard">
 
 				<CardActionArea>
-					<CardContent id="movieCardContent" title="Click to watch trailer"
+					<CardContent id="movieCardContent" title="Click to watch the trailer"
 						onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? this.state.Title : this.state.NameEng} ${this.state.Year}`), this.state.imdbID)}>
 						<div className="movieCardContentImgDiv">
 							{!loading

@@ -4,7 +4,7 @@ import youTubeIcon from '../../../../assets/youtube_icon.png';
 
 import './MoviesResultsGrid.css';
 
-const POSTER_BASE_URL = "http://image.tmdb.org/t/p/w300/";
+const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w300/";
 
 const moviesResultsGrid = props => {
     let moviesSearchResultList = null;
@@ -46,7 +46,7 @@ const moviesResultsGrid = props => {
                             <h2>{elem.title}</h2>
                             <h3>{year}</h3>
                         </div>
-                        <img src={youTubeIcon} id="youTubeIcon" alt="YouTube icon"
+                        <img src={youTubeIcon} id="youTubeIcon" alt="YouTube icon" title="Click to watch the trailer"
                             onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.title} ${year}`, elem.id); }} />
                     </li>
                 )

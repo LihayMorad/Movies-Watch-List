@@ -127,8 +127,7 @@ class movieAddModal extends Component {
                     onClose={this.props.toggle}
                     maxWidth="md"
                     fullWidth
-                    TransitionComponent={Zoom}
-                    disableBackdropClick>
+                    TransitionComponent={Zoom}>
 
                     <DialogTitle id="movieAddModalTitle">Add a movie to your watch list
                         <IconButton id="movieAddModalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
@@ -138,9 +137,9 @@ class movieAddModal extends Component {
 
                         <StyledDialogContent>
                             <DialogContentText>
-                                Search a movie by its english name and then choose it from the search results.<br />
+                                Search a movie or see popular movies now and then choose one from the search results.<br />
                                 You may specify its hebrew name and your personal note below.<br />
-                                When you're done click 'Add' below.
+                                When you're done click 'Add'.
                         </DialogContentText>
                             <br />
                             <TextField
@@ -160,7 +159,7 @@ class movieAddModal extends Component {
 
                             <Button type="submit" color="primary" variant="outlined" className="movieAddModalBtn"><SearchIcon />Search</Button>
                             <Button type="button" color="secondary" variant="outlined" className="movieAddModalBtn"
-                                onClick={this.handleTrendingMovieSearch}><WhatshotIcon />&nbsp;Trending Movies</Button>
+                                onClick={this.handleTrendingMovieSearch}><WhatshotIcon />&nbsp;Popular Movies</Button>
 
                             {!loading
                                 ? this.state.resultsType && <MoviesResultsGrid

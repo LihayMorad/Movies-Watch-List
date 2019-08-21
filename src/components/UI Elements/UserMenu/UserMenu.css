@@ -67,3 +67,7 @@
 .btnPadding {
     padding: 6px 8px !important;
 }
+
+.Menu #applyBtn {
+    padding: 4px 7px !important;
+}

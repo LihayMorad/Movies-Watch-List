@@ -231,7 +231,7 @@ class UserMenu extends Component {
                 <Button id="loggedInBtn" className="btnPadding" color="primary" variant="contained">
                     {firebaseUser.isAnonymous
                         ? <><PersonOutlineIcon />&nbsp;&nbsp;Guest</>
-                        : <><PersonIcon />&nbsp;{firebaseUser.displayName || firebaseUser.email}</>}
+                        : <><PersonIcon />&nbsp;Logout from {firebaseUser.displayName || firebaseUser.email}</>}
                 </Button>
             </MenuItem >;
 
@@ -336,7 +336,7 @@ class UserMenu extends Component {
                             </ButtonBase>
                         </FormControl>
 
-                        <Button className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
+                        <Button id="applyBtn" className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
                             <MovieFilterIcon />&nbsp;Apply
                         </Button>
 
