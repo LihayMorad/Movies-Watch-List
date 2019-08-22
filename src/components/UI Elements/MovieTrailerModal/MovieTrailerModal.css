@@ -9,11 +9,6 @@
     flex: unset;
 }
 
-.DialogTitleDiv button {
-    position: absolute;
-    right: 0;
-}
-
 .DialogContentYoutubeDivWrapper {
     position: relative;
     padding-bottom: 55.25%;

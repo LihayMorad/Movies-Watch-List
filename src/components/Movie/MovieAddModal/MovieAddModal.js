@@ -4,6 +4,9 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions';
 
+import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
+import MovieTrailerModal from '../../UI Elements/MovieTrailerModal/MovieTrailerModal';
+import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,11 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
-
 import Zoom from '@material-ui/core/Zoom';
-import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
-import MovieTrailerModal from '../../UI Elements/MovieTrailerModal/MovieTrailerModal';
-import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
 import { withStyles } from '@material-ui/core/styles';
 import './MovieAddModal.css';
@@ -130,7 +129,7 @@ class movieAddModal extends Component {
                     TransitionComponent={Zoom}>
 
                     <DialogTitle id="movieAddModalTitle">Add a movie to your watch list
-                        <IconButton id="movieAddModalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
+                        <IconButton className="modalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
                     </DialogTitle>
 
                     <form id="movieAddModalForm" onSubmit={e => { e.preventDefault(); this.handleMovieSearch(); }}>

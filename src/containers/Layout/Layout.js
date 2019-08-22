@@ -15,9 +15,7 @@ class Layout extends Component {
         showScrollToMenuButton: false
     }
 
-    componentDidMount() {
-        this.topMenuRef = React.createRef();
-    }
+    componentDidMount() { this.topMenuRef = React.createRef(); }
 
     scrollToMenu = () => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }
 

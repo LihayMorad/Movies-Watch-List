@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-
 import firebase, { database } from '../../../config/firebase';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions';
+
+import MovieAddModal from '../../Movie/MovieAddModal/MovieAddModal';
+import Snackbar from '../../UI Elements/Snackbar/Snackbar';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -25,9 +27,6 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Fade from '@material-ui/core/Fade';
 
-import MovieAddModal from '../../Movie/MovieAddModal/MovieAddModal';
-import Snackbar from '../../UI Elements/Snackbar/Snackbar';
-
 import { withStyles } from '@material-ui/core/styles';
 import './UserMenu.css';
 
@@ -47,7 +46,7 @@ class UserMenu extends Component {
         filter: "releaseYear",
         order: "descending",
         year: "All",
-        maxResults: 5,
+        maxResults: 10,
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
         accountMenuAnchorEl: null,
         years: [],
@@ -110,11 +109,15 @@ class UserMenu extends Component {
         this.setState({ maxResults: maxResults, loading: true }, () => {
             const user = firebase.auth().currentUser;
             const userID = user.uid;
-            let onValue = null;
+            let onValue = database.ref('/mymovies/' + userID);
 
-            year === "All"
-                ? onValue = database.ref('/mymovies/' + userID).orderByChild(filterToShow).limitToLast(this.state.maxResults)
-                : onValue = database.ref('/mymovies/' + userID).orderByChild("Year").limitToLast(this.state.maxResults).equalTo(parseInt(year))
+            if (year === "All") {
+                onValue = order === "descending"
+                    ? onValue.orderByChild(filterToShow).limitToLast(this.state.maxResults)
+                    : onValue.orderByChild(filterToShow).limitToFirst(this.state.maxResults)
+            } else {
+                onValue = onValue.orderByChild("Year").limitToFirst(this.state.maxResults).equalTo(parseInt(year))
+            }
 
             onValue.on('value',
                 response => { this.handleFirebaseData(response, filterToShow, order, year); },
@@ -185,23 +188,31 @@ class UserMenu extends Component {
 
     toggleMovieAddModal = () => { this.setState(state => ({ addingMovie: !state.addingMovie })) }
 
-    handleMovieAdd = details => {
+    isMovieAlreadyExists = (imdbID) => {
+        return new Promise((resolve, reject) => {
+            database.ref('/mymovies/' + firebase.auth().currentUser.uid).orderByChild("imdbID").equalTo(imdbID).once('value',
+                response => { resolve(!!response.val()); },
+                error => { resolve("error"); })
+        })
+    }
+
+    handleMovieAdd = async (details) => {
         const Year = parseInt(details.Year);
         const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
         const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year, Watched };
 
-        // check if movie already exists in user's list. best performance according to: https://nikitahl.com/how-to-find-an-item-in-a-javascript-array
-        for (let i = 0; i < this.props.movies.length; i++) {
-            if (this.props.movies[i].imdbID === imdbID) {
-                this.props.toggleSnackbar(true, `The movie ${NameEng} is already exists in your list!`, "warning"); return;
-            }
+        const isMovieExistsResponse = await this.isMovieAlreadyExists(imdbID);
+        if (isMovieExistsResponse) {
+            isMovieExistsResponse !== "error"
+                ? this.props.toggleSnackbar(true, `The movie '${NameEng}' already exists in your list!`, "warning")
+                : this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'.`, "error");
+            return;
         }
 
         database.ref(`/mymovies/${firebase.auth().currentUser.uid}`).push(movieToBeAdded, (error) => {
-            const message = !error
-                ? `${movieToBeAdded.NameEng} (${movieToBeAdded.Year}) added successfully`
-                : `There was an error adding ${movieToBeAdded.NameEng} (${movieToBeAdded.Year}). ${error}`;
-            this.props.toggleSnackbar(true, message, !error ? "success" : "error");
+            !error
+                ? this.props.toggleSnackbar(true, `The movie '${NameEng} (${Year})' added successfully`, "success")
+                : this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'`, "error")
             this.toggleMovieAddModal();
         });
     }
@@ -312,8 +323,8 @@ class UserMenu extends Component {
                                 input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
                                 autoWidth>
                                 <MenuItem value={1000}>All</MenuItem>
-                                <MenuItem value={5}><em>5</em></MenuItem>
-                                <MenuItem value={10}>10</MenuItem>
+                                <MenuItem value={5}>5</MenuItem>
+                                <MenuItem value={10}><em>10</em></MenuItem>
                                 <MenuItem value={15}>15</MenuItem>
                                 <MenuItem value={20}>20</MenuItem>
                                 <MenuItem value={25}>25</MenuItem>

@@ -2,8 +2,8 @@
     padding: 24px 45px 20px 24px;
 }
 
-#movieAddModalCloseBtn {
-    position: absolute;
+.modalCloseBtn {
+    position: absolute !important;
     right: 0;
     top: 0;
 }
