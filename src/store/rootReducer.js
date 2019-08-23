@@ -5,6 +5,7 @@ const initialState = {
     snackbarMessage: "",
     snackbarType: "default",
     showWatchedMovies: false,
+    freeSearchFilter: "",
     loadingMovies: false
 };
 
@@ -39,6 +40,11 @@ const rootReducer = (state = initialState, action) => {
                 loadingMovies: false
             };
 
+            case actionTypes.ON_FREE_SEARCH_FILTER_CHANGE:
+                return {
+                    ...state,
+                    freeSearchFilter: action.payload
+                }
 
         default:
             return { ...state };

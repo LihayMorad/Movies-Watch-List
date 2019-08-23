@@ -76,22 +76,24 @@ class MoviesContainer extends PureComponent {
         const { loadingMovies } = this.props;
 
         if (isLoggedIn) {
-            const movies = dbMovies.map(movie => (
-                <Movie
-                    key={movie['key']}
-                    dbMovieID={movie['key']}
-                    imdbID={movie['imdbID'] || null}
-                    NameHeb={movie['NameHeb']}
-                    NameEng={movie['NameEng']}
-                    Year={movie['Year']}
-                    comments={movie['Comments']}
-                    watched={movie['Watched']}
-                    userID={firebase.auth().currentUser.uid}
-                    userEmail={firebase.auth().currentUser.email}
-                    delete={this.handleMovieDelete}
-                    toggleWatchTrailer={this.toggleWatchTrailer}
-                    toggleEditComments={this.toggleEditComments} />
-            ));
+            const movies = dbMovies
+                .filter(movie => movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()))
+                .map(movie => (
+                    <Movie
+                        key={movie['key']}
+                        dbMovieID={movie['key']}
+                        imdbID={movie['imdbID'] || null}
+                        NameHeb={movie['NameHeb']}
+                        NameEng={movie['NameEng']}
+                        Year={movie['Year']}
+                        comments={movie['Comments']}
+                        watched={movie['Watched']}
+                        userID={firebase.auth().currentUser.uid}
+                        userEmail={firebase.auth().currentUser.email}
+                        delete={this.handleMovieDelete}
+                        toggleWatchTrailer={this.toggleWatchTrailer}
+                        toggleEditComments={this.toggleEditComments} />
+                ));
 
             moviesContainer = !loadingMovies
                 ? moviesContainer = dbMovies.length === 0

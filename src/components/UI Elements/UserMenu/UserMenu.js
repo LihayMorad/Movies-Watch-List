@@ -10,8 +10,11 @@ import Snackbar from '../../UI Elements/Snackbar/Snackbar';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import Fab from '@material-ui/core/Fab';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
 import Switch from '@material-ui/core/Switch';
@@ -184,11 +187,11 @@ class UserMenu extends Component {
 
     handleFilterChange = e => { this.setState({ [e.target.name]: e.target.value }); };
 
-    handleMovieSearch = () => { this.getMoviesToWatch(this.state.filter, this.state.order, this.state.year, this.state.maxResults); };
+    handleApplyFilters = () => { this.getMoviesToWatch(this.state.filter, this.state.order, this.state.year, this.state.maxResults); };
 
     toggleMovieAddModal = () => { this.setState(state => ({ addingMovie: !state.addingMovie })) }
 
-    isMovieAlreadyExists = (imdbID) => {
+    isMovieAlreadyExists = imdbID => {
         return new Promise((resolve, reject) => {
             database.ref('/mymovies/' + firebase.auth().currentUser.uid).orderByChild("imdbID").equalTo(imdbID).once('value',
                 response => { resolve(!!response.val()); },
@@ -218,7 +221,6 @@ class UserMenu extends Component {
     }
 
     render() {
-
         const firebaseUser = firebase.auth().currentUser;
         const { accountMenuAnchorEl } = this.state;
         const isLoggedIn = !!firebaseUser;
@@ -347,7 +349,7 @@ class UserMenu extends Component {
                             </ButtonBase>
                         </FormControl>
 
-                        <Button id="applyBtn" className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleMovieSearch}>
+                        <Button id="applyBtn" className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleApplyFilters}>
                             <MovieFilterIcon />&nbsp;Apply
                         </Button>
 
@@ -360,6 +362,21 @@ class UserMenu extends Component {
                     <MovieAddModal isOpen={this.state.addingMovie} toggle={this.toggleMovieAddModal} addMovie={this.handleMovieAdd} />
 
                 </form>}
+
+                <TextField
+                    className="MenuElement"
+                    variant="outlined"
+                    margin="normal" id="freeSearch"
+                    name="freeSearch" label="Search in your list"
+                    placeholder="Enter movie name"
+                    value={this.props.freeSearchFilter}
+                    InputProps={{
+                        type: "text",
+                        startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
+                    }}
+                    InputLabelProps={{ style: { color: 'inherit' } }}
+                    onChange={(e) => { this.props.onFreeSearch(e.target.value); }}
+                />
 
                 <Snackbar />
 
@@ -377,7 +394,8 @@ const mapDispatchToProps = dispatch => ({
     saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),
     toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES }),
     toggleLoadingMovies: (isLoading) => dispatch({ type: actionTypes.TOGGLE_LOADING_MOVIES, payload: isLoading }),
-    toggleSnackbar: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
+    toggleSnackbar: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
+    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value })
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);
