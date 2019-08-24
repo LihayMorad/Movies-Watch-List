@@ -71,3 +71,11 @@
 .Menu #applyBtn {
     padding: 4px 7px !important;
 }
+
+.freeSearch {
+    margin-top: 20px !important;
+}
+
+.freeSearch div::before, .freeSearch div:hover {
+    border-bottom-color: inherit !important;
+}

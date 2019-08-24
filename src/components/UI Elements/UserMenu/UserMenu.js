@@ -357,17 +357,14 @@ class UserMenu extends Component {
 
                     <Fab id="menuAddMovie" color="primary" variant="extended" size="large" title="Add Movie" onClick={this.toggleMovieAddModal} >
                         <AddIcon />Add Movie
-                        </Fab>
-
-                    <MovieAddModal isOpen={this.state.addingMovie} toggle={this.toggleMovieAddModal} addMovie={this.handleMovieAdd} />
+                    </Fab>
 
                 </form>}
 
-                <TextField
-                    className="MenuElement"
-                    variant="outlined"
-                    margin="normal" id="freeSearch"
-                    name="freeSearch" label="Search in your list"
+                {isLoggedIn && this.props.movies.length > 0 && <TextField
+                    className="MenuElement freeSearch"
+                    name="freeSearch" margin="normal"
+                    label="Search in your list"
                     placeholder="Enter movie name"
                     value={this.props.freeSearchFilter}
                     InputProps={{
@@ -376,7 +373,9 @@ class UserMenu extends Component {
                     }}
                     InputLabelProps={{ style: { color: 'inherit' } }}
                     onChange={(e) => { this.props.onFreeSearch(e.target.value); }}
-                />
+                />}
+
+                <MovieAddModal isOpen={this.state.addingMovie} toggle={this.toggleMovieAddModal} addMovie={this.handleMovieAdd} />
 
                 <Snackbar />
 

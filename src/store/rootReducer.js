@@ -6,6 +6,7 @@ const initialState = {
     snackbarType: "default",
     showWatchedMovies: false,
     freeSearchFilter: "",
+    movies: [],
     loadingMovies: false
 };
 
