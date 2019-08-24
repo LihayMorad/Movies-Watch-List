@@ -29,12 +29,15 @@ class MoviesContainer extends PureComponent {
 
     handleMovieDelete = (movieID, movieYear) => {
         let movieName = "";
+        let isMovieWatched;
         let updatedMovies = [...this.props.movies];
         let shouldDeleteYear = true;
 
         updatedMovies = updatedMovies.filter(movie => {
+
             if (movieID === movie.key) {
                 movieName = movie.NameEng;
+                isMovieWatched = movie.Watched;
                 return false;
             } else { // there is another movie with the same year
                 if (movieYear === movie.Year) { shouldDeleteYear = false; }
@@ -45,13 +48,12 @@ class MoviesContainer extends PureComponent {
         database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies/${movieID}`).remove()
             .then(() => {
                 this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
-                this.props.saveMovies(updatedMovies);
+                if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
+                const counterNames = ["total"];
+                if (!isMovieWatched) counterNames.push("unwatched");
+                this.handleCounterChange(counterNames, "Delete Movie");
             })
-            .catch(() => {
-                this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error");
-            })
-
-        if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
+            .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
     }
 
     handleYearDelete = yearToDelete => {
@@ -62,11 +64,30 @@ class MoviesContainer extends PureComponent {
         });
     }
 
+    handleCounterChange = (names, type) => {
+        const updatedCounter = { ...this.props.moviesCounter };
+        switch (type) {
+            case "Add Movie":
+                names.forEach(name => { updatedCounter[name]++; })
+                database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+                    if (!error) { }
+                    else { console.log('error: ', error); }
+                });
+                break;
+            case "Delete Movie":
+                names.forEach(name => { updatedCounter[name]--; })
+                database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+                    if (!error) { }
+                    else { console.log('error: ', error); }
+                });
+                break;
+            default: break;
+        }
+    }
+
     toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
 
-    toggleEditComments = (comments = "", userID = "", dbMovieID = "") => {
-        this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments }))
-    };
+    toggleEditComments = (comments = "", userID = "", dbMovieID = "") => { this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments })) };
 
     handleEditComments = comments => {
         database.ref(`/mymovies/${this.state.userID}/movies/${this.state.dbMovieID}`).update({ Comments: comments }, (error) => {
@@ -82,10 +103,11 @@ class MoviesContainer extends PureComponent {
         // const { showInformationDialog, informationDialogTitle } = this.state;
         let moviesContainer = null;
         let loggedOutMessage = null;
+        let counter = null;
         const firebaseUser = firebase.auth().currentUser;
         const isLoggedIn = !!firebaseUser;
         const dbMovies = this.props.movies || [];
-        const { loadingMovies } = this.props;
+        const { loadingMovies, moviesCounter } = this.props;
 
         if (isLoggedIn) {
             const movies = dbMovies
@@ -94,12 +116,8 @@ class MoviesContainer extends PureComponent {
                     <Movie
                         key={movie['key']}
                         dbMovieID={movie['key']}
+                        {...movie}
                         imdbID={movie['imdbID'] || null}
-                        NameHeb={movie['NameHeb']}
-                        NameEng={movie['NameEng']}
-                        Year={movie['Year']}
-                        comments={movie['Comments']}
-                        watched={movie['Watched']}
                         userID={firebase.auth().currentUser.uid}
                         userEmail={firebase.auth().currentUser.email}
                         delete={this.handleMovieDelete}
@@ -116,6 +134,11 @@ class MoviesContainer extends PureComponent {
                     : <div className="MoviesContainer">{movies}</div>
                 : <MoviesSpinner />;
 
+            counter = <>
+                <p>Total: {moviesCounter.total}</p>
+                <p>Unwatched: {moviesCounter.unwatched}</p>
+            </>
+
         } else {
             loggedOutMessage = <><br />
                 <h3 className="noResultsH3">Please login to edit your list</h3>
@@ -127,6 +150,8 @@ class MoviesContainer extends PureComponent {
             <div>
 
                 {loggedOutMessage}
+
+                {counter}
 
                 {moviesContainer}
 
@@ -157,8 +182,7 @@ class MoviesContainer extends PureComponent {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
-    saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),
-})
+    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);

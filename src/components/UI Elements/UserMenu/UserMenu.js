@@ -52,8 +52,7 @@ class UserMenu extends Component {
         maxResults: 10,
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
         accountMenuAnchorEl: null,
-        addingMovie: false,
-        loading: false
+        addingMovie: false
     }
 
     componentDidMount() {
@@ -108,7 +107,7 @@ class UserMenu extends Component {
         this.props.toggleLoadingMovies(true);
         const filterToShow = filter === "releaseYear" ? "Year" : filter;
 
-        this.setState({ maxResults: maxResults, loading: true }, () => {
+        this.setState({ maxResults: maxResults }, () => {
             const userID = firebase.auth().currentUser.uid;
             let moviesDBRef = database.ref(`/mymovies/${userID}/movies`);
             let moviesYearsDBRef = database.ref(`/mymovies/${userID}/years`);
@@ -130,10 +129,14 @@ class UserMenu extends Component {
 
             moviesYearsDBRef.on('value',
                 response => {
-                    const years = response.val() ? new Set([...this.props.moviesYears, ...response.val()]) : [];
+                    const years = response.val() ? new Set([...response.val()]) : [];
                     this.props.saveMoviesYears([...years].sort((a, b) => b - a));
                 },
                 error => { console.log('[moviesYearsDBRef] error: ', error); })
+
+            database.ref(`/mymovies/${userID}/counter`).on('value',
+                response => { this.props.onMoviesCounterChange(response.val()); },
+                error => { console.log('error: ', error); })
         });
     }
 
@@ -152,11 +155,9 @@ class UserMenu extends Component {
     }
 
     setMoviesToWatch = moviesData => {
-
         if (!this.props.showWatchedMovies) { moviesData = moviesData.filter(movie => !movie.Watched); }
 
         this.props.saveMovies(moviesData);
-        this.setState({ loading: false });
     }
 
     sortMoviesOfTheSameYear = (responseData, filter, order) => {
@@ -220,6 +221,7 @@ class UserMenu extends Component {
                 this.props.toggleSnackbar(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
                 this.toggleMovieAddModal();
                 this.handleYearAdd(Year);
+                this.handleCounterChange(["total", "unwatched"], "Add Movie");
             } else {
                 this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'`, "error");
             }
@@ -232,6 +234,20 @@ class UserMenu extends Component {
             if (!error) { }
             else { console.log('error: ', error); }
         });
+    }
+
+    handleCounterChange = (names, type) => {
+        switch (type) {
+            case "Add Movie":
+                const updatedCounter = { ...this.props.moviesCounter };
+                names.forEach(name => { updatedCounter[name]++; })
+                database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+                    if (!error) { }
+                    else { console.log('error: ', error); }
+                });
+                break;
+            default: break;
+        }
     }
 
     render() {
@@ -409,7 +425,8 @@ const mapDispatchToProps = dispatch => ({
     toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES }),
     toggleLoadingMovies: (isLoading) => dispatch({ type: actionTypes.TOGGLE_LOADING_MOVIES, payload: isLoading }),
     toggleSnackbar: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
-    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value })
-})
+    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value }),
+    onMoviesCounterChange: (updatedCounter) => dispatch({ type: actionTypes.ON_MOVIES_COUNTER_CHANGE, payload: updatedCounter })
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

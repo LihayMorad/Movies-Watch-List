@@ -37,7 +37,7 @@ class movieAddModal extends Component {
 
     state = { ...initialState }
 
-    componentDidMount() { this.personalNote = React.createRef(); } // for scrolling to bottom
+    componentDidMount() { this.personalNote = React.createRef(); } // for scrolling to modal bottom
 
     componentDidUpdate(prevProps) { if (prevProps.isOpen !== this.props.isOpen) this.setState({ ...initialState }); }
 

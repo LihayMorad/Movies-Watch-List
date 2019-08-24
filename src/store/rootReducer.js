@@ -8,6 +8,10 @@ const initialState = {
     freeSearchFilter: "",
     movies: [],
     moviesYears: [],
+    moviesCounter: {
+        total: 0,
+        unwatched: 0
+    },
     loadingMovies: false
 };
 
@@ -54,8 +58,15 @@ const rootReducer = (state = initialState, action) => {
                 freeSearchFilter: action.payload
             }
 
-        default:
-            return { ...state };
+        case actionTypes.ON_MOVIES_COUNTER_CHANGE:
+            if (action.payload) {
+                return {
+                    ...state,
+                    moviesCounter: { ...action.payload } // DB.on('value')
+                };
+            } else return state;
+
+        default: return state;
     }
 }
 

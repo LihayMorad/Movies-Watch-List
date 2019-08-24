@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { database } from '../../config/firebase';
+import firebase, { database } from '../../config/firebase';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
@@ -28,13 +28,13 @@ import './Movie.css';
 class Movie extends Component {
 
 	state = {
-		NameHeb: "", NameEng: "", Year: "", comments: "", dbMovieID: "", watched: false,
+		NameHeb: "", NameEng: "", Year: "", Comments: "", dbMovieID: "", Watched: false,
 		loading: true, Error: false
 	}
 
 	componentDidMount() { this.setState({ ...this.props }, this.getMovieDb); }
 
-	componentDidUpdate(prevProps) { if (prevProps.comments !== this.props.comments) this.setState({ comments: this.props.comments }); }
+	componentDidUpdate(prevProps) { if (prevProps.Comments !== this.props.Comments) this.setState({ Comments: this.props.Comments }); }
 
 	getMovieDb = () => {
 		this.setState({ loading: true }, async () => {
@@ -58,12 +58,49 @@ class Movie extends Component {
 	toggleMovieWatched = e => {
 		const { checked } = e.target;
 		database.ref(`/mymovies/${this.props.userID}/movies/${this.props.dbMovieID}`).update({ Watched: checked }, (error) => {
-			const message = !error
-				? `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`
-				: "There was an error marking the movie as watched";
-			this.props.onSnackbarToggle(true, message, !error ? "information" : "error");
-			if (!(!this.props.showWatchedMovies && checked)) this.setState({ watched: checked }); // prevent setState on unmounted component
+			if (!error) {
+				this.props.onSnackbarToggle(true, `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`, "information");
+				this.handleCounterChange("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
+			} else {
+				this.props.onSnackbarToggle(true, "There was an error marking the movie as watched", "error");
+			}
+			if (!(!this.props.showWatchedMovies && checked)) this.setState({ Watched: checked }); // prevent setState on unmounted component
 		})
+	}
+
+	handleCounterChange = (names, type) => {
+		const updatedCounter = { ...this.props.moviesCounter };
+		switch (type) {
+			case "Add Movie":
+				names.forEach(name => { updatedCounter[name]++; })
+				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+					if (!error) { }
+					else { console.log('error: ', error); }
+				});
+				break;
+			case "Delete Movie":
+				names.forEach(name => { updatedCounter[name]--; })
+				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+					if (!error) { }
+					else { console.log('error: ', error); }
+				});
+				break;
+			case "Mark as watched":
+				updatedCounter.unwatched--;
+				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+					if (!error) { }
+					else { console.log('error: ', error); }
+				});
+				break;
+			case "Mark as unwatched":
+				updatedCounter.unwatched++;
+				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
+					if (!error) { }
+					else { console.log('error: ', error); }
+				});
+				break;
+			default: break;
+		}
 	}
 
 	render() {
@@ -102,8 +139,8 @@ class Movie extends Component {
 									{!movieDBError
 										? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
 										: <p>{this.state.Year}</p>}
-									{this.state.comments
-										? <p>Personal note: <span id="commentsSpan">{this.state.comments}</span></p>
+									{this.state.Comments
+										? <p>Personal note: <span id="commentsSpan">{this.state.Comments}</span></p>
 										: ""}
 								</div>
 								: <MovieSpinner />
@@ -129,13 +166,13 @@ class Movie extends Component {
 				</CardActions>
 
 				<Fab className="movieCardFab" color="primary" size="small" title="Add/Edit movie's personal note"
-					onClick={() => { this.props.toggleEditComments(this.state.comments, this.state.userID, this.state.dbMovieID); }} >
+					onClick={() => { this.props.toggleEditComments(this.state.Comments, this.state.userID, this.state.dbMovieID); }} >
 					<EditIcon />
 				</Fab>
 
-				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.watched ? 'unwatched' : 'watched'}`}>
+				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.Watched ? 'unwatched' : 'watched'}`}>
 					<Checkbox style={{ height: 'inherit' }}
-						checked={this.state.watched || false}
+						checked={this.state.Watched || false}
 						icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
 						checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
 						onChange={this.toggleMovieWatched} />
