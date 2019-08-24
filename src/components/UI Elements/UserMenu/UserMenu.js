@@ -52,7 +52,6 @@ class UserMenu extends Component {
         maxResults: 10,
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
         accountMenuAnchorEl: null,
-        years: [],
         addingMovie: false,
         loading: false
     }
@@ -88,7 +87,7 @@ class UserMenu extends Component {
                 this.props.toggleSnackbar(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information");
                 this.handleCloseAccountMenu();
             })
-            .catch((error) => { this.props.toggleSnackbar(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login with your '${error.email}' Google account.`, "error"); }); // Accounts linking failed.
+            .catch((error) => { this.props.toggleSnackbar(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login this Google account.`, "error"); }); // Accounts linking failed.
     }
 
     handleUserSignOut = () => {
@@ -110,24 +109,31 @@ class UserMenu extends Component {
         const filterToShow = filter === "releaseYear" ? "Year" : filter;
 
         this.setState({ maxResults: maxResults, loading: true }, () => {
-            const user = firebase.auth().currentUser;
-            const userID = user.uid;
-            let onValue = database.ref('/mymovies/' + userID);
+            const userID = firebase.auth().currentUser.uid;
+            let moviesDBRef = database.ref(`/mymovies/${userID}/movies`);
+            let moviesYearsDBRef = database.ref(`/mymovies/${userID}/years`);
 
             if (year === "All") {
-                onValue = order === "descending"
-                    ? onValue.orderByChild(filterToShow).limitToLast(this.state.maxResults)
-                    : onValue.orderByChild(filterToShow).limitToFirst(this.state.maxResults)
+                moviesDBRef = order === "descending"
+                    ? moviesDBRef.orderByChild(filterToShow).limitToLast(this.state.maxResults)
+                    : moviesDBRef.orderByChild(filterToShow).limitToFirst(this.state.maxResults)
             } else {
-                onValue = onValue.orderByChild("Year").limitToFirst(this.state.maxResults).equalTo(parseInt(year))
+                moviesDBRef = moviesDBRef.orderByChild("Year").limitToFirst(this.state.maxResults).equalTo(parseInt(year))
             }
 
-            onValue.on('value',
+            moviesDBRef.on('value',
                 response => { this.handleFirebaseData(response, filterToShow, order, year); },
                 error => {
                     this.props.toggleLoadingMovies(false);
                     firebase.auth().currentUser && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
                 })
+
+            moviesYearsDBRef.on('value',
+                response => {
+                    const years = response.val() ? new Set([...this.props.moviesYears, ...response.val()]) : [];
+                    this.props.saveMoviesYears([...years].sort((a, b) => b - a));
+                },
+                error => { console.log('[moviesYearsDBRef] error: ', error); })
         });
     }
 
@@ -146,14 +152,11 @@ class UserMenu extends Component {
     }
 
     setMoviesToWatch = moviesData => {
-        let years = new Set([...this.state.years]);
-        moviesData.forEach(movie => { years.add(movie['Year']); })
 
         if (!this.props.showWatchedMovies) { moviesData = moviesData.filter(movie => !movie.Watched); }
 
         this.props.saveMovies(moviesData);
-
-        this.setState({ years: [...years].sort((a, b) => b - a), loading: false });
+        this.setState({ loading: false });
     }
 
     sortMoviesOfTheSameYear = (responseData, filter, order) => {
@@ -193,7 +196,7 @@ class UserMenu extends Component {
 
     isMovieAlreadyExists = imdbID => {
         return new Promise((resolve, reject) => {
-            database.ref('/mymovies/' + firebase.auth().currentUser.uid).orderByChild("imdbID").equalTo(imdbID).once('value',
+            database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).orderByChild("imdbID").equalTo(imdbID).once('value',
                 response => { resolve(!!response.val()); },
                 error => { resolve("error"); })
         })
@@ -212,11 +215,22 @@ class UserMenu extends Component {
             return;
         }
 
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}`).push(movieToBeAdded, (error) => {
-            !error
-                ? this.props.toggleSnackbar(true, `The movie '${NameEng} (${Year})' added successfully`, "success")
-                : this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'`, "error")
-            this.toggleMovieAddModal();
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).push(movieToBeAdded, (error) => {
+            if (!error) {
+                this.props.toggleSnackbar(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
+                this.toggleMovieAddModal();
+                this.handleYearAdd(Year);
+            } else {
+                this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'`, "error");
+            }
+        });
+    }
+
+    handleYearAdd = year => {
+        const years = new Set([...this.props.moviesYears, year]);
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/years`).set([...years], (error) => {
+            if (!error) { }
+            else { console.log('error: ', error); }
         });
     }
 
@@ -225,7 +239,7 @@ class UserMenu extends Component {
         const { accountMenuAnchorEl } = this.state;
         const isLoggedIn = !!firebaseUser;
         const isAccountMenuOpen = !!accountMenuAnchorEl;
-        const years = [...this.state.years].map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
+        const years = this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
 
         let signInOutButton = <MenuItem>
             <Button
@@ -391,6 +405,7 @@ const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
     saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),
+    saveMoviesYears: (moviesYears) => dispatch({ type: actionTypes.SAVE_MOVIES_YEARS, payload: moviesYears }),
     toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES }),
     toggleLoadingMovies: (isLoading) => dispatch({ type: actionTypes.TOGGLE_LOADING_MOVIES, payload: isLoading }),
     toggleSnackbar: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),

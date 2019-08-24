@@ -7,6 +7,7 @@ const initialState = {
     showWatchedMovies: false,
     freeSearchFilter: "",
     movies: [],
+    moviesYears: [],
     loadingMovies: false
 };
 
@@ -41,11 +42,17 @@ const rootReducer = (state = initialState, action) => {
                 loadingMovies: false
             };
 
-            case actionTypes.ON_FREE_SEARCH_FILTER_CHANGE:
-                return {
-                    ...state,
-                    freeSearchFilter: action.payload
-                }
+        case actionTypes.SAVE_MOVIES_YEARS:
+            return {
+                ...state,
+                moviesYears: action.payload
+            }
+
+        case actionTypes.ON_FREE_SEARCH_FILTER_CHANGE:
+            return {
+                ...state,
+                freeSearchFilter: action.payload
+            }
 
         default:
             return { ...state };

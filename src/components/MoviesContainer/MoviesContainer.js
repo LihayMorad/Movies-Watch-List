@@ -27,26 +27,39 @@ class MoviesContainer extends PureComponent {
 
     handleInformationDialogTitle = title => { this.setState({ informationDialogTitle: title }, () => { this.toggleInformationDialog(); }); }
 
-    handleMovieDelete = movieID => {
-        let movieDetails = "";
+    handleMovieDelete = (movieID, movieYear) => {
+        let movieName = "";
         let updatedMovies = [...this.props.movies];
+        let shouldDeleteYear = true;
 
         updatedMovies = updatedMovies.filter(movie => {
             if (movieID === movie.key) {
-                movieDetails = `${movie.NameEng} (${movie.Year})`;
+                movieName = movie.NameEng;
                 return false;
+            } else { // there is another movie with the same year
+                if (movieYear === movie.Year) { shouldDeleteYear = false; }
             }
             return true;
         });
 
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${movieID}`).remove()
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies/${movieID}`).remove()
             .then(() => {
-                this.props.onSnackbarToggle(true, `The movie '${movieDetails}' deleted successfully`, "success");
+                this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
                 this.props.saveMovies(updatedMovies);
             })
             .catch(() => {
-                this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieDetails}'`, "error");
+                this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error");
             })
+
+        if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
+    }
+
+    handleYearDelete = yearToDelete => {
+        const years = this.props.moviesYears.filter(year => year !== yearToDelete);
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/years`).set([...years], (error) => {
+            if (!error) { }
+            else { console.log('error: ', error); }
+        });
     }
 
     toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
@@ -56,7 +69,7 @@ class MoviesContainer extends PureComponent {
     };
 
     handleEditComments = comments => {
-        database.ref(`/mymovies/${this.state.userID}/${this.state.dbMovieID}`).update({ Comments: comments }, (error) => {
+        database.ref(`/mymovies/${this.state.userID}/movies/${this.state.dbMovieID}`).update({ Comments: comments }, (error) => {
             const message = !error
                 ? "Personal note saved successfully"
                 : "There was an error saving the note";
@@ -66,7 +79,6 @@ class MoviesContainer extends PureComponent {
     }
 
     render() {
-
         // const { showInformationDialog, informationDialogTitle } = this.state;
         let moviesContainer = null;
         let loggedOutMessage = null;

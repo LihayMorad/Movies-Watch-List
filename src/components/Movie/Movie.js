@@ -48,7 +48,7 @@ class Movie extends Component {
 				} else {
 					error = omdbResponse.data.Error;
 				}
-				this.setState({ loading: false, ...movieData, Error: error });
+				this.setState({ loading: false, ...movieData, Year: parseInt(movieData.Year), Error: error });
 			} catch (error) {
 				this.setState({ loading: false, Error: true });
 			}
@@ -57,7 +57,7 @@ class Movie extends Component {
 
 	toggleMovieWatched = e => {
 		const { checked } = e.target;
-		database.ref(`/mymovies/${this.props.userID}/${this.props.dbMovieID}`).update({ Watched: checked }, (error) => {
+		database.ref(`/mymovies/${this.props.userID}/movies/${this.props.dbMovieID}`).update({ Watched: checked }, (error) => {
 			const message = !error
 				? `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`
 				: "There was an error marking the movie as watched";
@@ -142,7 +142,7 @@ class Movie extends Component {
 				</Fab>
 
 				<Fab className="movieCardFab" color="secondary" size="small" title="Delete movie"
-					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID); } }} >
+					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID, this.state.Year); } }} >
 					<DeleteIcon />
 				</Fab>
 
