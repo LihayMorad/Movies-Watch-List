@@ -17,9 +17,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
-import Switch from '@material-ui/core/Switch';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
-import ButtonBase from '@material-ui/core/ButtonBase';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
@@ -41,7 +39,6 @@ const StyledFormControlLabel = withStyles({
 const StyledInputLabel = withStyles({ root: { color: 'inherit !important', '&:focus': { color: 'inherit !important' } } })(InputLabel);
 const StyledSelect = withStyles({ icon: { color: 'inherit' } })(Select);
 const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 12px' }, notchedOutline: { borderColor: '#ffffffbf !important', '&:focus': { borderColor: 'white !important' }, } })(OutlinedInput);
-const StyledSwitch = withStyles({ switchBase: { color: 'grey' }, checked: { color: 'white' }, })(Switch);
 
 class UserMenu extends Component {
 
@@ -150,14 +147,7 @@ class UserMenu extends Component {
                 ? response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
                 : response.forEach(elem => { sortedMovies.push({ key: elem.key, ...elem.val() }); });
         }
-
-        this.setMoviesToWatch(sortedMovies);
-    }
-
-    setMoviesToWatch = moviesData => {
-        if (!this.props.showWatchedMovies) { moviesData = moviesData.filter(movie => !movie.Watched); }
-
-        this.props.saveMovies(moviesData);
+        this.props.saveMovies(sortedMovies);
     }
 
     sortMoviesOfTheSameYear = (responseData, filter, order) => {
@@ -255,6 +245,7 @@ class UserMenu extends Component {
         const { accountMenuAnchorEl } = this.state;
         const isLoggedIn = !!firebaseUser;
         const isAccountMenuOpen = !!accountMenuAnchorEl;
+        const { moviesCounter } = this.props;
         const years = this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
 
         let signInOutButton = <MenuItem>
@@ -362,21 +353,6 @@ class UserMenu extends Component {
                                 <MenuItem value={25}>25</MenuItem>
                                 <MenuItem value={50}>50</MenuItem>
                             </StyledSelect>
-                        </FormControl>
-
-                        <FormControl id="showWatchedMoviesSwitch" className="MenuElement">
-                            <ButtonBase>
-                                <StyledFormControlLabel
-                                    control={<StyledSwitch
-                                        name="showWatchedMoviesSwitch"
-                                        color="default"
-                                        checked={this.props.showWatchedMovies}
-                                        onChange={this.props.toggleWatchedMovies}
-                                    />}
-                                    label="Show watched movies"
-                                    labelPlacement="end"
-                                />
-                            </ButtonBase>
                         </FormControl>
 
                         <Button id="applyBtn" className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleApplyFilters}>

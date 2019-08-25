@@ -10,8 +10,10 @@ import MovieCommentsModal from '../UI Elements/MovieCommentsModal/MovieCommentsM
 // import InformationDialog from './InformationDialog/InformationDialog';
 import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
 
+import FormControl from '@material-ui/core/FormControl';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
+import Checkbox from '@material-ui/core/Checkbox';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
 import Badge from '@material-ui/core/Badge';
@@ -24,6 +26,7 @@ const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '0px' }
 })(Tooltip);
+const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
 
 class MoviesContainer extends PureComponent {
 
@@ -124,7 +127,8 @@ class MoviesContainer extends PureComponent {
 
         if (isLoggedIn) {
             const movies = dbMovies
-                .filter(movie => movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()))
+                .filter(movie => movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase())
+                    && movie.Watched === this.props.showWatchedMovies)
                 .map(movie => (
                     <Movie
                         key={movie['key']}
@@ -147,23 +151,23 @@ class MoviesContainer extends PureComponent {
                     : <div className="MoviesContainer">{movies}</div>
                 : <MoviesSpinner />;
 
-            counter = <div id="MoviesCounterBadges">
+            counter = <FormControl>
                 <StyledTooltip disableFocusListener disableTouchListener title="Watched movies" TransitionComponent={Zoom}>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={moviesCounter.total - moviesCounter.unwatched} color="primary">
-                            <RemoveRedEye />
-                        </Badge>
-                    </IconButton>
+                    <Checkbox
+                        checked={this.props.showWatchedMovies}
+                        icon={<StyledIconButton >
+                            <Badge badgeContent={moviesCounter.unwatched} color="secondary">
+                                <RemoveRedEyeOutlined fontSize="large" />
+                            </Badge>
+                        </StyledIconButton>}
+                        checkedIcon={<StyledIconButton >
+                            <Badge badgeContent={moviesCounter.total - moviesCounter.unwatched} color="secondary">
+                                <RemoveRedEye fontSize="large" />
+                            </Badge>
+                        </StyledIconButton>}
+                        onChange={this.props.toggleWatchedMovies} />
                 </StyledTooltip>
-
-                <StyledTooltip disableFocusListener disableTouchListener title="Unwatched movies" TransitionComponent={Zoom}>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={moviesCounter.unwatched} color="secondary">
-                            <RemoveRedEyeOutlined />
-                        </Badge>
-                    </IconButton>
-                </StyledTooltip>
-            </div>
+            </FormControl>
 
         } else {
             loggedOutMessage = <><br />
@@ -208,7 +212,8 @@ class MoviesContainer extends PureComponent {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
+    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
+    toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);
