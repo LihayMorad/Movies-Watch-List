@@ -5,6 +5,8 @@ import firebase, { database } from '../../config/firebase';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
 
+import MovieTabs from './MovieTabs/MovieTabs';
+import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,17 +15,20 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import MovieTabs from './MovieTabs/MovieTabs';
 import Divider from '@material-ui/core/Divider';
-import MovieNotFound from '../../assets/MovieNotFound.png';
-import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
 import Checkbox from '@material-ui/core/Checkbox';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 
+import MovieNotFound from '../../assets/MovieNotFound.png';
 import youTubeIcon from '../../assets/youtube_icon.png';
 
+import { withStyles } from '@material-ui/core/styles';
 import './Movie.css';
+
+const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);
 
 class Movie extends Component {
 
@@ -112,41 +117,43 @@ class Movie extends Component {
 			<Card className="movieCard">
 
 				<CardActionArea>
-					<CardContent id="movieCardContent" title="Click to watch the trailer"
-						onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? this.state.Title : this.state.NameEng} ${this.state.Year}`), this.state.imdbID)}>
-						<div className="movieCardContentImgDiv">
-							{!loading
-								? !movieDBError
-									? <>
-										<img src={this.state.Poster} id="movieCardContentImgDivPoster" alt="Movie Poster Not Found" />
-										<img src={youTubeIcon} id="movieCardContentYouTubeImg" alt="YouTube icon" />
-									</>
-									: <div id="movieCardContentImgDivError">
-										<img src={MovieNotFound} alt={movieDBError === true ? "Error" : movieDBError} />
-										<h1>Database error {movieDBError}</h1>
+					<StyledTooltip title="Click to watch the trailer" TransitionComponent={Zoom}>
+						<CardContent id="movieCardContent"
+							onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? this.state.Title : this.state.NameEng} ${this.state.Year}`), this.state.imdbID)}>
+							<div className="movieCardContentImgDiv">
+								{!loading
+									? !movieDBError
+										? <>
+											<img src={this.state.Poster} id="movieCardContentImgDivPoster" alt="Movie Poster Not Found" />
+											<img src={youTubeIcon} id="movieCardContentYouTubeImg" alt="YouTube icon" />
+										</>
+										: <div id="movieCardContentImgDivError">
+											<img src={MovieNotFound} alt={movieDBError === true ? "Error" : movieDBError} />
+											<h1>Database error {movieDBError}</h1>
+										</div>
+									: <MovieSpinner />
+								}
+							</div>
+
+							<Divider variant="middle"></Divider>
+
+							<div className="movieCardContentTextDiv">
+								{!loading
+									? <div>
+										<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.NameEng} </Typography>
+										<Typography variant="h5"> {this.state.NameHeb} </Typography>
+										{!movieDBError
+											? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
+											: <p>{this.state.Year}</p>}
+										{this.state.Comments
+											? <p>Personal note: <span id="commentsSpan">{this.state.Comments}</span></p>
+											: ""}
 									</div>
-								: <MovieSpinner />
-							}
-						</div>
-
-						<Divider variant="middle"></Divider>
-
-						<div className="movieCardContentTextDiv">
-							{!loading
-								? <div>
-									<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.NameEng} </Typography>
-									<Typography variant="h5"> {this.state.NameHeb} </Typography>
-									{!movieDBError
-										? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
-										: <p>{this.state.Year}</p>}
-									{this.state.Comments
-										? <p>Personal note: <span id="commentsSpan">{this.state.Comments}</span></p>
-										: ""}
-								</div>
-								: <MovieSpinner />
-							}
-						</div>
-					</CardContent>
+									: <MovieSpinner />
+								}
+							</div>
+						</CardContent>
+					</StyledTooltip>
 				</CardActionArea>
 
 				<CardActions id="movieCardActions">

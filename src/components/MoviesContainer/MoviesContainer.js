@@ -10,7 +10,20 @@ import MovieCommentsModal from '../UI Elements/MovieCommentsModal/MovieCommentsM
 // import InformationDialog from './InformationDialog/InformationDialog';
 import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
 
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
+import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
+import Badge from '@material-ui/core/Badge';
+import Zoom from '@material-ui/core/Zoom';
+
+import { withStyles } from '@material-ui/core/styles';
 import './MoviesContainer.css';
+
+const StyledTooltip = withStyles({
+    tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
+    tooltipPlacementBottom: { marginTop: '0px' }
+})(Tooltip);
 
 class MoviesContainer extends PureComponent {
 
@@ -30,11 +43,9 @@ class MoviesContainer extends PureComponent {
     handleMovieDelete = (movieID, movieYear) => {
         let movieName = "";
         let isMovieWatched;
-        let updatedMovies = [...this.props.movies];
         let shouldDeleteYear = true;
 
-        updatedMovies = updatedMovies.filter(movie => {
-
+        this.props.movies.filter(movie => {
             if (movieID === movie.key) {
                 movieName = movie.NameEng;
                 isMovieWatched = movie.Watched;
@@ -45,15 +56,17 @@ class MoviesContainer extends PureComponent {
             return true;
         });
 
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies/${movieID}`).remove()
-            .then(() => {
-                this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
-                if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
-                const counterNames = ["total"];
-                if (!isMovieWatched) counterNames.push("unwatched");
-                this.handleCounterChange(counterNames, "Delete Movie");
-            })
-            .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
+        if (movieName) { // movie found in props movies list
+            database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies/${movieID}`).remove()
+                .then(() => {
+                    if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
+                    const counterNames = ["total"];
+                    if (!isMovieWatched) { counterNames.push("unwatched"); }
+                    this.handleCounterChange(counterNames, "Delete Movie");
+                    this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
+                })
+                .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
+        } else { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); }
     }
 
     handleYearDelete = yearToDelete => {
@@ -134,10 +147,23 @@ class MoviesContainer extends PureComponent {
                     : <div className="MoviesContainer">{movies}</div>
                 : <MoviesSpinner />;
 
-            counter = <>
-                <p>Total: {moviesCounter.total}</p>
-                <p>Unwatched: {moviesCounter.unwatched}</p>
-            </>
+            counter = <div id="MoviesCounterBadges">
+                <StyledTooltip disableFocusListener disableTouchListener title="Watched movies" TransitionComponent={Zoom}>
+                    <IconButton color="inherit">
+                        <Badge badgeContent={moviesCounter.total - moviesCounter.unwatched} color="primary">
+                            <RemoveRedEye />
+                        </Badge>
+                    </IconButton>
+                </StyledTooltip>
+
+                <StyledTooltip disableFocusListener disableTouchListener title="Unwatched movies" TransitionComponent={Zoom}>
+                    <IconButton color="inherit">
+                        <Badge badgeContent={moviesCounter.unwatched} color="secondary">
+                            <RemoveRedEyeOutlined />
+                        </Badge>
+                    </IconButton>
+                </StyledTooltip>
+            </div>
 
         } else {
             loggedOutMessage = <><br />

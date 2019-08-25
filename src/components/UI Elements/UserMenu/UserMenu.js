@@ -273,7 +273,7 @@ class UserMenu extends Component {
             signInOutButton = <MenuItem title="Logout" onClick={this.handleUserSignOut}>
                 <Button id="loggedInBtn" className="btnPadding" color="primary" variant="contained">
                     {firebaseUser.isAnonymous
-                        ? <><PersonOutlineIcon />&nbsp;&nbsp;Guest</>
+                        ? <><PersonOutlineIcon />&nbsp;Logout from Guest</>
                         : <><PersonIcon />&nbsp;Logout from {firebaseUser.displayName || firebaseUser.email}</>}
                 </Button>
             </MenuItem >;
@@ -394,7 +394,7 @@ class UserMenu extends Component {
                 {isLoggedIn && this.props.movies.length > 0 && <TextField
                     className="MenuElement freeSearch"
                     name="freeSearch" margin="normal"
-                    label="Search in your list"
+                    label="Filter search results"
                     placeholder="Enter movie name"
                     value={this.props.freeSearchFilter}
                     InputProps={{

@@ -12,3 +12,10 @@
 .noResultsH4 {
     margin: 0px auto;
 }
+
+#MoviesCounterBadges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 7px 4px;
+}
