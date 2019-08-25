@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions';
 
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
-import MovieTrailerModal from '../../UI Elements/MovieTrailerModal/MovieTrailerModal';
-import SearchResultsSpinner from '../../UI Elements/Spinners/SearchResultsSpinner/SearchResultsSpinner';
+import MovieTrailerModal from '../MovieTrailerModal/MovieTrailerModal';
+import SearchResultsSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';

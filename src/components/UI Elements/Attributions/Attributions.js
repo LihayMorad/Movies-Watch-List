@@ -1,6 +1,6 @@
 import React from 'react';
 
-import TMDbLogo from '../../assets/TMDbLogo.png';
+import TMDbLogo from '../../../assets/TMDbLogo.png';
 
 import './Attributions.css';
 

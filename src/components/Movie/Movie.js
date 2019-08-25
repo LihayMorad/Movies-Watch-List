@@ -69,7 +69,6 @@ class Movie extends Component {
 			} else {
 				this.props.onSnackbarToggle(true, "There was an error marking the movie as watched", "error");
 			}
-			if (!(!this.props.showWatchedMovies && checked)) this.setState({ Watched: checked }); // prevent setState on unmounted component
 		})
 	}
 
@@ -172,23 +171,30 @@ class Movie extends Component {
 					}
 				</CardActions>
 
-				<Fab className="movieCardFab" color="primary" size="small" title="Add/Edit movie's personal note"
-					onClick={() => { this.props.toggleEditComments(this.state.Comments, this.state.userID, this.state.dbMovieID); }} >
-					<EditIcon />
-				</Fab>
+				<StyledTooltip title="Edit movie's personal note" TransitionComponent={Zoom}>
+					<Fab className="movieCardFab" color="primary" size="small"
+						onClick={() => { this.props.toggleEditComments(this.state.Comments, this.state.userID, this.state.dbMovieID); }} >
+						<EditIcon />
+					</Fab>
+				</StyledTooltip>
 
-				<Fab className="movieCardFab" color="default" size="small" title={`Mark as ${this.state.Watched ? 'unwatched' : 'watched'}`}>
-					<Checkbox style={{ height: 'inherit' }}
-						checked={this.state.Watched || false}
-						icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
-						checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
-						onChange={this.toggleMovieWatched} />
-				</Fab>
+				<StyledTooltip title={`Mark movie as ${this.state.Watched ? 'unwatched' : 'watched'}`} TransitionComponent={Zoom}>
+					<Fab className="movieCardFab" color="default" size="small">
+						<Checkbox style={{ height: 'inherit' }}
+							checked={this.state.Watched || false}
+							icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
+							checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
+							onChange={this.toggleMovieWatched} />
+					</Fab>
+				</StyledTooltip>
 
-				<Fab className="movieCardFab" color="secondary" size="small" title="Delete movie"
-					onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID, this.state.Year); } }} >
-					<DeleteIcon />
-				</Fab>
+				<StyledTooltip title="Delete movie" TransitionComponent={Zoom}>
+					<Fab className="movieCardFab" color="secondary" size="small"
+						onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID, this.state.Year); } }} >
+						<DeleteIcon />
+					</Fab>
+				</StyledTooltip>
+
 
 			</Card>
 
@@ -202,6 +208,6 @@ const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
 	onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Movie);

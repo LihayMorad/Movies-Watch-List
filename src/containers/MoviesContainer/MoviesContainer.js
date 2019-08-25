@@ -4,44 +4,45 @@ import firebase, { database } from '../../config/firebase';
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions';
 
-import Movie from '../Movie/Movie';
-import MovieTrailerModal from '../UI Elements/MovieTrailerModal/MovieTrailerModal';
-import MovieCommentsModal from '../UI Elements/MovieCommentsModal/MovieCommentsModal';
-// import InformationDialog from './InformationDialog/InformationDialog';
-import MoviesSpinner from '../UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
+import Movie from '../../components/Movie/Movie';
 
+import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddModal';
+import MovieTrailerModal from '../../components/UI Elements/MovieTrailerModal/MovieTrailerModal';
+import MovieCommentsModal from '../../components/UI Elements/MovieCommentsModal/MovieCommentsModal';
+import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
+// import InformationModal from '../UI Elements/InformationModal/InformationModal';
+
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 import FormControl from '@material-ui/core/FormControl';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
 import Checkbox from '@material-ui/core/Checkbox';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
 import Badge from '@material-ui/core/Badge';
 import Zoom from '@material-ui/core/Zoom';
+import AddIcon from '@material-ui/icons/Add';
 
 import { withStyles } from '@material-ui/core/styles';
 import './MoviesContainer.css';
 
+const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '0px' }
 })(Tooltip);
-const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
 
 class MoviesContainer extends PureComponent {
 
     state = {
-        showInformationDialog: false, informationDialogTitle: "",
+        showInformationModal: false, informationModalTitle: "",
         watchingTrailer: false, searchTrailerParams: "", searchID: "",
-        editingComments: false, comments: ""
+        editingComments: false, comments: "",
+        addingMovie: false
     }
-
-    toggleInformationDialog = () => {
-        this.setState(state => ({ showInformationDialog: !state.showInformationDialog }),
-            () => setTimeout(() => { this.setState({ showInformationDialog: false }) }, 3000));
-    }
-
-    handleInformationDialogTitle = title => { this.setState({ informationDialogTitle: title }, () => { this.toggleInformationDialog(); }); }
 
     handleMovieDelete = (movieID, movieYear) => {
         let movieName = "";
@@ -101,9 +102,50 @@ class MoviesContainer extends PureComponent {
         }
     }
 
-    toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
+    handleMovieAdd = async (details) => {
+        const Year = parseInt(details.Year);
+        const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
+        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year, Watched };
 
-    toggleEditComments = (comments = "", userID = "", dbMovieID = "") => { this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments })) };
+        const isMovieExistsResponse = await this.isMovieAlreadyExists(imdbID);
+        if (isMovieExistsResponse) {
+            isMovieExistsResponse !== "error"
+                ? this.props.onSnackbarToggle(true, `The movie '${NameEng}' already exists in your list!`, "warning")
+                : this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'.`, "error");
+            return;
+        }
+
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).push(movieToBeAdded, (error) => {
+            if (!error) {
+                this.props.onSnackbarToggle(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
+                this.toggleAddMovie();
+                this.handleYearAdd(Year);
+                this.handleCounterChange(["total", "unwatched"], "Add Movie");
+            } else {
+                this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error");
+            }
+        });
+    }
+
+    isMovieAlreadyExists = imdbID => {
+        return new Promise((resolve, reject) => {
+            database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).orderByChild("imdbID").equalTo(imdbID).once('value',
+                response => { resolve(!!response.val()); },
+                error => { resolve("error"); })
+        })
+    }
+
+    handleYearAdd = year => {
+        const years = new Set([...this.props.moviesYears, year]);
+        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/years`).set([...years], (error) => {
+            if (!error) { }
+            else { console.log('error: ', error); }
+        });
+    }
+
+    toggleAddMovie = () => { this.setState(state => ({ addingMovie: !state.addingMovie })) };
+
+    toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
 
     handleEditComments = comments => {
         database.ref(`/mymovies/${this.state.userID}/movies/${this.state.dbMovieID}`).update({ Comments: comments }, (error) => {
@@ -115,15 +157,25 @@ class MoviesContainer extends PureComponent {
         });
     }
 
+    toggleEditComments = (comments = "", userID = "", dbMovieID = "") => { this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments })) };
+
+    handleInformationModalTitle = title => { this.setState({ informationModalTitle: title }, () => { this.toggleInformationModal(); }); }
+
+    toggleInformationModal = () => {
+        this.setState(state => ({ showInformationModal: !state.showInformationModal }),
+            () => setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000));
+    }
+
     render() {
-        // const { showInformationDialog, informationDialogTitle } = this.state;
+        // const { showInformationModal, informationModalTitle } = this.state;
         let moviesContainer = null;
         let loggedOutMessage = null;
         let counter = null;
+        let addMovieBtn = null;
         const firebaseUser = firebase.auth().currentUser;
         const isLoggedIn = !!firebaseUser;
         const dbMovies = this.props.movies || [];
-        const { loadingMovies, moviesCounter } = this.props;
+        const { loadingMovies, moviesCounter, showWatchedMovies } = this.props;
 
         if (isLoggedIn) {
             const movies = dbMovies
@@ -151,16 +203,22 @@ class MoviesContainer extends PureComponent {
                     : <div className="MoviesContainer">{movies}</div>
                 : <MoviesSpinner />;
 
+
+            addMovieBtn = <Fab id="menuAddMovie" color="primary" variant="extended" size="large" onClick={this.toggleAddMovie} >
+                <AddIcon />Add Movie
+            </Fab>
+
+
             counter = <FormControl>
-                <StyledTooltip disableFocusListener disableTouchListener title="Watched movies" TransitionComponent={Zoom}>
+                <StyledTooltip title={`${showWatchedMovies ? 'Watched' : 'Unwatched'} movies`} disableFocusListener disableTouchListener TransitionComponent={Zoom}>
                     <Checkbox
-                        checked={this.props.showWatchedMovies}
-                        icon={<StyledIconButton >
+                        checked={showWatchedMovies}
+                        icon={<StyledIconButton>
                             <Badge badgeContent={moviesCounter.unwatched} color="secondary">
                                 <RemoveRedEyeOutlined fontSize="large" />
                             </Badge>
                         </StyledIconButton>}
-                        checkedIcon={<StyledIconButton >
+                        checkedIcon={<StyledIconButton>
                             <Badge badgeContent={moviesCounter.total - moviesCounter.unwatched} color="secondary">
                                 <RemoveRedEye fontSize="large" />
                             </Badge>
@@ -181,14 +239,31 @@ class MoviesContainer extends PureComponent {
 
                 {loggedOutMessage}
 
+                {addMovieBtn}
+
                 {counter}
+
+                {isLoggedIn && this.props.movies.length > 0 && <TextField
+                    className="MenuElement freeSearch"
+                    name="freeSearch" margin="normal"
+                    label="Filter search results"
+                    placeholder="Enter movie name"
+                    value={this.props.freeSearchFilter}
+                    InputProps={{
+                        type: "text",
+                        startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
+                    }}
+                    InputLabelProps={{ style: { color: 'inherit' } }}
+                    onChange={(e) => { this.props.onFreeSearch(e.target.value); }}
+                />}
 
                 {moviesContainer}
 
-                {/* <InformationDialog
-                    isOpen={showInformationDialog}
-                    toggle={this.toggleInformationDialog}
-                    dialogTitle={informationDialogTitle} /> */}
+                <MovieAddModal
+                    isOpen={this.state.addingMovie}
+                    toggle={this.toggleAddMovie}
+                    addMovie={this.handleMovieAdd} />
+
 
                 <MovieTrailerModal
                     isOpen={this.state.watchingTrailer}
@@ -202,6 +277,11 @@ class MoviesContainer extends PureComponent {
                     comments={this.state.comments}
                     handleEditComments={this.handleEditComments} />
 
+                {/* <InformationModal
+                        isOpen={showInformationModal}
+                        toggle={this.toggleInformationModal}
+                        title={informationModalTitle} /> */}
+
             </div >
         );
 
@@ -213,6 +293,7 @@ const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
     onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
+    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value }),
     toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES })
 });
 

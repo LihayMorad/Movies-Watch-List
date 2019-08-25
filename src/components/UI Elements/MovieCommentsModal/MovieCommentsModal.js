@@ -39,7 +39,7 @@ class movieCommentsModal extends Component {
                 open={this.props.isOpen}
                 onClose={this.handleClose}
                 fullWidth
-                maxWidth="md" >
+                maxWidth="md">
 
                 <DialogTitle>Movie note
                     <IconButton className="modalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>

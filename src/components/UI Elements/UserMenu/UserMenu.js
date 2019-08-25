@@ -4,41 +4,33 @@ import firebase, { database } from '../../../config/firebase';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions';
 
-import MovieAddModal from '../../Movie/MovieAddModal/MovieAddModal';
-import Snackbar from '../../UI Elements/Snackbar/Snackbar';
-
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
-import Fab from '@material-ui/core/Fab';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
-import AddIcon from '@material-ui/icons/Add';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import LinkIcon from '@material-ui/icons/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Tooltip from '@material-ui/core/Tooltip';
 import Fade from '@material-ui/core/Fade';
+import Zoom from '@material-ui/core/Zoom';
 
 import { withStyles } from '@material-ui/core/styles';
 import './UserMenu.css';
 
-const StyledFormControlLabel = withStyles({
-    root: { maxWidth: '100px', marginRight: '0' },
-    label: { fontSize: '0.7rem', fontWeight: '500', color: 'white !important' }
-})(FormControlLabel);
-
 const StyledInputLabel = withStyles({ root: { color: 'inherit !important', '&:focus': { color: 'inherit !important' } } })(InputLabel);
 const StyledSelect = withStyles({ icon: { color: 'inherit' } })(Select);
 const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 12px' }, notchedOutline: { borderColor: '#ffffffbf !important', '&:focus': { borderColor: 'white !important' }, } })(OutlinedInput);
+const StyledTooltip = withStyles({
+    tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
+    tooltipPlacementBottom: { marginTop: '5px' }
+})(Tooltip);
 
 class UserMenu extends Component {
 
@@ -48,8 +40,7 @@ class UserMenu extends Component {
         year: "All",
         maxResults: 10,
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
-        accountMenuAnchorEl: null,
-        addingMovie: false
+        accountMenuAnchorEl: null
     }
 
     componentDidMount() {
@@ -62,28 +53,28 @@ class UserMenu extends Component {
     handleUserSignIn = () => {
         firebase.auth().signInWithPopup(this.state.googleAuthProvider)
             .then((result) => { // Sign-in successfully.
-                this.props.toggleSnackbar(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information");
+                this.props.onSnackbarToggle(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information");
                 this.handleCloseAccountMenu();
             })
-            .catch((error) => { this.props.toggleSnackbar(true, `Sign in error: ${error}`, "error"); }); // Sign-in failed.
+            .catch((error) => { this.props.onSnackbarToggle(true, `Sign in error: ${error}`, "error"); }); // Sign-in failed.
     }
 
     handleUserSignInAnonymously = () => {
         firebase.auth().signInAnonymously()
             .then((result) => { // Sign-in anonymously successfully.
-                this.props.toggleSnackbar(true, `Hi, you are now logged in as a guest user.`, "information");
+                this.props.onSnackbarToggle(true, `Hi, you are now logged in as a guest user.`, "information");
                 this.handleCloseAccountMenu();
             })
-            .catch((error) => { this.props.toggleSnackbar(true, `Error! cannot sign in as a guest user.`, "error"); }); // Sign-in anonymously failed.
+            .catch((error) => { this.props.onSnackbarToggle(true, `Error! cannot sign in as a guest user.`, "error"); }); // Sign-in anonymously failed.
     }
 
     handleUserAccountLinking = () => {
         firebase.auth().currentUser.linkWithPopup(this.state.googleAuthProvider)
             .then((result) => { // Accounts linking succeeded.
-                this.props.toggleSnackbar(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information");
+                this.props.onSnackbarToggle(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information");
                 this.handleCloseAccountMenu();
             })
-            .catch((error) => { this.props.toggleSnackbar(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login this Google account.`, "error"); }); // Accounts linking failed.
+            .catch((error) => { this.props.onSnackbarToggle(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login this Google account.`, "error"); }); // Accounts linking failed.
     }
 
     handleUserSignOut = () => {
@@ -93,10 +84,10 @@ class UserMenu extends Component {
         if (window.confirm(`Are you sure you want to logout from your ${relevantAccountMessage} `)) {
             firebase.auth().signOut()
                 .then((result) => { // Sign-out successfully.
-                    this.props.toggleSnackbar(true, "You are now logged out", "information");
+                    this.props.onSnackbarToggle(true, "You are now logged out", "information");
                     this.handleCloseAccountMenu();
                 })
-                .catch((error) => { this.props.toggleSnackbar(true, `Sign out error: ${error}`, "error"); }); // Sign-out failed.
+                .catch((error) => { this.props.onSnackbarToggle(true, `Sign out error: ${error}`, "error"); }); // Sign-out failed.
         }
     }
 
@@ -121,7 +112,7 @@ class UserMenu extends Component {
                 response => { this.handleFirebaseData(response, filterToShow, order, year); },
                 error => {
                     this.props.toggleLoadingMovies(false);
-                    firebase.auth().currentUser && this.props.toggleSnackbar(true, `There was an error retrieving movies: ${error}`, "error");
+                    firebase.auth().currentUser && this.props.onSnackbarToggle(true, `There was an error retrieving movies: ${error}`, "error");
                 })
 
             moviesYearsDBRef.on('value',
@@ -179,73 +170,15 @@ class UserMenu extends Component {
 
     handleCloseAccountMenu = e => { this.setState({ accountMenuAnchorEl: null }); }
 
-    handleFilterChange = e => { this.setState({ [e.target.name]: e.target.value }); };
+    handleFilterChange = e => { this.setState({ [e.target.name]: e.target.value }); }
 
-    handleApplyFilters = () => { this.getMoviesToWatch(this.state.filter, this.state.order, this.state.year, this.state.maxResults); };
-
-    toggleMovieAddModal = () => { this.setState(state => ({ addingMovie: !state.addingMovie })) }
-
-    isMovieAlreadyExists = imdbID => {
-        return new Promise((resolve, reject) => {
-            database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).orderByChild("imdbID").equalTo(imdbID).once('value',
-                response => { resolve(!!response.val()); },
-                error => { resolve("error"); })
-        })
-    }
-
-    handleMovieAdd = async (details) => {
-        const Year = parseInt(details.Year);
-        const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
-        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year, Watched };
-
-        const isMovieExistsResponse = await this.isMovieAlreadyExists(imdbID);
-        if (isMovieExistsResponse) {
-            isMovieExistsResponse !== "error"
-                ? this.props.toggleSnackbar(true, `The movie '${NameEng}' already exists in your list!`, "warning")
-                : this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'.`, "error");
-            return;
-        }
-
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).push(movieToBeAdded, (error) => {
-            if (!error) {
-                this.props.toggleSnackbar(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
-                this.toggleMovieAddModal();
-                this.handleYearAdd(Year);
-                this.handleCounterChange(["total", "unwatched"], "Add Movie");
-            } else {
-                this.props.toggleSnackbar(true, `There was an error adding '${NameEng} (${Year})'`, "error");
-            }
-        });
-    }
-
-    handleYearAdd = year => {
-        const years = new Set([...this.props.moviesYears, year]);
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/years`).set([...years], (error) => {
-            if (!error) { }
-            else { console.log('error: ', error); }
-        });
-    }
-
-    handleCounterChange = (names, type) => {
-        switch (type) {
-            case "Add Movie":
-                const updatedCounter = { ...this.props.moviesCounter };
-                names.forEach(name => { updatedCounter[name]++; })
-                database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-                    if (!error) { }
-                    else { console.log('error: ', error); }
-                });
-                break;
-            default: break;
-        }
-    }
+    handleApplyFilters = () => { this.getMoviesToWatch(this.state.filter, this.state.order, this.state.year, this.state.maxResults); }
 
     render() {
         const firebaseUser = firebase.auth().currentUser;
         const { accountMenuAnchorEl } = this.state;
         const isLoggedIn = !!firebaseUser;
         const isAccountMenuOpen = !!accountMenuAnchorEl;
-        const { moviesCounter } = this.props;
         const years = this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
 
         let signInOutButton = <MenuItem>
@@ -255,9 +188,11 @@ class UserMenu extends Component {
         </MenuItem>;
 
         let signInOutAnonymouslyButton = <MenuItem>
-            <Button
-                className="btnPadding" color="default" variant="contained" title="Sign in anonymously"
-                onClick={this.handleUserSignInAnonymously}><PersonOutlineIcon />&nbsp;Login as a guest</Button>
+            <StyledTooltip title="Sign in anonymously" TransitionComponent={Zoom}>
+                <Button className="btnPadding" color="default" variant="contained" onClick={this.handleUserSignInAnonymously}>
+                    <PersonOutlineIcon />&nbsp;Login as a guest
+                </Button>
+            </StyledTooltip>
         </MenuItem>;
 
         if (isLoggedIn) {
@@ -270,16 +205,16 @@ class UserMenu extends Component {
             </MenuItem >;
 
             if (firebaseUser.isAnonymous) {
-                signInOutAnonymouslyButton = <MenuItem title="Link this guest account with your Google account to save your data"
-                    onClick={this.handleUserAccountLinking}>
-                    <Button className="btnPadding" color="primary" variant="outlined">
-                        <CloudUploadIcon />&nbsp;&nbsp;Link with Google
-                    </Button>
+                signInOutAnonymouslyButton = <MenuItem>
+                    <StyledTooltip title="Link this guest account with your Google account to save your data" TransitionComponent={Zoom}>
+                        <Button className="btnPadding" color="primary" variant="contained" onClick={this.handleUserAccountLinking}>
+                            <LinkIcon />&nbsp;Link with Google
+                        </Button>
+                    </StyledTooltip>
                 </MenuItem>;
             } else {
                 signInOutAnonymouslyButton = null;
             }
-
         }
 
         return (
@@ -361,29 +296,7 @@ class UserMenu extends Component {
 
                     </div>
 
-                    <Fab id="menuAddMovie" color="primary" variant="extended" size="large" title="Add Movie" onClick={this.toggleMovieAddModal} >
-                        <AddIcon />Add Movie
-                    </Fab>
-
                 </form>}
-
-                {isLoggedIn && this.props.movies.length > 0 && <TextField
-                    className="MenuElement freeSearch"
-                    name="freeSearch" margin="normal"
-                    label="Filter search results"
-                    placeholder="Enter movie name"
-                    value={this.props.freeSearchFilter}
-                    InputProps={{
-                        type: "text",
-                        startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
-                    }}
-                    InputLabelProps={{ style: { color: 'inherit' } }}
-                    onChange={(e) => { this.props.onFreeSearch(e.target.value); }}
-                />}
-
-                <MovieAddModal isOpen={this.state.addingMovie} toggle={this.toggleMovieAddModal} addMovie={this.handleMovieAdd} />
-
-                <Snackbar />
 
             </>
 
@@ -400,8 +313,7 @@ const mapDispatchToProps = dispatch => ({
     saveMoviesYears: (moviesYears) => dispatch({ type: actionTypes.SAVE_MOVIES_YEARS, payload: moviesYears }),
     toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES }),
     toggleLoadingMovies: (isLoading) => dispatch({ type: actionTypes.TOGGLE_LOADING_MOVIES, payload: isLoading }),
-    toggleSnackbar: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
-    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value }),
+    onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
     onMoviesCounterChange: (updatedCounter) => dispatch({ type: actionTypes.ON_MOVIES_COUNTER_CHANGE, payload: updatedCounter })
 });
 
