@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import firebase, { database } from '../../config/firebase';
+import { database } from '../../config/firebase';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
+
+import CounterService from '../../Services/CounterService';
 
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
@@ -65,46 +67,11 @@ class Movie extends Component {
 		database.ref(`/mymovies/${this.props.userID}/movies/${this.props.dbMovieID}`).update({ Watched: checked }, (error) => {
 			if (!error) {
 				this.props.onSnackbarToggle(true, `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`, "information");
-				this.handleCounterChange("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
+				CounterService(this.props.moviesCounter, "unwatched", checked ? "Mark as watched" : "Mark as unwatched");
 			} else {
 				this.props.onSnackbarToggle(true, "There was an error marking the movie as watched", "error");
 			}
 		})
-	}
-
-	handleCounterChange = (names, type) => {
-		const updatedCounter = { ...this.props.moviesCounter };
-		switch (type) {
-			case "Add Movie":
-				names.forEach(name => { updatedCounter[name]++; })
-				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-					if (!error) { }
-					else { console.log('error: ', error); }
-				});
-				break;
-			case "Delete Movie":
-				names.forEach(name => { updatedCounter[name]--; })
-				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-					if (!error) { }
-					else { console.log('error: ', error); }
-				});
-				break;
-			case "Mark as watched":
-				updatedCounter.unwatched--;
-				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-					if (!error) { }
-					else { console.log('error: ', error); }
-				});
-				break;
-			case "Mark as unwatched":
-				updatedCounter.unwatched++;
-				database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-					if (!error) { }
-					else { console.log('error: ', error); }
-				});
-				break;
-			default: break;
-		}
 	}
 
 	render() {

@@ -4,8 +4,9 @@ import firebase, { database } from '../../config/firebase';
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions';
 
-import Movie from '../../components/Movie/Movie';
+import CounterService from '../../Services/CounterService';
 
+import Movie from '../../components/Movie/Movie';
 import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddModal';
 import MovieTrailerModal from '../../components/UI Elements/MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from '../../components/UI Elements/MovieCommentsModal/MovieCommentsModal';
@@ -64,9 +65,9 @@ class MoviesContainer extends PureComponent {
             database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies/${movieID}`).remove()
                 .then(() => {
                     if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
-                    const counterNames = ["total"];
-                    if (!isMovieWatched) { counterNames.push("unwatched"); }
-                    this.handleCounterChange(counterNames, "Delete Movie");
+                    const properties = ["total"];
+                    if (!isMovieWatched) { properties.push("unwatched"); }
+                    CounterService(this.props.moviesCounter, properties, "Delete Movie");
                     this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
                 })
                 .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
@@ -79,27 +80,6 @@ class MoviesContainer extends PureComponent {
             if (!error) { }
             else { console.log('error: ', error); }
         });
-    }
-
-    handleCounterChange = (names, type) => {
-        const updatedCounter = { ...this.props.moviesCounter };
-        switch (type) {
-            case "Add Movie":
-                names.forEach(name => { updatedCounter[name]++; })
-                database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-                    if (!error) { }
-                    else { console.log('error: ', error); }
-                });
-                break;
-            case "Delete Movie":
-                names.forEach(name => { updatedCounter[name]--; })
-                database.ref(`/mymovies/${firebase.auth().currentUser.uid}/counter`).set(updatedCounter, (error) => {
-                    if (!error) { }
-                    else { console.log('error: ', error); }
-                });
-                break;
-            default: break;
-        }
     }
 
     handleMovieAdd = async (details) => {
@@ -120,7 +100,7 @@ class MoviesContainer extends PureComponent {
                 this.props.onSnackbarToggle(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
                 this.toggleAddMovie();
                 this.handleYearAdd(Year);
-                this.handleCounterChange(["total", "unwatched"], "Add Movie");
+                CounterService(this.props.moviesCounter, ["total", "unwatched"], "Add Movie");
             } else {
                 this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error");
             }
