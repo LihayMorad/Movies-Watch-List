@@ -58,11 +58,11 @@ const rootReducer = (state = initialState, action) => {
                 freeSearchFilter: action.payload
             }
 
-        case actionTypes.ON_MOVIES_COUNTER_CHANGE:
+        case actionTypes.ON_MOVIES_COUNTER_CHANGE: // DB.on('value')
             if (action.payload) {
                 return {
                     ...state,
-                    moviesCounter: { ...action.payload } // DB.on('value')
+                    moviesCounter: { ...action.payload }
                 };
             } else return state;
 

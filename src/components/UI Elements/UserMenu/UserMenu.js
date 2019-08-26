@@ -12,6 +12,8 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
+import CloseIcon from '@material-ui/icons/Close';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import LinkIcon from '@material-ui/icons/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -21,16 +23,23 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import { withStyles } from '@material-ui/core/styles';
 import './UserMenu.css';
 
-const StyledInputLabel = withStyles({ root: { color: 'inherit !important', '&:focus': { color: 'inherit !important' } } })(InputLabel);
-const StyledSelect = withStyles({ icon: { color: 'inherit' } })(Select);
-const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 12px' }, notchedOutline: { borderColor: '#ffffffbf !important', '&:focus': { borderColor: 'white !important' }, } })(OutlinedInput);
+const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
+const StyledDialogTitle = withStyles({ root: { padding: '16px 24px 12px !important' } })(DialogTitle);
+const StyledDialogContent = withStyles({ root: { padding: '0 14px !important' } })(DialogContent);
+const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 12px' }, notchedOutline: {} })(OutlinedInput);
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '5px' }
 })(Tooltip);
+
 
 class UserMenu extends Component {
 
@@ -40,7 +49,8 @@ class UserMenu extends Component {
         year: "All",
         maxResults: 10,
         googleAuthProvider: new firebase.auth.GoogleAuthProvider(),
-        accountMenuAnchorEl: null
+        accountMenuAnchorEl: null,
+        isFiltersMenuOpen: false
     }
 
     componentDidMount() {
@@ -170,13 +180,17 @@ class UserMenu extends Component {
 
     handleCloseAccountMenu = e => { this.setState({ accountMenuAnchorEl: null }); }
 
+    handleOpenFiltersMenu = () => { this.setState({ isFiltersMenuOpen: true }); };
+
+    handleCloseFiltersMenu = () => { this.setState({ isFiltersMenuOpen: false }); };
+
     handleFilterChange = e => { this.setState({ [e.target.name]: e.target.value }); }
 
-    handleApplyFilters = () => { this.getMoviesToWatch(this.state.filter, this.state.order, this.state.year, this.state.maxResults); }
+    handleApplyFilters = () => { this.getMoviesToWatch(this.state.filter, this.state.order, this.state.year, this.state.maxResults); this.handleCloseFiltersMenu(); }
 
     render() {
         const firebaseUser = firebase.auth().currentUser;
-        const { accountMenuAnchorEl } = this.state;
+        const { accountMenuAnchorEl, isFiltersMenuOpen } = this.state;
         const isLoggedIn = !!firebaseUser;
         const isAccountMenuOpen = !!accountMenuAnchorEl;
         const years = this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>);
@@ -234,69 +248,87 @@ class UserMenu extends Component {
                     {signInOutAnonymouslyButton}
                 </Menu>
 
-                {isLoggedIn && <form>
-                    <div className="Menu">
-                        <FormControl id="sortByFilter" className="MenuElement" variant="outlined">
-                            <StyledInputLabel htmlFor="sortFilter">Sort by</StyledInputLabel>
-                            <StyledSelect
-                                value={this.state.filter}
-                                onChange={this.handleFilterChange}
-                                input={<StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />}
-                                autoWidth >
-                                <MenuItem value="releaseYear"><em>Year</em></MenuItem>
-                                <MenuItem value="NameEng">English Name</MenuItem>
-                                <MenuItem value="NameHeb">Hebrew Name</MenuItem>
-                            </StyledSelect>
-                        </FormControl>
+                <Button color="default" variant="contained" onClick={this.handleOpenFiltersMenu}><FilterListIcon />&nbsp;Filters</Button>
 
-                        <FormControl id="orderByFilter" className="MenuElement" variant="outlined">
-                            <StyledInputLabel htmlFor="orderBy">Order by</StyledInputLabel>
-                            <StyledSelect
-                                value={this.state.order}
-                                onChange={this.handleFilterChange}
-                                input={<StyledOutlinedInput labelWidth={60} name="order" id="orderBy" />}
-                                autoWidth >
-                                <MenuItem value="descending"><em>Descending</em></MenuItem>
-                                <MenuItem value="ascending">Ascending</MenuItem>
-                            </StyledSelect>
-                        </FormControl>
+                {isLoggedIn && <StyledDialog
+                    open={isFiltersMenuOpen}
+                    onClose={this.handleCloseFiltersMenu}>
 
-                        <FormControl id="menuYear" className="MenuElement" variant="outlined">
-                            <StyledInputLabel htmlFor="showYear">Year</StyledInputLabel>
-                            <StyledSelect
-                                value={this.state.year}
-                                onChange={this.handleFilterChange}
-                                input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
-                                autoWidth >
-                                <MenuItem value="All"><em>All</em></MenuItem>
-                                {years}
-                            </StyledSelect>
-                        </FormControl>
+                    <StyledDialogTitle>List filters
+                        <IconButton className="modalCloseBtn" onClick={this.handleCloseFiltersMenu}><CloseIcon /></IconButton>
+                    </StyledDialogTitle>
 
-                        <FormControl id="menuMaxResults" className="MenuElement" variant="outlined">
-                            <StyledInputLabel htmlFor="maxResults">Results</StyledInputLabel>
-                            <StyledSelect
-                                value={this.state.maxResults}
-                                onChange={this.handleFilterChange}
-                                input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
-                                autoWidth>
-                                <MenuItem value={1000}>All</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                                <MenuItem value={10}><em>10</em></MenuItem>
-                                <MenuItem value={15}>15</MenuItem>
-                                <MenuItem value={20}>20</MenuItem>
-                                <MenuItem value={25}>25</MenuItem>
-                                <MenuItem value={50}>50</MenuItem>
-                            </StyledSelect>
-                        </FormControl>
+                    <StyledDialogContent>
+                        <form>
+                            <div className="Menu">
+                                <FormControl id="sortByFilter" className="MenuElement" variant="outlined">
+                                    <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
+                                    <Select
+                                        value={this.state.filter}
+                                        onChange={this.handleFilterChange}
+                                        input={<StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />}
+                                        autoWidth >
+                                        <MenuItem value="releaseYear"><em>Year</em></MenuItem>
+                                        <MenuItem value="NameEng">English Name</MenuItem>
+                                        <MenuItem value="NameHeb">Hebrew Name</MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                        <Button id="applyBtn" className="MenuElement" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleApplyFilters}>
+                                <FormControl id="orderByFilter" className="MenuElement" variant="outlined">
+                                    <InputLabel htmlFor="orderBy">Order</InputLabel>
+                                    <Select
+                                        value={this.state.order}
+                                        onChange={this.handleFilterChange}
+                                        input={<StyledOutlinedInput labelWidth={41} name="order" id="orderBy" />}
+                                        autoWidth >
+                                        <MenuItem value="descending"><em>Descending</em></MenuItem>
+                                        <MenuItem value="ascending">Ascending</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl id="menuYear" className="MenuElement" variant="outlined">
+                                    <InputLabel htmlFor="showYear">Year</InputLabel>
+                                    <Select
+                                        value={this.state.year}
+                                        onChange={this.handleFilterChange}
+                                        input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
+                                        autoWidth >
+                                        <MenuItem value="All"><em>All</em></MenuItem>
+                                        {years}
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl id="menuMaxResults" className="MenuElement" variant="outlined">
+                                    <InputLabel htmlFor="maxResults">Results</InputLabel>
+                                    <Select
+                                        value={this.state.maxResults}
+                                        onChange={this.handleFilterChange}
+                                        input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
+                                        autoWidth>
+                                        <MenuItem value={1000}>All</MenuItem>
+                                        <MenuItem value={5}>5</MenuItem>
+                                        <MenuItem value={10}><em>10</em></MenuItem>
+                                        <MenuItem value={15}>15</MenuItem>
+                                        <MenuItem value={20}>20</MenuItem>
+                                        <MenuItem value={25}>25</MenuItem>
+                                        <MenuItem value={50}>50</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                            </div>
+
+                        </form>
+                    </StyledDialogContent>
+
+                    <DialogActions>
+                        <Button id="applyFiltersBtn" color="primary" variant="contained" size="small" title="Apply filters" onClick={this.handleApplyFilters}>
                             <MovieFilterIcon />&nbsp;Apply
                         </Button>
+                    </DialogActions>
 
-                    </div>
+                </StyledDialog>
 
-                </form>}
+                }
 
             </>
 
