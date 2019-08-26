@@ -1,6 +1,10 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Watch List",
+  "name": "Movies Watch List",
+  "description": "A website for creating and managing your own movies watch list and access it from anywhere anytime.",
+  "categories": [
+    "entertainment"
+  ],
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,8 +12,8 @@
       "type": "image/x-icon"
     }
   ],
-  "start_url": ".",
+  "start_url": "https://movies-watch-list.netlify.com",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#00003e"
 }
