@@ -51,7 +51,6 @@ const simpleSnackbar = props => {
     return (
         <Snackbar
             id="snackbarRoot"
-            style={{ margin: '15px auto' }}
             open={props.isSnackbarOpen}
             onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
@@ -70,7 +69,6 @@ const simpleSnackbar = props => {
                     </IconButton>
                 ]} />
         </Snackbar>
-
     );
 
 }

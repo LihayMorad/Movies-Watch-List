@@ -12,6 +12,12 @@ const initialState = {
         total: 0,
         unwatched: 0
     },
+    filters: {
+        filter: "releaseYear",
+        order: "descending",
+        year: "All",
+        maxResults: 10
+    },
     loadingMovies: false
 };
 
@@ -63,6 +69,14 @@ const rootReducer = (state = initialState, action) => {
                 return {
                     ...state,
                     moviesCounter: { ...action.payload }
+                };
+            } else return state;
+
+        case actionTypes.ON_FILTERS_CHANGE:
+            if (action.payload) {
+                return {
+                    ...state,
+                    filters: { ...action.payload }
                 };
             } else return state;
 

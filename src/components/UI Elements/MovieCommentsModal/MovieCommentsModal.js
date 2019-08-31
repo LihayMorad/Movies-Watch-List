@@ -7,11 +7,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { withStyles } from '@material-ui/core/styles';
+
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 
 class movieCommentsModal extends Component {
@@ -25,13 +25,9 @@ class movieCommentsModal extends Component {
 
     handleChange = e => { this.setState({ comments: e.target.value, commentsChanged: true }); }
 
-    handleClose = () => {
-        this.setState({ commentsChanged: false });
-        this.props.toggle();
-    }
+    handleClose = () => { this.setState({ commentsChanged: false }); this.props.toggle(); }
 
     render() {
-
         const { commentsChanged } = this.state;
 
         return (
@@ -42,7 +38,9 @@ class movieCommentsModal extends Component {
                 maxWidth="md">
 
                 <DialogTitle>Movie note
-                    <IconButton className="modalCloseBtn" onClick={this.props.toggle}><CloseIcon /></IconButton>
+                    <IconButton className="modalCloseBtn" onClick={this.props.toggle}>
+                        <CloseIcon />
+                    </IconButton>
                 </DialogTitle>
 
                 <DialogContent>
@@ -59,8 +57,9 @@ class movieCommentsModal extends Component {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button color="primary"
-                        onClick={() => { this.props.handleEditComments(commentsChanged ? this.state.comments : this.props.comments) }}>Save</Button>
+                    <Button color="primary" onClick={() => { this.props.handleEditComments(commentsChanged ? this.state.comments : this.props.comments) }}>
+                        Save
+                    </Button>
                 </DialogActions>
 
             </StyledDialog>

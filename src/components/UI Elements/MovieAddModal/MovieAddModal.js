@@ -51,66 +51,54 @@ class movieAddModal extends Component {
     }
 
     handleMovieSearch = () => {
-        this.setState({ loading: true }, async () => {
-            try {
-                let movieSearchResults = [];
-                let resultsType = "";
-                const searchURL = `https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
-                const omdbResponse = await axios(searchURL);
-                if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
-                    movieSearchResults = omdbResponse.data.Search;
-                    resultsType = "search";
-                } else {
-                    const message = omdbResponse.data.Error === "Too many results." ? "Too many results, please try to be more specific." : omdbResponse.data.Error;
-                    this.props.onSnackbarToggle(true, `Search error. ${message}`, "warning");
-                }
-                this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType });
-            } catch (error) {
-                this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error");
-                this.setState({ loading: false, movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "" });
-            }
-        });
+        this.setState({ loading: true }, () => {
+            let movieSearchResults = [];
+            let resultsType = "";
+            axios(`https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
+                .then((response) => {
+                    if (response.status === 200 && response.data.Response === "True") {
+                        movieSearchResults = response.data.Search;
+                        resultsType = "search";
+                    } else {
+                        const message = response.data.Error === "Too many results." ? "Too many results, please try to be more specific." : response.data.Error;
+                        this.props.onSnackbarToggle(true, `Search error. ${message}`, "warning");
+                    }
+                })
+                .catch((error) => { this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error"); })
+                .finally(() => { this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType }); })
+        })
     }
 
     handleTrendingMovieSearch = () => {
 
-        this.setState({ loading: true }, async () => {
-            try {
-                let movieSearchResults = [];
-                let resultsType = "";
-                const trendingURL = `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_TMDB_API_KEY}`;
-                const tmdbResponse = await axios(trendingURL);
-                if (tmdbResponse.status === 200) {
-                    movieSearchResults = tmdbResponse.data.results;
-                    resultsType = "trending";
-                } else {
-                    this.props.onSnackbarToggle(true, "Search error. Something went wrong!", "warning");
-                }
-                this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType });
-            } catch (error) {
-                this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error");
-                this.setState({ loading: false, movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "" });
-            }
+        this.setState({ loading: true }, () => {
+            let movieSearchResults = [];
+            let resultsType = "";
+            axios(`https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_TMDB_API_KEY}`)
+                .then((response) => {
+                    if (response.status === 200) {
+                        movieSearchResults = response.data.results;
+                        resultsType = "trending";
+                    } else {
+                        this.props.onSnackbarToggle(true, "Search error. Something went wrong!", "warning");
+                    }
+                })
+                .catch((error) => { this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error"); })
+                .finally(() => { this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType }); })
         });
     }
 
-    handleUpdateCurrentMovie = (imdbID, tmdbID, title, year) => {
-        this.setState({ imdbID, tmdbID, selectedTitle: title, selectedYear: year },
-            () => { this.personalNote.current.scrollIntoView({ behavior: "smooth" }); });
+    getIMDBID = (tmdbID, movieTitle, movieYear) => {
+        axios(`https://api.themoviedb.org/3/movie/${tmdbID}/external_ids?api_key=${process.env.REACT_APP_TMDB_API_KEY}`)
+            .then((response) => {
+                if (response.status === 200) { this.handleUpdateCurrentMovie(response.data.imdb_id, tmdbID, movieTitle, movieYear); }
+                else { this.props.onSnackbarToggle(true, "Something went wrong! can't get movie data", "warning"); }
+            })
+            .catch((error) => { this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error"); })
     }
 
-    getIMDBID = async (tmdbID, movieTitle, movieYear) => {
-        try {
-            const searchURL = `https://api.themoviedb.org/3/movie/${tmdbID}/external_ids?api_key=${process.env.REACT_APP_TMDB_API_KEY}`;
-            const tmdbResponse = await axios(searchURL);
-            if (tmdbResponse.status === 200) {
-                this.handleUpdateCurrentMovie(tmdbResponse.data.imdb_id, tmdbID, movieTitle, movieYear);
-            } else {
-                this.props.onSnackbarToggle(true, "Something went wrong! can't get movie data", "warning");
-            }
-        } catch (error) {
-            this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error");
-        }
+    handleUpdateCurrentMovie = (imdbID, tmdbID, title, year) => {
+        this.setState({ imdbID, tmdbID, selectedTitle: title, selectedYear: year }, () => { this.personalNote.current.scrollIntoView({ behavior: "smooth" }); });
     }
 
     toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
@@ -139,7 +127,7 @@ class movieAddModal extends Component {
                                 Search a movie or see popular movies now and then choose one from the search results.<br />
                                 You may specify its hebrew name and your personal note below.<br />
                                 When you're done click 'Add'.
-                        </DialogContentText>
+                            </DialogContentText>
                             <br />
                             <TextField
                                 fullWidth variant="outlined"
@@ -156,9 +144,13 @@ class movieAddModal extends Component {
                                 inputProps={{ type: "number", placeholder: "Enter release year", min: "1950", max: currYear + 2 }}
                                 onChange={this.handleChange} />
 
-                            <Button type="submit" color="primary" variant="outlined" className="movieAddModalBtn"><SearchIcon />Search</Button>
-                            <Button type="button" color="secondary" variant="outlined" className="movieAddModalBtn"
-                                onClick={this.handleTrendingMovieSearch}><WhatshotIcon />&nbsp;Popular Movies</Button>
+                            <Button type="submit" color="primary" variant="outlined" className="movieAddModalBtn">
+                                <SearchIcon />Search
+                            </Button>
+
+                            <Button type="button" color="secondary" variant="outlined" className="movieAddModalBtn" onClick={this.handleTrendingMovieSearch}>
+                                <WhatshotIcon />&nbsp;Popular Movies
+                            </Button>
 
                             {!loading
                                 ? this.state.resultsType && <MoviesResultsGrid
@@ -191,7 +183,9 @@ class movieAddModal extends Component {
                         </StyledDialogContent>
 
                         {imdbID && <DialogActions>
-                            <Button color="primary" variant="contained" id="movieAddModalAddBtn" onClick={this.handleAddMovie}>Add</Button>
+                            <Button color="primary" variant="contained" id="movieAddModalAddBtn" onClick={this.handleAddMovie}>
+                                Add
+                            </Button>
                         </DialogActions>}
 
                     </form>

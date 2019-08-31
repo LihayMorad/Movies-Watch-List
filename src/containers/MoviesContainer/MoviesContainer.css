@@ -5,10 +5,22 @@
     margin: 10px;
 }
 
-.noResultsH3 {
+.informationH3 {
     margin: 20px auto 5px auto;
 }
 
-.noResultsH4 {
+.informationH4 {
     margin: 0px auto;
+}
+
+.freeSearch {
+    margin-top: 10px !important;
+}
+
+.freeSearch div, .freeSearch input, .freeSearch svg {
+    color: white !important;
+}
+
+.freeSearch div::before, .freeSearch div:hover {
+    border-bottom-color: inherit !important;
 }

@@ -10,10 +10,7 @@ import './MoviesResultsGrid.css';
 
 const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w300/";
 
-const StyledTooltip = withStyles({
-    tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
-    tooltipPlacementBottom: { marginTop: '-27px' }
-})(Tooltip);
+const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '-27px' } })(Tooltip);
 
 const moviesResultsGrid = props => {
     let moviesSearchResultList = null;
@@ -60,7 +57,6 @@ const moviesResultsGrid = props => {
                                 onClick={e => { e.stopPropagation(); props.toggleWatchTrailer(`${elem.title} ${year}`, elem.id); }} />
                         </li>
                     </StyledTooltip>
-
                 )
             });
             break;

@@ -1,0 +1,23 @@
+.MenuFlex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: initial;
+}
+
+.MenuElementMg {
+    margin: 10px 8px !important;
+}
+
+#filtersMenuBtn {
+    margin-bottom: 8px;
+}
+
+.btnPadding {
+    padding: 6px 8px !important;
+}
+
+#applyFiltersBtn {
+    padding: 5px 7px !important;
+}

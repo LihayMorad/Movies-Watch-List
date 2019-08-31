@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import Header from '../../components/UI Elements/Header/Header';
-import UserMenu from '../../components/UI Elements/UserMenu/UserMenu';
+import AccountMenu from '../../components/AccountMenu/AccountMenu';
+import FiltersMenu from '../../components/FiltersMenu/FiltersMenu';
 import MoviesContainer from '../MoviesContainer/MoviesContainer';
 import Attributions from '../../components/UI Elements/Attributions/Attributions';
 import Snackbar from '../../components/UI Elements/Snackbar/Snackbar';
@@ -28,22 +29,23 @@ class Layout extends Component {
     render() {
 
         const scrollToMenu = <StyledTooltip title="Scroll to the top menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-            <Fab
-                id="scrollToMenu" color="primary" variant="extended" size="small"
-                onClick={this.scrollToMenu}><NavigationIcon />
+            <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
+                <NavigationIcon />
             </Fab>
         </StyledTooltip>;
 
-        const userMenu = ({ isVisible }) => {
+        const filtersMenu = ({ isVisible }) => {
             setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
-            return <div ref={this.topMenuRef}><UserMenu /></div>;
+            return <div ref={this.topMenuRef}><FiltersMenu /></div>;
         }
 
-        return (<>
+        return <>
             <Header />
 
+            <AccountMenu />
+
             <TrackVisibility partialVisibility>
-                {userMenu}
+                {filtersMenu}
             </TrackVisibility>
 
             <MoviesContainer />
@@ -53,7 +55,7 @@ class Layout extends Component {
             <Attributions />
 
             <Snackbar />
-        </>)
+        </>
     }
 };
 

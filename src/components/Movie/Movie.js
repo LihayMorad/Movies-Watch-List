@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { database } from '../../config/firebase';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
 
-import CounterService from '../../Services/CounterService';
+import MoviesService from '../../Services/MoviesService';
 
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
@@ -14,14 +13,14 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import Checkbox from '@material-ui/core/Checkbox';
+import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
-import Checkbox from '@material-ui/core/Checkbox';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
-import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 
 import MovieNotFound from '../../assets/MovieNotFound.png';
@@ -44,39 +43,38 @@ class Movie extends Component {
 	componentDidUpdate(prevProps) { if (prevProps.Comments !== this.props.Comments) this.setState({ Comments: this.props.Comments }); }
 
 	getMovieDb = () => {
-		this.setState({ loading: true }, async () => {
-			try {
-				const searchURL = `https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`;
-				const omdbResponse = await axios(searchURL);
-				let movieData = {}
-				let error = false;
-				if (omdbResponse.status === 200 && omdbResponse.data.Response === "True") {
-					movieData = omdbResponse.data;
-				} else {
-					error = omdbResponse.data.Error;
-				}
-				this.setState({ loading: false, ...movieData, Year: parseInt(movieData.Year), Error: error });
-			} catch (error) {
-				this.setState({ loading: false, Error: true });
-			}
+		this.setState({ loading: true }, () => {
+			let movieData = {};
+			let error = false;
+			axios(`https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
+				.then((response) => {
+					if (response.status === 200 && response.data.Response === "True") { movieData = response.data; movieData.Year = parseInt(response.data.Year) }
+					else { error = response.data.Error }
+				})
+				.catch((error) => { error = true })
+				.finally(() => { this.setState({ loading: false, ...movieData, Error: error }); })
 		});
 	}
 
 	toggleMovieWatched = e => {
 		const { checked } = e.target;
-		database.ref(`/mymovies/${this.props.userID}/movies/${this.props.dbMovieID}`).update({ Watched: checked }, (error) => {
-			if (!error) {
+		MoviesService.ToggleMovieWatched(this.props.dbMovieID, checked)
+			.then(() => {
 				this.props.onSnackbarToggle(true, `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`, "information");
-				CounterService(this.props.moviesCounter, "unwatched", checked ? "Mark as watched" : "Mark as unwatched");
-			} else {
-				this.props.onSnackbarToggle(true, "There was an error marking the movie as watched", "error");
-			}
-		})
+				this.handleUpdateCounter("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
+			})
+			.catch(() => { this.props.onSnackbarToggle(true, "There was an error marking the movie as watched", "error"); })
+	}
+
+	handleUpdateCounter = (properties, type) => {
+		MoviesService.UpdateCounter(this.props.moviesCounter, properties, type)
+			.then(() => { })
+			.catch(() => { })
 	}
 
 	render() {
 		const movieDBError = this.state.Error;
-		const { loading } = this.state;
+		const { imdbID, dbMovieID, Title, NameEng, NameHeb, Comments, Year, Poster, Country, Runtime, Watched, loading } = this.state;
 
 		return (
 
@@ -85,12 +83,12 @@ class Movie extends Component {
 				<CardActionArea>
 					<StyledTooltip title="Click to watch the trailer" TransitionComponent={Zoom}>
 						<CardContent id="movieCardContent"
-							onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? this.state.Title : this.state.NameEng} ${this.state.Year}`), this.state.imdbID)}>
+							onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? Title : NameEng} ${Year}`), imdbID)}>
 							<div className="movieCardContentImgDiv">
 								{!loading
 									? !movieDBError
 										? <>
-											<img src={this.state.Poster} id="movieCardContentImgDivPoster" alt="Movie Poster Not Found" />
+											<img src={Poster} id="movieCardContentImgDivPoster" alt="Movie Poster Not Found" />
 											<img src={youTubeIcon} id="movieCardContentYouTubeImg" alt="YouTube icon" />
 										</>
 										: <div id="movieCardContentImgDivError">
@@ -106,13 +104,13 @@ class Movie extends Component {
 							<div className="movieCardContentTextDiv">
 								{!loading
 									? <div>
-										<Typography variant="h4"> {!movieDBError ? this.state.Title : this.state.NameEng} </Typography>
-										<Typography variant="h5"> {this.state.NameHeb} </Typography>
+										<Typography variant="h4"> {!movieDBError ? Title : NameEng} </Typography>
+										<Typography variant="h5"> {NameHeb} </Typography>
 										{!movieDBError
-											? <p>{this.state.Country} {this.state.Year} <span>({this.state.Runtime})</span></p>
-											: <p>{this.state.Year}</p>}
-										{this.state.Comments
-											? <p>Personal note: <span id="commentsSpan">{this.state.Comments}</span></p>
+											? <p>{Country} {Year} <span>({Runtime})</span></p>
+											: <p>{Year}</p>}
+										{Comments
+											? <p>Personal note: <span id="commentsSpan">{Comments}</span></p>
 											: ""}
 									</div>
 									: <MovieSpinner />
@@ -132,23 +130,22 @@ class Movie extends Component {
 							imdbID={this.state.imdbID}
 							plot={this.state.Plot}
 							actors={this.state.Actors}
-							genre={this.state.Genre}
-							userEmail={this.props.userEmail} />
+							genre={this.state.Genre} />
 						: <MovieSpinner />
 					}
 				</CardActions>
 
 				<StyledTooltip title="Edit movie's personal note" TransitionComponent={Zoom}>
 					<Fab className="movieCardFab" color="primary" size="small"
-						onClick={() => { this.props.toggleEditComments(this.state.Comments, this.state.userID, this.state.dbMovieID); }} >
+						onClick={() => { this.props.toggleEditComments(dbMovieID, Comments); }}>
 						<EditIcon />
 					</Fab>
 				</StyledTooltip>
 
-				<StyledTooltip title={`Mark movie as ${this.state.Watched ? 'unwatched' : 'watched'}`} TransitionComponent={Zoom}>
+				<StyledTooltip title={`Mark movie as ${Watched ? 'unwatched' : 'watched'}`} TransitionComponent={Zoom}>
 					<Fab className="movieCardFab" color="default" size="small">
 						<Checkbox style={{ height: 'inherit' }}
-							checked={this.state.Watched || false}
+							checked={Watched || false}
 							icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
 							checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
 							onChange={this.toggleMovieWatched} />
@@ -157,11 +154,10 @@ class Movie extends Component {
 
 				<StyledTooltip title="Delete movie" TransitionComponent={Zoom}>
 					<Fab className="movieCardFab" color="secondary" size="small"
-						onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(this.state.dbMovieID, this.state.Year); } }} >
+						onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(dbMovieID, Year); } }}>
 						<DeleteIcon />
 					</Fab>
 				</StyledTooltip>
-
 
 			</Card>
 

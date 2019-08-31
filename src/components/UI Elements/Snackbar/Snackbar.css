@@ -1,3 +1,7 @@
+#snackbarRoot {
+    margin: 15px auto;
+}
+
 #snackbarMessage {
     display: flex;
     align-items: center;

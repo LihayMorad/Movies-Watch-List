@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import firebase, { database } from '../../config/firebase';
 
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions';
 
-import CounterService from '../../Services/CounterService';
+import MoviesService from '../../Services/MoviesService';
+import AccountsService from '../../Services/AccountsService';
 
 import Movie from '../../components/Movie/Movie';
 import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddModal';
@@ -14,27 +14,24 @@ import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner/M
 // import InformationModal from '../UI Elements/InformationModal/InformationModal';
 
 import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
 import FormControl from '@material-ui/core/FormControl';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Checkbox from '@material-ui/core/Checkbox';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
-import Checkbox from '@material-ui/core/Checkbox';
+import Badge from '@material-ui/core/Badge';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
-import Badge from '@material-ui/core/Badge';
 import Zoom from '@material-ui/core/Zoom';
-import AddIcon from '@material-ui/icons/Add';
 
 import { withStyles } from '@material-ui/core/styles';
 import './MoviesContainer.css';
 
 const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
-const StyledTooltip = withStyles({
-    tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
-    tooltipPlacementBottom: { marginTop: '0px' }
-})(Tooltip);
+const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '0px' } })(Tooltip);
 
 class MoviesContainer extends PureComponent {
 
@@ -45,7 +42,7 @@ class MoviesContainer extends PureComponent {
         addingMovie: false
     }
 
-    handleMovieDelete = (movieID, movieYear) => {
+    handleDeleteMovie = (movieID, movieYear) => {
         let movieName = "";
         let isMovieWatched;
         let shouldDeleteYear = true;
@@ -55,39 +52,38 @@ class MoviesContainer extends PureComponent {
                 movieName = movie.NameEng;
                 isMovieWatched = movie.Watched;
                 return false;
-            } else { // there is another movie with the same year
-                if (movieYear === movie.Year) { shouldDeleteYear = false; }
+            } else {
+                if (movieYear === movie.Year) { shouldDeleteYear = false; } // there is another movie with the same year
             }
             return true;
         });
 
-        if (movieName) { // movie found in props movies list
-            database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies/${movieID}`).remove()
+        if (movieName) { // make sure movie found in props movies list
+            MoviesService.DeleteMovie(movieID)
                 .then(() => {
-                    if (shouldDeleteYear) { this.handleYearDelete(movieYear); }
+                    if (shouldDeleteYear) { this.handleDeleteYear(movieYear); }
                     const properties = ["total"];
                     if (!isMovieWatched) { properties.push("unwatched"); }
-                    CounterService(this.props.moviesCounter, properties, "Delete Movie");
+                    this.handleUpdateCounter(properties, "Delete Movie");
                     this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
                 })
                 .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
         } else { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); }
     }
 
-    handleYearDelete = yearToDelete => {
+    handleDeleteYear = yearToDelete => {
         const years = this.props.moviesYears.filter(year => year !== yearToDelete);
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/years`).set([...years], (error) => {
-            if (!error) { }
-            else { console.log('error: ', error); }
-        });
+        MoviesService.UpdateYears(years)
+            .then(() => { })
+            .catch(() => { })
     }
 
-    handleMovieAdd = async (details) => {
+    handleAddMovie = async (details) => {
         const Year = parseInt(details.Year);
         const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
-        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Year, Watched };
+        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Watched, Year };
 
-        const isMovieExistsResponse = await this.isMovieAlreadyExists(imdbID);
+        const isMovieExistsResponse = await MoviesService.IsMovieAlreadyExists(imdbID);
         if (isMovieExistsResponse) {
             isMovieExistsResponse !== "error"
                 ? this.props.onSnackbarToggle(true, `The movie '${NameEng}' already exists in your list!`, "warning")
@@ -95,104 +91,62 @@ class MoviesContainer extends PureComponent {
             return;
         }
 
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).push(movieToBeAdded, (error) => {
-            if (!error) {
+        MoviesService.AddMovie(movieToBeAdded)
+            .then(() => {
                 this.props.onSnackbarToggle(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
                 this.toggleAddMovie();
-                this.handleYearAdd(Year);
-                CounterService(this.props.moviesCounter, ["total", "unwatched"], "Add Movie");
-            } else {
-                this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error");
-            }
-        });
+                this.handleAddYear(Year);
+                this.handleUpdateCounter(["total", "unwatched"], "Add Movie");
+            })
+            .catch(() => { this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error"); })
     }
 
-    isMovieAlreadyExists = imdbID => {
-        return new Promise((resolve, reject) => {
-            database.ref(`/mymovies/${firebase.auth().currentUser.uid}/movies`).orderByChild("imdbID").equalTo(imdbID).once('value',
-                response => { resolve(!!response.val()); },
-                error => { resolve("error"); })
-        })
+    handleAddYear = year => {
+        MoviesService.UpdateYears(new Set([...this.props.moviesYears, year]))
+            .then(() => { })
+            .catch(() => { })
     }
 
-    handleYearAdd = year => {
-        const years = new Set([...this.props.moviesYears, year]);
-        database.ref(`/mymovies/${firebase.auth().currentUser.uid}/years`).set([...years], (error) => {
-            if (!error) { }
-            else { console.log('error: ', error); }
-        });
+    handleUpdateCounter = (properties, type) => {
+        MoviesService.UpdateCounter(this.props.moviesCounter, properties, type)
+            .then(() => { })
+            .catch(() => { })
+    }
+
+    handleEditComments = comments => {
+        MoviesService.UpdateComments(this.state.dbMovieID, comments)
+            .then(() => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "Personal note saved successfully", "information"); }) })
+            .catch((error) => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "There was an error saving your personal note", "error"); }) })
     }
 
     toggleAddMovie = () => { this.setState(state => ({ addingMovie: !state.addingMovie })) };
 
     toggleWatchTrailer = (searchTrailerParams = "", searchID = "") => { this.setState(state => ({ searchTrailerParams, searchID, watchingTrailer: !state.watchingTrailer })); };
 
-    handleEditComments = comments => {
-        database.ref(`/mymovies/${this.state.userID}/movies/${this.state.dbMovieID}`).update({ Comments: comments }, (error) => {
-            const message = !error
-                ? "Personal note saved successfully"
-                : "There was an error saving the note";
-            this.setState({ comments: comments, editingComments: false },
-                () => { this.props.onSnackbarToggle(true, message, !error ? "information" : "error"); });
-        });
-    }
-
-    toggleEditComments = (comments = "", userID = "", dbMovieID = "") => { this.setState(state => ({ comments, userID, dbMovieID, editingComments: !state.editingComments })) };
+    toggleEditComments = (dbMovieID = "", comments = "") => { this.setState(state => ({ comments, dbMovieID, editingComments: !state.editingComments })) };
 
     handleInformationModalTitle = title => { this.setState({ informationModalTitle: title }, () => { this.toggleInformationModal(); }); }
 
-    toggleInformationModal = () => {
-        this.setState(state => ({ showInformationModal: !state.showInformationModal }),
-            () => setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000));
-    }
+    toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000)); }
 
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;
         let moviesContainer = null;
         let loggedOutMessage = null;
         let counter = null;
+        let freeSearch = null;
         let addMovieBtn = null;
-        const firebaseUser = firebase.auth().currentUser;
-        const isLoggedIn = !!firebaseUser;
+        const loggedInUser = AccountsService.GetLoggedInUser();
         const dbMovies = this.props.movies || [];
         const { loadingMovies, moviesCounter, showWatchedMovies } = this.props;
 
-        if (isLoggedIn) {
-            const movies = dbMovies
-                .filter(movie => movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase())
-                    && movie.Watched === this.props.showWatchedMovies)
-                .map(movie => (
-                    <Movie
-                        key={movie['key']}
-                        dbMovieID={movie['key']}
-                        {...movie}
-                        imdbID={movie['imdbID'] || null}
-                        userID={firebase.auth().currentUser.uid}
-                        userEmail={firebase.auth().currentUser.email}
-                        delete={this.handleMovieDelete}
-                        toggleWatchTrailer={this.toggleWatchTrailer}
-                        toggleEditComments={this.toggleEditComments} />
-                ));
-
-            moviesContainer = !loadingMovies
-                ? moviesContainer = dbMovies.length === 0
-                    ? <>
-                        <h3 className="noResultsH3">No results</h3>
-                        <h4 className="noResultsH4">Add a movie or change list filters</h4>
-                    </>
-                    : <div className="MoviesContainer">{movies}</div>
-                : <MoviesSpinner />;
-
-
-            addMovieBtn = <Fab id="menuAddMovie" color="primary" variant="extended" size="large" onClick={this.toggleAddMovie} >
-                <AddIcon />Add Movie
-            </Fab>
-
+        if (loggedInUser) {
 
             counter = <FormControl>
                 <StyledTooltip title={`${showWatchedMovies ? 'Watched' : 'Unwatched'} movies`} disableFocusListener disableTouchListener TransitionComponent={Zoom}>
                     <Checkbox
                         checked={showWatchedMovies}
+                        onChange={this.props.toggleWatchedMovies}
                         icon={<StyledIconButton>
                             <Badge badgeContent={moviesCounter.unwatched} color="secondary">
                                 <RemoveRedEyeOutlined fontSize="large" />
@@ -202,15 +156,56 @@ class MoviesContainer extends PureComponent {
                             <Badge badgeContent={moviesCounter.total - moviesCounter.unwatched} color="secondary">
                                 <RemoveRedEye fontSize="large" />
                             </Badge>
-                        </StyledIconButton>}
-                        onChange={this.props.toggleWatchedMovies} />
+                        </StyledIconButton>} />
                 </StyledTooltip>
             </FormControl>
 
+            freeSearch = <TextField
+                className="MenuElementMg freeSearch"
+                name="freeSearch" margin="normal"
+                label="Filter search results"
+                placeholder="Enter movie name"
+                value={this.props.freeSearchFilter}
+                InputProps={{
+                    type: "text",
+                    startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
+                }}
+                InputLabelProps={{ style: { color: 'inherit' } }}
+                onChange={(e) => { this.props.onFreeSearch(e.target.value); }} />
+
+            addMovieBtn = <div>
+                <Fab color="primary" variant="extended" size="large" onClick={this.toggleAddMovie}>
+                    <AddIcon />Add Movie
+                </Fab>
+            </div>
+
+            const movies = dbMovies
+                .filter(movie => movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()) && movie.Watched === showWatchedMovies)
+                .map(movie => (
+                    <Movie
+                        key={movie['key']}
+                        dbMovieID={movie['key']}
+                        {...movie}
+                        imdbID={movie['imdbID'] || null}
+                        delete={this.handleDeleteMovie}
+                        toggleWatchTrailer={this.toggleWatchTrailer}
+                        toggleEditComments={this.toggleEditComments} />
+                ));
+
+            moviesContainer = !loadingMovies
+                ? moviesContainer = movies.length === 0
+                    ? <>
+                        <h3 className="informationH3">No results</h3>
+                        <h4 className="informationH4">Add a movie or change list filters</h4>
+                    </>
+                    : <div className="MoviesContainer">{movies}</div>
+                : <MoviesSpinner />;
+
         } else {
-            loggedOutMessage = <><br />
-                <h3 className="noResultsH3">Please login to edit your list</h3>
-                <h4 className="noResultsH4">(You can login as a guest)</h4>
+            loggedOutMessage = <>
+                <h3 className="informationH3">Welcome!</h3><br />
+                <h4 className="informationH4">Sign in to start editing your movie watch list</h4>
+                <h4 className="informationH4">* You can use your Google account or a guest account</h4>
             </>
         }
 
@@ -219,37 +214,25 @@ class MoviesContainer extends PureComponent {
 
                 {loggedOutMessage}
 
+                {loggedInUser && this.props.movies.length > 0 && <>
+                    {counter}
+                    {freeSearch}
+                </>}
+
                 {addMovieBtn}
-
-                {counter}
-
-                {isLoggedIn && this.props.movies.length > 0 && <TextField
-                    className="MenuElement freeSearch"
-                    name="freeSearch" margin="normal"
-                    label="Filter search results"
-                    placeholder="Enter movie name"
-                    value={this.props.freeSearchFilter}
-                    InputProps={{
-                        type: "text",
-                        startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
-                    }}
-                    InputLabelProps={{ style: { color: 'inherit' } }}
-                    onChange={(e) => { this.props.onFreeSearch(e.target.value); }}
-                />}
 
                 {moviesContainer}
 
                 <MovieAddModal
                     isOpen={this.state.addingMovie}
                     toggle={this.toggleAddMovie}
-                    addMovie={this.handleMovieAdd} />
-
+                    addMovie={this.handleAddMovie} />
 
                 <MovieTrailerModal
                     isOpen={this.state.watchingTrailer}
                     toggle={this.toggleWatchTrailer}
-                    searchParams={this.state.searchTrailerParams}
-                    searchID={this.state.searchID} />
+                    searchID={this.state.searchID}
+                    searchParams={this.state.searchTrailerParams} />
 
                 <MovieCommentsModal
                     isOpen={this.state.editingComments}

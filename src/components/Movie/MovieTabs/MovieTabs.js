@@ -1,4 +1,7 @@
 import React, { PureComponent } from 'react';
+
+import AccountsService from '../../../Services/AccountsService';
+
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -36,11 +39,11 @@ class MovieTabs extends PureComponent {
 		expanded: false
 	};
 
-	handleChange = panel => (e, expanded) => { this.setState({ expanded: expanded && panel }); };
+	handlePanelChange = panel => (e, expanded) => { this.setState({ expanded: expanded && panel }); };
 
 	render() {
 		const { expanded } = this.state;
-		const { userEmail } = this.props;
+		const userEmail = AccountsService.GetLoggedInUser().email;
 		const searchParams = `${this.props.title}+${this.props.year}`;
 		let ratings = "";
 
@@ -88,7 +91,7 @@ class MovieTabs extends PureComponent {
 		return (
 			<div>
 
-				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handleChange("panel1")} >
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handlePanelChange("panel1")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Plot</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{this.props.genre}</StyledTypographyMg>
@@ -96,7 +99,7 @@ class MovieTabs extends PureComponent {
 					<StyledExpansionPanelDetails>{this.props.plot || ""}</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handleChange("panel2")} >
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handlePanelChange("panel2")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Cast</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
@@ -106,7 +109,7 @@ class MovieTabs extends PureComponent {
 					</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handleChange("panel3")} >
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Ratings</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{imdbRating}</StyledTypographyMg>
@@ -115,7 +118,7 @@ class MovieTabs extends PureComponent {
 				</StyledExpansionPanel>
 
 				{userEmail === "m141084@gmail.com" &&
-					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handleChange("panel4")} >
+					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handlePanelChange("panel4")} >
 						<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 							<StyledTypographyH6 color="inherit" variant="h6">Downloads</StyledTypographyH6>
 							<StyledTypographyMg color="inherit" variant="subtitle2">Torrents & Subtitles</StyledTypographyMg>
