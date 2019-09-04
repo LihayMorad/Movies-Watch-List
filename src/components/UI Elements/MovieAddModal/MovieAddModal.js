@@ -23,15 +23,15 @@ import Zoom from '@material-ui/core/Zoom';
 import { withStyles } from '@material-ui/core/styles';
 import './MovieAddModal.css';
 
+const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
+const StyledDialogContent = withStyles({ root: { padding: '0 24px 12px !important' } })(DialogContent);
+
 const currYear = new Date().getFullYear();
 const initialState = {
     NameHeb: "", NameEng: "", Year: currYear, Comments: "",
     movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "", loading: false,
     watchingTrailer: false, searchTrailerParams: "", searchID: ""
 };
-
-const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
-const StyledDialogContent = withStyles({ root: { padding: '0 24px 12px !important' } })(DialogContent);
 
 class movieAddModal extends Component {
 

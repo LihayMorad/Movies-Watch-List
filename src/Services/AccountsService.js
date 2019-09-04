@@ -1,27 +1,31 @@
-import firebase, { database } from '../config/firebase';
+import { auth, database, firestore } from '../config/firebase';
 
 const accountsService = {
 
     googleAuthProvider: null,
 
     InitAccountService() {
-        this.googleAuthProvider = new firebase.auth.GoogleAuthProvider().setCustomParameters({ prompt: 'select_account' });
-        return firebase.auth();
+        this.googleAuthProvider = new auth.GoogleAuthProvider().setCustomParameters({ prompt: 'select_account' });
+        return auth();
     },
 
-    SignIn() { return firebase.auth().signInWithPopup(this.googleAuthProvider) },
+    SignIn() { return auth().signInWithPopup(this.googleAuthProvider) },
 
-    SignInAnonymously() { return firebase.auth().signInAnonymously() },
+    SignInAnonymously() { return auth().signInAnonymously() },
 
-    SignOut() { this.ClearListeners(["movies", "years", "counter"]); return firebase.auth().signOut() },
+    SignOut() { return auth().signOut() },
 
-    LinkAccount() { return firebase.auth().currentUser.linkWithPopup(this.googleAuthProvider) },
+    LinkAccount() { return auth().currentUser.linkWithPopup(this.googleAuthProvider) },
 
-    GetDBRef(target) { return database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${target}`); },
+    GetDBRef(target) {
+        if (target === "movies")
+            return firestore.collection(`mymovies/${auth().currentUser.uid}/${target}`)
+        else { }
+    },
 
-    GetLoggedInUser() { return firebase.auth().currentUser; },
+    GetDBListener() { return firestore.doc(`mymovies/${auth().currentUser.uid}`) },
 
-    ClearListeners(targets) { targets.forEach(target => { database.ref(`/mymovies/${firebase.auth().currentUser.uid}/${target}`).off(); }) }
+    GetLoggedInUser() { return auth().currentUser; }
 
 }
 

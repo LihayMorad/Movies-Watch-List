@@ -10,15 +10,20 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
 import CloseIcon from '@material-ui/icons/Close';
 import SaveIcon from '@material-ui/icons/Save';
+import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
+import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
 
 import { withStyles } from '@material-ui/core/styles';
 import './FiltersMenu.css';
@@ -26,16 +31,19 @@ import './FiltersMenu.css';
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 const StyledDialogTitle = withStyles({ root: { padding: '16px 24px 12px !important' } })(DialogTitle);
 const StyledDialogContent = withStyles({ root: { padding: '0 14px !important' } })(DialogContent);
-const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 12px' }, notchedOutline: {} })(OutlinedInput);
+const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 13px' }, notchedOutline: {} })(OutlinedInput);
+const StyledFormControlLabel = withStyles({ root: { marginRight: '0' }, label: { fontSize: '0.7rem', fontWeight: '500', textAlign: 'center' } })(FormControlLabel);
+const StyledCheckbox = withStyles({ root: { margin: '9.5px 3px 9.5px 10px', padding: '0' } })(Checkbox);
+const StyledIconButton = withStyles({ root: { padding: '0px' } })(IconButton);
 
 class FiltersMenu extends Component {
 
     state = {
-        isFiltersMenuOpen: false
+        isFiltersMenuOpen: false,
+        currentFilters: this.props.filters
     }
 
     componentDidMount() {
-        this.setState({ currentFilters: this.props.filters });
         AccountsService.InitAccountService().onAuthStateChanged(user => {
             if (user) { // User is signed in.
                 this.getMoviesToWatch();
@@ -44,87 +52,102 @@ class FiltersMenu extends Component {
         });
     }
 
-    componentWillUnmount() { AccountsService.ClearListeners(["movies", "years", "counter"]); }
+    componentDidUpdate(prevProps) {
+        if (this.props.filters !== prevProps.filters) {
+            this.setState({ currentFilters: this.props.filters }, this.getMoviesToWatch);
+        }
+    }
+
+    componentWillUnmount() {
+        this.clearDBListeners("movies");
+        this.clearDBListeners("yearsAndCounter");
+    }
+
+    clearDBListeners = type => {
+        if (this.state.DBListeners) {
+            if (type === "movies") this.state.DBListeners.clearMovies && this.state.DBListeners.clearMovies();
+            if (type === "yearsAndCounter") this.state.DBListeners.clearYearsAndCounter && this.state.DBListeners.clearYearsAndCounter();
+        }
+    }
 
     setDBListeners = () => {
-        AccountsService.GetDBRef("years").on('value',
+        this.clearDBListeners("yearsAndCounter");
+        const DBListener = AccountsService.GetDBListener().onSnapshot(
             response => {
-                const years = response.val() ? new Set([...response.val()]) : [];
-                this.props.saveMoviesYears([...years].sort((a, b) => b - a));
+                if (response.exists) {
+                    if (response.data() && response.data().counter) {
+                        this.props.onMoviesCounterChange(response.data().counter);
+                    }
+                    if (response.data() && response.data().years) {
+                        const years = new Set([...response.data().years]) || [];
+                        this.props.saveMoviesYears([...years].sort((a, b) => b - a));
+                    }
+                }
             },
-            error => { })
+            error => { });
 
-        AccountsService.GetDBRef("counter").on('value',
-            response => { this.props.onMoviesCounterChange(response.val()); },
-            error => { })
+        this.setState({ DBListeners: { ...this.state.DBListeners, clearYearsAndCounter: DBListener } });
     }
 
     getMoviesToWatch = () => {
         this.props.toggleLoadingMovies(true);
 
-        AccountsService.ClearListeners(["movies"]);
+        this.clearDBListeners("movies");
 
-        const { filter, order, year, maxResults } = this.state.currentFilters; // state.currentFilters VS props.filters
+        const { filter, order, year, maxResults, showWatchedMovies } = this.props.filters;
         const filterToShow = filter === "releaseYear" ? "Year" : filter;
+        const orderToShow = order === "descending" ? "desc" : "asc";
         let moviesDBRef = AccountsService.GetDBRef("movies");
 
         if (year === "All") {
-            moviesDBRef = order === "descending"
-                ? moviesDBRef.orderByChild(filterToShow).limitToLast(maxResults)
-                : moviesDBRef.orderByChild(filterToShow).limitToFirst(maxResults);
-        } else {
-            moviesDBRef = moviesDBRef.orderByChild("Year").limitToFirst(maxResults).equalTo(year);
+            moviesDBRef = moviesDBRef.orderBy(filterToShow, orderToShow);
+        } else { // specific year
+            moviesDBRef = moviesDBRef.where("Year", "==", year);
+            if (filterToShow !== "Year") { moviesDBRef = moviesDBRef.orderBy(filterToShow, orderToShow); }
         }
 
-        moviesDBRef.on('value',
-            response => { this.handleFirebaseData(response, filterToShow, order, year); },
+        const DBListener = moviesDBRef.where("Watched", "==", showWatchedMovies).limit(maxResults).onSnapshot( // { includeMetadataChanges: true },
+            response => {
+                if (!response.empty) { // && !response.metadata.hasPendingWrites
+                    this.handleFirebaseData(response, filterToShow, order, year);
+                }
+                else {
+                    this.handleFirebaseData([], filterToShow, order, year);
+                    this.props.toggleLoadingMovies(false);
+                }
+            },
             error => {
                 this.props.toggleLoadingMovies(false);
-                this.props.onSnackbarToggle(true, `There was an error retrieving movies: ${error}`, "error");
-            })
+                this.props.onSnackbarToggle(true, `There was an error retrieving movies`, "error");
+            });
+
+        this.setState({ DBListeners: { ...this.state.DBListeners, clearMovies: DBListener } });
     }
 
-    handleFirebaseData = (response, filter, order, year) => {
+    handleFirebaseData = response => {
         let sortedMovies = [];
-
-        if (year !== "All") {
-            sortedMovies = this.sortMoviesOfTheSameYear(response.val(), filter, order);
-        } else {
-            order === "descending"
-                ? response.forEach(elem => { sortedMovies.unshift({ key: elem.key, ...elem.val() }); })
-                : response.forEach(elem => { sortedMovies.push({ key: elem.key, ...elem.val() }); });
-        }
+        response.forEach(doc => { sortedMovies.push({ key: doc.id, ...doc.data() }); });
         this.props.saveMovies(sortedMovies);
     }
 
-    sortMoviesOfTheSameYear = (movies, filter, order) => {
-        let sortedMovies = [];
-
-        for (const movieKey in movies) { sortedMovies.push({ key: movieKey, ...movies[movieKey] }); }
-
-        sortedMovies = sortedMovies.sort((a, b) => { // filter(movie => !movie.Error).
-            const movie1 = a[filter];
-            const movie2 = b[filter];
-
-            if (order === "descending") {
-                return (movie2 > movie1
-                    ? 1
-                    : (movie2 === movie1 ? 0 : -1));
-            } else {
-                return (movie1 < movie2
-                    ? -1
-                    : (movie2 === movie1 ? 0 : 1));
-            }
+    handleChangeShowWatchedMoviesFilter = e => {
+        this.setState(state => {
+            const currentFilters = { ...state.currentFilters, showWatchedMovies: !state.currentFilters.showWatchedMovies };
+            return { filtersChanged: true, currentFilters }
         });
-        return sortedMovies;
     }
 
-    handleChangeFilter = e => { this.setState(state => ({ filtersChanged: true, currentFilters: { ...state.currentFilters, [e.target.name]: e.target.value } })); }
+    handleChangeFilter = e => {
+        this.setState(state => {
+            const currentFilters = { ...state.currentFilters, [e.target.name]: e.target.value };
+            if (currentFilters.year !== "All" && currentFilters.filter === "releaseYear") currentFilters.filter = "NameEng";
+            return { filtersChanged: true, currentFilters }
+        });
+    }
 
     handleApplyFilters = () => {
         if (this.state.filtersChanged) {
             this.props.onFiltersChange(this.state.currentFilters);
-            this.getMoviesToWatch(); // should setTimeout here if I want to use the updated filters
         }
         this.handleCloseFiltersMenu();
     }
@@ -144,7 +167,7 @@ class FiltersMenu extends Component {
 
     render() {
         const loggedInUser = AccountsService.GetLoggedInUser();
-        const { isFiltersMenuOpen } = this.state;
+        const { isFiltersMenuOpen, currentFilters } = this.state;
 
         return (
             loggedInUser && !this.props.loadingMovies && <>
@@ -161,61 +184,77 @@ class FiltersMenu extends Component {
                     </StyledDialogTitle>
 
                     <StyledDialogContent>
-                        <form>
-                            <div className="MenuFlex">
-                                <FormControl id="sortByFilter" className="MenuElementMg" variant="outlined">
-                                    <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
-                                    <Select
-                                        value={this.state.currentFilters.filter}
-                                        onChange={this.handleChangeFilter}
-                                        input={<StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />}
-                                        autoWidth>
-                                        <MenuItem value="releaseYear"><em>Year</em></MenuItem>
-                                        <MenuItem value="NameEng">English Name</MenuItem>
-                                        <MenuItem value="NameHeb">Hebrew Name</MenuItem>
-                                    </Select>
-                                </FormControl>
+                        <FormGroup row id="filtersForm">
+                            <FormControl id="sortByFilter" className="MenuElementMg" variant="outlined">
+                                <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
+                                <Select
+                                    value={this.state.currentFilters.filter}
+                                    onChange={this.handleChangeFilter}
+                                    input={<StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />}
+                                    autoWidth>
+                                    {this.state.currentFilters.year === "All" && <MenuItem value="releaseYear"><em>Year</em></MenuItem>}
+                                    <MenuItem value="NameEng">English Name</MenuItem>
+                                    <MenuItem value="NameHeb">Hebrew Name</MenuItem>
+                                </Select>
+                            </FormControl>
 
-                                <FormControl id="orderByFilter" className="MenuElementMg" variant="outlined">
-                                    <InputLabel htmlFor="orderBy">Order</InputLabel>
-                                    <Select
-                                        value={this.state.currentFilters.order}
-                                        onChange={this.handleChangeFilter}
-                                        input={<StyledOutlinedInput labelWidth={41} name="order" id="orderBy" />}
-                                        autoWidth>
-                                        <MenuItem value="descending"><em>{this.getOrderLabel("descending")}</em></MenuItem>
-                                        <MenuItem value="ascending">{this.getOrderLabel("ascending")}</MenuItem>
-                                    </Select>
-                                </FormControl>
+                            <FormControl id="orderByFilter" className="MenuElementMg" variant="outlined">
+                                <InputLabel htmlFor="orderBy">Order</InputLabel>
+                                <Select
+                                    value={this.state.currentFilters.order}
+                                    onChange={this.handleChangeFilter}
+                                    input={<StyledOutlinedInput labelWidth={41} name="order" id="orderBy" />}
+                                    autoWidth>
+                                    <MenuItem value="descending"><em>{this.getOrderLabel("descending")}</em></MenuItem>
+                                    <MenuItem value="ascending">{this.getOrderLabel("ascending")}</MenuItem>
+                                </Select>
+                            </FormControl>
 
-                                <FormControl id="menuYear" className="MenuElementMg" variant="outlined">
-                                    <InputLabel htmlFor="showYear">Year</InputLabel>
-                                    <Select
-                                        value={this.state.currentFilters.year}
-                                        onChange={this.handleChangeFilter}
-                                        input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
-                                        autoWidth>
-                                        <MenuItem value="All"><em>All</em></MenuItem>
-                                        {this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>)}
-                                    </Select>
-                                </FormControl>
+                            <FormControl id="menuYear" className="MenuElementMg" variant="outlined">
+                                <InputLabel htmlFor="showYear">Year</InputLabel>
+                                <Select
+                                    value={this.state.currentFilters.year}
+                                    onChange={this.handleChangeFilter}
+                                    input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
+                                    autoWidth>
+                                    <MenuItem value="All"><em>All</em></MenuItem>
+                                    {this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>)}
+                                </Select>
+                            </FormControl>
 
-                                <FormControl id="menuMaxResults" className="MenuElementMg" variant="outlined">
-                                    <InputLabel htmlFor="maxResults">Results</InputLabel>
-                                    <Select
-                                        value={this.state.currentFilters.maxResults}
-                                        onChange={this.handleChangeFilter}
-                                        input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
-                                        autoWidth>
-                                        <MenuItem value={1000}>All</MenuItem>
-                                        <MenuItem value={5}>5</MenuItem>
-                                        <MenuItem value={10}><em>10</em></MenuItem>
-                                        <MenuItem value={25}>25</MenuItem>
-                                        <MenuItem value={50}>50</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        </form>
+                            <FormControl id="menuMaxResults" className="MenuElementMg" variant="outlined">
+                                <InputLabel htmlFor="maxResults">Results</InputLabel>
+                                <Select
+                                    value={this.state.currentFilters.maxResults}
+                                    onChange={this.handleChangeFilter}
+                                    input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
+                                    autoWidth>
+                                    <MenuItem value={1000}>All</MenuItem>
+                                    <MenuItem value={5}>5</MenuItem>
+                                    <MenuItem value={10}><em>10</em></MenuItem>
+                                    <MenuItem value={25}>25</MenuItem>
+                                    <MenuItem value={50}>50</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            <FormControl id="showWatchedMovies" className="MenuElementMg" variant="outlined">
+                                <StyledFormControlLabel
+                                    control={<StyledCheckbox
+                                        name="showWatchedMovies"
+                                        checked={this.state.currentFilters.showWatchedMovies}
+                                        onChange={this.handleChangeShowWatchedMoviesFilter}
+                                        icon={<StyledIconButton color="default">
+                                            <RemoveRedEyeOutlined fontSize="large" />
+                                        </StyledIconButton>}
+                                        checkedIcon={<StyledIconButton color="primary">
+                                            <RemoveRedEye fontSize="large" />
+                                        </StyledIconButton>} />
+                                    }
+                                    label={`Show ${currentFilters.showWatchedMovies ? 'watched' : 'unseen'} movies`}
+                                    labelPlacement="end"
+                                />
+                            </FormControl>
+                        </FormGroup>
                     </StyledDialogContent>
 
                     <DialogActions>

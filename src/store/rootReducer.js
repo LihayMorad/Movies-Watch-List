@@ -4,7 +4,6 @@ const initialState = {
     isSnackbarOpen: false,
     snackbarMessage: "",
     snackbarType: "default",
-    showWatchedMovies: false,
     freeSearchFilter: "",
     movies: [],
     moviesYears: [],
@@ -16,7 +15,8 @@ const initialState = {
         filter: "releaseYear",
         order: "descending",
         year: "All",
-        maxResults: 10
+        maxResults: 10,
+        showWatchedMovies: false
     },
     loadingMovies: false
 };
@@ -31,12 +31,6 @@ const rootReducer = (state = initialState, action) => {
                 isSnackbarOpen: action.payload.open,
                 snackbarMessage: action.payload.message,
                 snackbarType: action.payload.type
-            };
-
-        case actionTypes.TOGGLE_WATCHED_MOVIES:
-            return {
-                ...state,
-                showWatchedMovies: !state.showWatchedMovies
             };
 
         case actionTypes.TOGGLE_LOADING_MOVIES:
@@ -64,7 +58,7 @@ const rootReducer = (state = initialState, action) => {
                 freeSearchFilter: action.payload
             }
 
-        case actionTypes.ON_MOVIES_COUNTER_CHANGE: // DB.on('value')
+        case actionTypes.ON_MOVIES_COUNTER_CHANGE:
             if (action.payload) {
                 return {
                     ...state,

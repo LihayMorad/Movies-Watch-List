@@ -8,9 +8,9 @@ import youTubeIcon from '../../../../assets/youtube_icon.png';
 import { withStyles } from '@material-ui/core/styles';
 import './MoviesResultsGrid.css';
 
-const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w300/";
-
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '-27px' } })(Tooltip);
+
+const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w300/";
 
 const moviesResultsGrid = props => {
     let moviesSearchResultList = null;
@@ -65,7 +65,6 @@ const moviesResultsGrid = props => {
     }
 
     return <ul id="moviesSearchResults">{moviesSearchResultList}</ul>;
-
 }
 
 export default moviesResultsGrid;

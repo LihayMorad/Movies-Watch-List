@@ -1,9 +1,6 @@
-.MenuFlex {
-    display: flex;
-    flex-wrap: wrap;
+#filtersForm {
     justify-content: center;
     align-items: center;
-    text-align: initial;
 }
 
 .MenuElementMg {
@@ -20,4 +17,17 @@
 
 #applyFiltersBtn {
     padding: 5px 7px !important;
+}
+
+#showWatchedMovies {
+    padding: 0 7px;
+    max-width: 95px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    transition: border-color 0.2s ease-out;
+}
+
+#showWatchedMovies:hover {
+    border-color: black;
 }

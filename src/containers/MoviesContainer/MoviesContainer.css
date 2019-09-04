@@ -24,3 +24,9 @@
 .freeSearch div::before, .freeSearch div:hover {
     border-bottom-color: inherit !important;
 }
+
+#moviesCounter {
+    position: absolute;
+    top: 10px;
+    left: 0;
+}

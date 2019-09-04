@@ -14,9 +14,7 @@ import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner/M
 // import InformationModal from '../UI Elements/InformationModal/InformationModal';
 
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Checkbox from '@material-ui/core/Checkbox';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
@@ -42,33 +40,21 @@ class MoviesContainer extends PureComponent {
         addingMovie: false
     }
 
-    handleDeleteMovie = (movieID, movieYear) => {
-        let movieName = "";
-        let isMovieWatched;
-        let shouldDeleteYear = true;
-
-        this.props.movies.filter(movie => {
-            if (movieID === movie.key) {
-                movieName = movie.NameEng;
-                isMovieWatched = movie.Watched;
-                return false;
-            } else {
-                if (movieYear === movie.Year) { shouldDeleteYear = false; } // there is another movie with the same year
-            }
-            return true;
-        });
-
-        if (movieName) { // make sure movie found in props movies list
+    handleDeleteMovie = async (movieID, imdbID, movieName, movieYear, isMovieWatched) => {
+        try {
+            const shouldDeleteYear = await MoviesService.ShouldDeleteYear(imdbID, movieYear);
             MoviesService.DeleteMovie(movieID)
                 .then(() => {
-                    if (shouldDeleteYear) { this.handleDeleteYear(movieYear); }
+                    if (shouldDeleteYear) { this.handleDeleteYear(movieYear); } // there is another movie with the same year
                     const properties = ["total"];
                     if (!isMovieWatched) { properties.push("unwatched"); }
                     this.handleUpdateCounter(properties, "Delete Movie");
                     this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
                 })
                 .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
-        } else { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); }
+        } catch (error) {
+            this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error");;
+        }
     }
 
     handleDeleteYear = yearToDelete => {
@@ -83,34 +69,33 @@ class MoviesContainer extends PureComponent {
         const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
         const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Watched, Year };
 
-        const isMovieExistsResponse = await MoviesService.IsMovieAlreadyExists(imdbID);
-        if (isMovieExistsResponse) {
-            isMovieExistsResponse !== "error"
-                ? this.props.onSnackbarToggle(true, `The movie '${NameEng}' already exists in your list!`, "warning")
-                : this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'.`, "error");
-            return;
-        }
+        try {
+            const isMovieExists = await MoviesService.IsMovieAlreadyExists(imdbID);
+            if (isMovieExists) { this.props.onSnackbarToggle(true, `The movie '${NameEng}' already exists in your list!`, "warning"); return; }
+        } catch (error) { this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'.`, "error"); }
 
         MoviesService.AddMovie(movieToBeAdded)
-            .then(() => {
+            .then((res) => {
                 this.props.onSnackbarToggle(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
                 this.toggleAddMovie();
                 this.handleAddYear(Year);
                 this.handleUpdateCounter(["total", "unwatched"], "Add Movie");
             })
-            .catch(() => { this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error"); })
+            .catch((error) => {
+                this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error");
+            })
     }
 
     handleAddYear = year => {
         MoviesService.UpdateYears(new Set([...this.props.moviesYears, year]))
-            .then(() => { })
-            .catch(() => { })
+            .then((res) => { })
+            .catch((error) => { })
     }
 
     handleUpdateCounter = (properties, type) => {
         MoviesService.UpdateCounter(this.props.moviesCounter, properties, type)
-            .then(() => { })
-            .catch(() => { })
+            .then((res) => { })
+            .catch((error) => { })
     }
 
     handleEditComments = comments => {
@@ -138,40 +123,41 @@ class MoviesContainer extends PureComponent {
         let addMovieBtn = null;
         const loggedInUser = AccountsService.GetLoggedInUser();
         const dbMovies = this.props.movies || [];
-        const { loadingMovies, moviesCounter, showWatchedMovies } = this.props;
+        const { loadingMovies, moviesCounter, filters } = this.props;
+        const unseenCounter = moviesCounter.unwatched;
+        const watchedCounter = moviesCounter.total - moviesCounter.unwatched;
 
         if (loggedInUser) {
 
-            counter = <FormControl>
-                <StyledTooltip title={`${showWatchedMovies ? 'Watched' : 'Unwatched'} movies`} disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                    <Checkbox
-                        checked={showWatchedMovies}
-                        onChange={this.props.toggleWatchedMovies}
-                        icon={<StyledIconButton>
-                            <Badge badgeContent={moviesCounter.unwatched} color="secondary">
-                                <RemoveRedEyeOutlined fontSize="large" />
-                            </Badge>
-                        </StyledIconButton>}
-                        checkedIcon={<StyledIconButton>
-                            <Badge badgeContent={moviesCounter.total - moviesCounter.unwatched} color="secondary">
-                                <RemoveRedEye fontSize="large" />
-                            </Badge>
-                        </StyledIconButton>} />
-                </StyledTooltip>
-            </FormControl>
+            counter = <div id="moviesCounter">
+                {unseenCounter > 0 && <StyledTooltip title="Total unseen movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                    <StyledIconButton>
+                        <Badge badgeContent={unseenCounter} color="secondary">
+                            <RemoveRedEyeOutlined fontSize="default" />
+                        </Badge>
+                    </StyledIconButton>
+                </StyledTooltip>}
+                {watchedCounter > 0 && <StyledTooltip title="Total watched movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                    <StyledIconButton>
+                        <Badge badgeContent={watchedCounter} color="secondary">
+                            <RemoveRedEye fontSize="default" />
+                        </Badge>
+                    </StyledIconButton>
+                </StyledTooltip>}
+            </div>
 
             freeSearch = <TextField
                 className="MenuElementMg freeSearch"
                 name="freeSearch" margin="normal"
                 label="Filter search results"
-                placeholder="Enter movie name"
+                placeholder="Movie english name"
                 value={this.props.freeSearchFilter}
                 InputProps={{
                     type: "text",
                     startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
                 }}
                 InputLabelProps={{ style: { color: 'inherit' } }}
-                onChange={(e) => { this.props.onFreeSearch(e.target.value); }} />
+                onChange={e => { this.props.onFreeSearch(e.target.value); }} />
 
             addMovieBtn = <div>
                 <Fab color="primary" variant="extended" size="large" onClick={this.toggleAddMovie}>
@@ -180,7 +166,10 @@ class MoviesContainer extends PureComponent {
             </div>
 
             const movies = dbMovies
-                .filter(movie => movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()) && movie.Watched === showWatchedMovies)
+                .filter(movie => (
+                    movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()) ||
+                    movie.NameHeb.includes(this.props.freeSearchFilter)
+                ))
                 .map(movie => (
                     <Movie
                         key={movie['key']}
@@ -214,10 +203,9 @@ class MoviesContainer extends PureComponent {
 
                 {loggedOutMessage}
 
-                {loggedInUser && this.props.movies.length > 0 && <>
-                    {counter}
-                    {freeSearch}
-                </>}
+                {this.props.movies.length > 0 && filters.year === "All" && freeSearch}
+
+                {counter}
 
                 {addMovieBtn}
 
@@ -256,8 +244,7 @@ const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
     onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
-    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value }),
-    toggleWatchedMovies: () => dispatch({ type: actionTypes.TOGGLE_WATCHED_MOVIES })
+    onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);

@@ -47,11 +47,11 @@ class Movie extends Component {
 			let movieData = {};
 			let error = false;
 			axios(`https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`)
-				.then((response) => {
+				.then(response => {
 					if (response.status === 200 && response.data.Response === "True") { movieData = response.data; movieData.Year = parseInt(response.data.Year) }
 					else { error = response.data.Error }
 				})
-				.catch((error) => { error = true })
+				.catch(error => { error = true })
 				.finally(() => { this.setState({ loading: false, ...movieData, Error: error }); })
 		});
 	}
@@ -154,7 +154,9 @@ class Movie extends Component {
 
 				<StyledTooltip title="Delete movie" TransitionComponent={Zoom}>
 					<Fab className="movieCardFab" color="secondary" size="small"
-						onClick={() => { if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(dbMovieID, Year); } }}>
+						onClick={() => {
+							if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(dbMovieID, imdbID, !movieDBError ? Title : NameEng, Year, Watched); }
+						}}>
 						<DeleteIcon />
 					</Fab>
 				</StyledTooltip>
