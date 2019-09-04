@@ -1,4 +1,4 @@
-import { auth, database, firestore } from '../config/firebase';
+import { auth, firestore } from '../config/firebase';
 
 const accountsService = {
 
