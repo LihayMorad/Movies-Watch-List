@@ -52,16 +52,14 @@ class MoviesContainer extends PureComponent {
                     this.props.onSnackbarToggle(true, `The movie '${movieName} (${movieYear})' deleted successfully`, "success");
                 })
                 .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
-        } catch (error) {
-            this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error");;
-        }
+        } catch (error) { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); }
     }
 
     handleDeleteYear = yearToDelete => {
         const years = this.props.moviesYears.filter(year => year !== yearToDelete);
         MoviesService.UpdateYears(years)
-            .then(() => { })
-            .catch(() => { })
+            .then((res) => { })
+            .catch((error) => { })
     }
 
     handleAddMovie = async (details) => {
@@ -81,9 +79,7 @@ class MoviesContainer extends PureComponent {
                 this.handleAddYear(Year);
                 this.handleUpdateCounter(["total", "unwatched"], "Add Movie");
             })
-            .catch((error) => {
-                this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error");
-            })
+            .catch((error) => { this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error"); })
     }
 
     handleAddYear = year => {
@@ -100,7 +96,7 @@ class MoviesContainer extends PureComponent {
 
     handleEditComments = comments => {
         MoviesService.UpdateComments(this.state.dbMovieID, comments)
-            .then(() => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "Personal note saved successfully", "information"); }) })
+            .then((res) => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "Personal note saved successfully", "information"); }) })
             .catch((error) => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "There was an error saving your personal note", "error"); }) })
     }
 
@@ -112,7 +108,7 @@ class MoviesContainer extends PureComponent {
 
     handleInformationModalTitle = title => { this.setState({ informationModalTitle: title }, () => { this.toggleInformationModal(); }); }
 
-    toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000)); }
+    toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => { setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000) }); }
 
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;

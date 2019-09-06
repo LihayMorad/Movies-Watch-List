@@ -48,6 +48,8 @@ class FiltersMenu extends Component {
             if (user) { // User is signed in.
                 this.getMoviesToWatch();
                 this.setDBListeners();
+            } else { // User is signed off.
+                this.clearDBListeners(["movies", "yearsAndCounter"]);
             }
         });
     }
@@ -58,21 +60,15 @@ class FiltersMenu extends Component {
         }
     }
 
-    componentWillUnmount() {
-        this.clearDBListeners("movies");
-        this.clearDBListeners("yearsAndCounter");
-    }
+    componentWillUnmount() { this.clearDBListeners(["movies", "yearsAndCounter"]); }
 
-    clearDBListeners = type => {
-        if (this.state.DBListeners) {
-            if (type === "movies") this.state.DBListeners.clearMovies && this.state.DBListeners.clearMovies();
-            if (type === "yearsAndCounter") this.state.DBListeners.clearYearsAndCounter && this.state.DBListeners.clearYearsAndCounter();
-        }
+    clearDBListeners = types => {
+        if (this.state.DBListeners) { types.forEach(type => { this.state.DBListeners[type] && this.state.DBListeners[type](); }); }
     }
 
     setDBListeners = () => {
-        this.clearDBListeners("yearsAndCounter");
-        const DBListener = AccountsService.GetDBListener().onSnapshot(
+        this.clearDBListeners(["yearsAndCounter"]);
+        const DBListener = AccountsService.GetDBRef("user").onSnapshot(
             response => {
                 if (response.exists) {
                     if (response.data() && response.data().counter) {
@@ -86,18 +82,18 @@ class FiltersMenu extends Component {
             },
             error => { });
 
-        this.setState({ DBListeners: { ...this.state.DBListeners, clearYearsAndCounter: DBListener } });
+        this.setState({ DBListeners: { ...this.state.DBListeners, yearsAndCounter: DBListener } });
     }
 
     getMoviesToWatch = () => {
         this.props.toggleLoadingMovies(true);
 
-        this.clearDBListeners("movies");
+        this.clearDBListeners(["movies"]);
 
         const { filter, order, year, maxResults, showWatchedMovies } = this.props.filters;
         const filterToShow = filter === "releaseYear" ? "Year" : filter;
         const orderToShow = order === "descending" ? "desc" : "asc";
-        let moviesDBRef = AccountsService.GetDBRef("movies");
+        let moviesDBRef = AccountsService.GetDBRef("userMovies");
 
         if (year === "All") {
             moviesDBRef = moviesDBRef.orderBy(filterToShow, orderToShow);
@@ -121,7 +117,7 @@ class FiltersMenu extends Component {
                 this.props.onSnackbarToggle(true, `There was an error retrieving movies`, "error");
             });
 
-        this.setState({ DBListeners: { ...this.state.DBListeners, clearMovies: DBListener } });
+        this.setState({ DBListeners: { ...this.state.DBListeners, movies: DBListener } });
     }
 
     handleFirebaseData = response => {

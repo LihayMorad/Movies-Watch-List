@@ -12,6 +12,8 @@ import NavigationIcon from '@material-ui/icons/Navigation';
 import TrackVisibility from 'react-on-screen';
 import Zoom from '@material-ui/core/Zoom';
 
+import './Layout.css';
+
 import { withStyles } from '@material-ui/core/styles';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);

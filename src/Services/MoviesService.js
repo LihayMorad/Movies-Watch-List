@@ -42,7 +42,7 @@ const moviesService = {
         })
     },
 
-    ShouldDeleteYear(imdbID, year) {
+    ShouldDeleteYear(imdbID, year) { // there is no '!=' clause in Firestore so we should split the query into a greater-than query and a less-than query.
         return new Promise((resolve, reject) => {
             firestore.collection(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies`).where("Year", "==", year).where("imdbID", ">", imdbID).get()
                 .then(querySnapshot => {
