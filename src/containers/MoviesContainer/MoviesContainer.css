@@ -30,3 +30,7 @@
     top: 10px;
     left: 0;
 }
+
+#addMovieBtn {
+    margin: 4px auto;
+}

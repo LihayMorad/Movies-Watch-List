@@ -146,7 +146,7 @@ class MoviesContainer extends PureComponent {
                 className="MenuElementMg freeSearch"
                 name="freeSearch" margin="normal"
                 label="Filter search results"
-                placeholder="Movie english name"
+                placeholder="Enter movie name"
                 value={this.props.freeSearchFilter}
                 InputProps={{
                     type: "text",
@@ -155,7 +155,7 @@ class MoviesContainer extends PureComponent {
                 InputLabelProps={{ style: { color: 'inherit' } }}
                 onChange={e => { this.props.onFreeSearch(e.target.value); }} />
 
-            addMovieBtn = <div>
+            addMovieBtn = <div id="addMovieBtn">
                 <Fab color="primary" variant="extended" size="large" onClick={this.toggleAddMovie}>
                     <AddIcon />Add Movie
                 </Fab>
@@ -199,7 +199,7 @@ class MoviesContainer extends PureComponent {
 
                 {loggedOutMessage}
 
-                {this.props.movies.length > 0 && filters.year === "All" && freeSearch}
+                {this.props.movies.length > 0 && filters.year === "All" && filters.maxResults === 1000 && !loadingMovies && freeSearch}
 
                 {counter}
 

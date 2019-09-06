@@ -30,7 +30,7 @@ class Layout extends Component {
 
     render() {
 
-        const scrollToMenu = <StyledTooltip title="Scroll to the top menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+        const scrollToMenu = <StyledTooltip title="Scroll up to filters menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
             <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
                 <NavigationIcon />
             </Fab>

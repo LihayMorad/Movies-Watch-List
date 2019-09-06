@@ -18,12 +18,14 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import MovieFilterIcon from '@material-ui/icons/MovieFilter';
 import CloseIcon from '@material-ui/icons/Close';
 import SaveIcon from '@material-ui/icons/Save';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
 import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
+import Zoom from '@material-ui/core/Zoom';
 
 import { withStyles } from '@material-ui/core/styles';
 import './FiltersMenu.css';
@@ -35,6 +37,7 @@ const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 1
 const StyledFormControlLabel = withStyles({ root: { marginRight: '0' }, label: { fontSize: '0.7rem', fontWeight: '500', textAlign: 'center' } })(FormControlLabel);
 const StyledCheckbox = withStyles({ root: { margin: '9.5px 3px 9.5px 10px', padding: '0' } })(Checkbox);
 const StyledIconButton = withStyles({ root: { padding: '0px' } })(IconButton);
+const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);
 
 class FiltersMenu extends Component {
 
@@ -167,9 +170,11 @@ class FiltersMenu extends Component {
 
         return (
             loggedInUser && !this.props.loadingMovies && <>
-                <Button id="filtersMenuBtn" color="secondary" variant="contained" onClick={this.handleOpenFiltersMenu}>
-                    <MovieFilterIcon />&nbsp;Filters
+                <StyledTooltip title="Change movies list filters" disableFocusListener TransitionComponent={Zoom}>
+                    <Button id="filtersMenuBtn" color="secondary" variant="contained" onClick={this.handleOpenFiltersMenu}>
+                        <MovieFilterIcon />&nbsp;Filters
                 </Button>
+                </StyledTooltip>
 
                 <StyledDialog open={isFiltersMenuOpen} onClose={this.handleCloseFiltersMenu}>
 

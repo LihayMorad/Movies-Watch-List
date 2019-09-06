@@ -106,7 +106,7 @@ class AccountMenu extends Component {
 
             signInOutAnonymouslyButton = loggedInUser.isAnonymous
                 ? <MenuItem>
-                    <StyledTooltip title="Link this guest account with your Google account to save your data" TransitionComponent={Zoom}>
+                    <StyledTooltip title="Link this guest account with your Google account to save your list" TransitionComponent={Zoom}>
                         <Button className="btnPadding" color="primary" variant="contained" onClick={this.handleUserAccountLinking}>
                             <LinkIcon />&nbsp;Link with Google
                         </Button>
