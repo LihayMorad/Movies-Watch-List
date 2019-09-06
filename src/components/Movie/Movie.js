@@ -142,7 +142,7 @@ class Movie extends Component {
 					</Fab>
 				</StyledTooltip>
 
-				<StyledTooltip title={`Mark movie as ${Watched ? 'unwatched' : 'watched'}`} TransitionComponent={Zoom}>
+				<StyledTooltip title={`Mark movie as ${Watched ? 'unseen' : 'watched'}`} TransitionComponent={Zoom}>
 					<Fab className="movieCardFab" color="default" size="small">
 						<Checkbox style={{ height: 'inherit' }}
 							checked={Watched || false}
