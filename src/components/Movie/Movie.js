@@ -16,6 +16,9 @@ import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
+import Rating from 'react-rating'; // https://github.com/dreyescat/react-rating
+import StarIcon from '@material-ui/icons/Star';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
@@ -80,10 +83,19 @@ class Movie extends Component {
 
 			<Card className="movieCard">
 
+				{this.state.imdbRating && <Rating
+					id="movieRatingStars"
+					initialRating={this.state.imdbRating}
+					stop={10}
+					fractions={10}
+					emptySymbol={<StarBorderIcon />}
+					fullSymbol={<StarIcon />}
+					readonly
+				/>}
+
 				<CardActionArea>
 					<StyledTooltip title="Click to watch the trailer" TransitionComponent={Zoom}>
-						<CardContent id="movieCardContent"
-							onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? Title : NameEng} ${Year}`), imdbID)}>
+						<CardContent id="movieCardContent" onClick={() => this.props.toggleWatchTrailer((`${!movieDBError ? Title : NameEng} ${Year}`), imdbID)}>
 							<div className="movieCardContentImgDiv">
 								{!loading
 									? !movieDBError

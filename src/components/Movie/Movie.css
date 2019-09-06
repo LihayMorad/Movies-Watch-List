@@ -1,6 +1,7 @@
 .movieCard {
     width: 300px;
     margin: 20px 20px;
+    position: relative;
     box-shadow: 0px 1px 20px 5px rgba(0, 0, 0, 0.68) !important;
     border-radius: 10px !important;
     background-color: #00000026 !important;
@@ -98,4 +99,8 @@
 
 .movieCardFab span {
     position: absolute;
+}
+
+#movieRatingStars {
+    color: #ffcf00;
 }
