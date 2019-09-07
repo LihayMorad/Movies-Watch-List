@@ -10,7 +10,7 @@ import './MoviesResultsGrid.css';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '-27px' } })(Tooltip);
 
-const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w300/";
+const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500/";
 
 const moviesResultsGrid = props => {
     let moviesSearchResultList = null;

@@ -32,7 +32,7 @@ import './FiltersMenu.css';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 const StyledDialogTitle = withStyles({ root: { padding: '16px 24px 12px !important' } })(DialogTitle);
-const StyledDialogContent = withStyles({ root: { padding: '0 14px !important' } })(DialogContent);
+const StyledDialogContent = withStyles({ root: { padding: '0 16px !important' } })(DialogContent);
 const StyledOutlinedInput = withStyles({ input: { padding: '18.5px 35px 18.5px 13px' }, notchedOutline: {} })(OutlinedInput);
 const StyledFormControlLabel = withStyles({ root: { marginRight: '0' }, label: { fontSize: '0.7rem', fontWeight: '500', textAlign: 'center' } })(FormControlLabel);
 const StyledCheckbox = withStyles({ root: { margin: '9.5px 3px 9.5px 10px', padding: '0' } })(Checkbox);
@@ -65,8 +65,8 @@ class FiltersMenu extends Component {
 
     componentWillUnmount() { this.clearDBListeners(["movies", "yearsAndCounter"]); }
 
-    clearDBListeners = types => {
-        if (this.state.DBListeners) { types.forEach(type => { this.state.DBListeners[type] && this.state.DBListeners[type](); }); }
+    clearDBListeners = listeners => {
+        if (this.state.DBListeners) { listeners.forEach(listener => { this.state.DBListeners[listener] && this.state.DBListeners[listener](); }); }
     }
 
     setDBListeners = () => {
@@ -145,9 +145,7 @@ class FiltersMenu extends Component {
     }
 
     handleApplyFilters = () => {
-        if (this.state.filtersChanged) {
-            this.props.onFiltersChange(this.state.currentFilters);
-        }
+        if (this.state.filtersChanged) { this.props.onFiltersChange(this.state.currentFilters); }
         this.handleCloseFiltersMenu();
     }
 
@@ -160,6 +158,7 @@ class FiltersMenu extends Component {
             case "releaseYear": return order === "descending" ? "Newest first" : "Oldest first";
             case "NameEng": return order === "descending" ? "Z - A" : "A - Z";
             case "NameHeb": return order === "descending" ? "ת - א" : "א - ת";
+            case "imdbRating": return order === "descending" ? "Highest first" : "Lowest first";
             default: break;
         }
     }
@@ -176,7 +175,11 @@ class FiltersMenu extends Component {
                 </Button>
                 </StyledTooltip>
 
-                <StyledDialog open={isFiltersMenuOpen} onClose={this.handleCloseFiltersMenu}>
+                <StyledDialog
+                    open={isFiltersMenuOpen}
+                    onClose={this.handleCloseFiltersMenu}
+                    maxWidth="md"
+                    TransitionComponent={Zoom}>
 
                     <StyledDialogTitle>List filters
                         <IconButton className="modalCloseBtn" onClick={this.handleCloseFiltersMenu}>
@@ -196,6 +199,7 @@ class FiltersMenu extends Component {
                                     {this.state.currentFilters.year === "All" && <MenuItem value="releaseYear"><em>Year</em></MenuItem>}
                                     <MenuItem value="NameEng">English Name</MenuItem>
                                     <MenuItem value="NameHeb">Hebrew Name</MenuItem>
+                                    <MenuItem value="imdbRating">IMDB Rating</MenuItem>
                                 </Select>
                             </FormControl>
 

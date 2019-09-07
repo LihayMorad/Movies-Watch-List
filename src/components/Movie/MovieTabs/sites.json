@@ -1,0 +1,40 @@
+{
+    "torrentsSites": [
+        {
+            "name": "RarBG",
+            "url": "https://rarbgtor.org/torrents.php?search="
+        },
+        {
+            "name": "TorrentDownloads",
+            "url": "https://www.torrentdownloads.me/search/?s_cat=4&search="
+        },
+        {
+            "name": "LimeTorrents",
+            "url": "https://www.limetorrents.info/search/movie/"
+        },
+        {
+            "name": "1337X",
+            "url": "https://1337x.to/category-search/",
+            "urlExt": "/Movies/1/"
+        },
+        {
+            "name": "KickassTorrents",
+            "url": "https://kickass.best/usearch/",
+            "urlExt": " category:movies/"
+        }
+    ],
+    "subtitlesSites": [
+        {
+            "name": "Subcenter",
+            "url": "http://www.subscenter.biz/he/subtitle/search/?q="
+        },
+        {
+            "name": "ScrewZira",
+            "url": "https://www.screwzira.com/Search.aspx?q="
+        },
+        {
+            "name": "Wizdom",
+            "url": "https://wizdom.xyz/#/movies/"
+        }
+    ]
+}

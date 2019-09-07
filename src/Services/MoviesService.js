@@ -63,12 +63,8 @@ const moviesService = {
         })
     },
 
-    UpdateComments(dbMovieID, comments) {
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${dbMovieID}`).update({ Comments: comments })
-    },
-
-    ToggleMovieWatched(dbMovieID, checked) {
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${dbMovieID}`).update({ Watched: checked })
+    UpdateMovie(dbMovieID, property, value) {
+        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${dbMovieID}`).update({ [property]: value });
     }
 
 }

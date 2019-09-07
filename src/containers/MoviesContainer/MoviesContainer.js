@@ -62,17 +62,15 @@ class MoviesContainer extends PureComponent {
             .catch((error) => { })
     }
 
-    handleAddMovie = async (details) => {
-        const Year = parseInt(details.Year);
-        const { NameEng, NameHeb, imdbID, Comments, Watched } = details;
-        const movieToBeAdded = { NameEng, NameHeb, imdbID, Comments, Watched, Year };
+    handleAddMovie = async (movie) => {
+        const { NameEng, imdbID, Year } = movie;
 
         try {
             const isMovieExists = await MoviesService.IsMovieAlreadyExists(imdbID);
             if (isMovieExists) { this.props.onSnackbarToggle(true, `The movie '${NameEng}' already exists in your list!`, "warning"); return; }
         } catch (error) { this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'.`, "error"); }
 
-        MoviesService.AddMovie(movieToBeAdded)
+        MoviesService.AddMovie(movie)
             .then((res) => {
                 this.props.onSnackbarToggle(true, `The movie '${NameEng} (${Year})' added successfully`, "success");
                 this.toggleAddMovie();
@@ -95,7 +93,7 @@ class MoviesContainer extends PureComponent {
     }
 
     handleEditComments = comments => {
-        MoviesService.UpdateComments(this.state.dbMovieID, comments)
+        MoviesService.UpdateMovie(this.state.dbMovieID, "Comments", comments)
             .then((res) => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "Personal note saved successfully", "information"); }) })
             .catch((error) => { this.setState({ comments: comments, editingComments: false }, () => { this.props.onSnackbarToggle(true, "There was an error saving your personal note", "error"); }) })
     }

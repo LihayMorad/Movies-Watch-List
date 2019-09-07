@@ -8,23 +8,14 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
+// import Rating from 'react-rating'; // https://github.com/dreyescat/react-rating
+// import StarIcon from '@material-ui/icons/Star';
+// import StarBorderIcon from '@material-ui/icons/StarBorder';
+
+import { torrentsSites, subtitlesSites } from './sites.json';
 
 import { withStyles } from '@material-ui/core/styles';
 import './MovieTabs.css';
-
-const torrentsSites = [
-	{ "name": "RarBG", "url": "https://rarbgtor.org/torrents.php?search=" },
-	{ "name": "TorrentDownloads", "url": "https://www.torrentdownloads.me/search/?s_cat=4&search=" },
-	{ "name": "LimeTorrents", "url": "https://www.limetorrents.info/search/movie/" },
-	{ "name": "1337X", "url": "https://1337x.to/category-search/", "urlExt": "/Movies/1/" },
-	{ "name": "KickassTorrents", "url": " https://kat.rip/usearch/", "urlExt": " category:movies/" }
-];
-
-const subtitlesSites = [
-	{ "name": "Subcenter", "url": "http://www.subscenter.biz/he/subtitle/search/?q=" },
-	{ "name": "ScrewZira", "url": "https://www.screwzira.com/Search.aspx?q=" },
-	{ "name": "Wizdom", "url": "https://wizdom.xyz/#/movies/" }
-];
 
 const StyledExpansionPanel = withStyles({ root: { color: 'inherit' } })(ExpansionPanel);
 const StyledExpansionPanelDetails = withStyles({ root: { color: 'inherit', padding: '8px 10px' } })(ExpansionPanelDetails);
@@ -109,13 +100,24 @@ class MovieTabs extends PureComponent {
 					</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")} >
+				{this.props.imdbRating && this.props.imdbRating !== "N/A" && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")} >
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+
 						<StyledTypographyH6 color="inherit" variant="h6">Ratings</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{imdbRating}</StyledTypographyMg>
+
+						{/* <Rating
+							className="movieRatingStars"
+							initialRating={this.props.imdbRating}
+							stop={10}
+							fractions={10}
+							emptySymbol={<StarBorderIcon />}
+							fullSymbol={<StarIcon />}
+							readonly
+						/> */}
 					</StyledExpansionPanelSummary>
 					<StyledExpansionPanelDetails>{ratings}</StyledExpansionPanelDetails>
-				</StyledExpansionPanel>
+				</StyledExpansionPanel>}
 
 				{userEmail === "m141084@gmail.com" &&
 					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handlePanelChange("panel4")} >

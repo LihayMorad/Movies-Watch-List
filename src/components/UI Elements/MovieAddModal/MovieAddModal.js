@@ -29,7 +29,7 @@ const StyledDialogContent = withStyles({ root: { padding: '0 24px 12px !importan
 const currYear = new Date().getFullYear();
 const initialState = {
     NameHeb: "", NameEng: "", Year: currYear, Comments: "",
-    movieSearchResults: [], imdbID: "", tmdbID: "", resultsType: "", loading: false,
+    movieSearchResults: [], imdbID: "", tmdbID: "", imdbRating: "", resultsType: "", loading: false,
     watchingTrailer: false, searchTrailerParams: "", searchID: ""
 };
 
@@ -44,10 +44,17 @@ class movieAddModal extends Component {
     handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
 
     handleAddMovie = () => {
-        const movieDetails = { ...this.state, Year: this.state.selectedYear, NameEng: this.state.selectedTitle, Watched: false };
-        this.state.imdbID
-            ? this.props.addMovie(movieDetails)
-            : this.props.onSnackbarToggle(true, "Please search and choose a movie from the search results.", "information");
+        if (this.state.imdbID) {
+            const { NameHeb, imdbID, Comments } = this.state;
+            const movieDetails = { NameHeb, NameEng: this.state.selectedTitle, imdbID, imdbRating: "", Comments, Year: parseInt(this.state.selectedYear), Watched: false };
+            if (this.state.tmdbID) { // save poster if we are adding movie from 'Popular Movies' search results
+                const poster = this.state.movieSearchResults.find(movie => movie.id === this.state.tmdbID).poster_path;
+                if (poster) movieDetails.Poster = poster;
+            }
+            this.props.addMovie(movieDetails);
+        } else {
+            this.props.onSnackbarToggle(true, "Please search and choose a movie from the search results.", "information");
+        }
     }
 
     handleMovieSearch = () => {
@@ -70,7 +77,6 @@ class movieAddModal extends Component {
     }
 
     handleTrendingMovieSearch = () => {
-
         this.setState({ loading: true }, () => {
             let movieSearchResults = [];
             let resultsType = "";
