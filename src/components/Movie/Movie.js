@@ -39,7 +39,7 @@ const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500/";
 class Movie extends Component {
 
 	state = {
-		NameHeb: "", NameEng: "", Year: "", Comments: "", imdbRating: "", dbMovieID: "", Watched: false,
+		NameHeb: "", NameEng: "", Year: "", Comments: "", imdbRating: "", dbMovieID: "", Watched: false, imdbRatingTimestamp: "",
 		loading: true, Error: false
 	}
 
@@ -57,8 +57,13 @@ class Movie extends Component {
 						movieData = response.data;
 						movieData.Year = parseInt(response.data.Year);
 						if (this.props.Poster) movieData.Poster = POSTER_BASE_URL + this.props.Poster;
-						const shouldUpdateIMDBRating = !this.state.imdbRating && movieData.imdbRating && movieData.imdbRating !== "N/A";
-						if (shouldUpdateIMDBRating) { this.handleUpdateIMDBRating(movieData.imdbRating); }
+
+						const timestampNow = Date.now();
+						const shouldUpdateIMDBRating = !this.state.imdbRating || !this.state.imdbRatingTimestamp || (timestampNow - this.state.imdbRatingTimestamp) / 1000 / 60 / 60 / 24 > 1;
+						if (shouldUpdateIMDBRating) {
+							const imdbRating = movieData.imdbRating && movieData.imdbRating !== "N/A" ? movieData.imdbRating : "";
+							this.handleUpdateIMDBRating(imdbRating, timestampNow);
+						}
 					}
 					else { error = response.data.Error }
 				})
@@ -69,12 +74,13 @@ class Movie extends Component {
 
 	toggleMovieWatched = e => {
 		const { checked } = e.target;
+		const label = checked ? 'watched' : 'unwatched';
 		MoviesService.UpdateMovie(this.props.dbMovieID, "Watched", checked)
 			.then(() => {
-				this.props.onSnackbarToggle(true, `Movie marked as ${checked ? 'watched' : 'unwatched'} successfully`, "information");
+				this.props.onSnackbarToggle(true, `Movie marked as ${label} successfully`, "information");
 				this.handleUpdateCounter("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
 			})
-			.catch(() => { this.props.onSnackbarToggle(true, "There was an error marking the movie as watched", "error"); })
+			.catch(() => { this.props.onSnackbarToggle(true, `There was an error marking the movie as ${label}`, "error"); })
 	}
 
 	handleUpdateCounter = (properties, type) => {
@@ -83,8 +89,11 @@ class Movie extends Component {
 			.catch(() => { })
 	}
 
-	handleUpdateIMDBRating = imdbRating => {
+	handleUpdateIMDBRating = (imdbRating, timestampNow) => {
 		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRating", imdbRating)
+			.then(() => { })
+			.catch(() => { })
+		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRatingTimestamp", timestampNow)
 			.then(() => { })
 			.catch(() => { })
 	}

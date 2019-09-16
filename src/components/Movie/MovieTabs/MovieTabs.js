@@ -8,9 +8,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
-// import Rating from 'react-rating'; // https://github.com/dreyescat/react-rating
-// import StarIcon from '@material-ui/icons/Star';
-// import StarBorderIcon from '@material-ui/icons/StarBorder';
 
 import { torrentsSites, subtitlesSites } from './sites.json';
 
@@ -44,7 +41,7 @@ class MovieTabs extends PureComponent {
 		}
 
 		const imdbRating = <a href={`https://www.imdb.com/title/${this.props.imdbID}`} target="_blank" rel="noopener noreferrer">
-			IMDb: {this.props.imdbRating === "N/A" ? "N/A" : this.props.imdbRating}</a>;
+			IMDb: {!this.props.imdbRating || this.props.imdbRating === "N/A" ? "N/A" : this.props.imdbRating}</a>;
 
 		const torrents = torrentsSites.map(site => {
 			let attributes = "";
@@ -82,7 +79,7 @@ class MovieTabs extends PureComponent {
 		return (
 			<div>
 
-				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handlePanelChange("panel1")} >
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handlePanelChange("panel1")}>
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Plot</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{this.props.genre}</StyledTypographyMg>
@@ -90,7 +87,7 @@ class MovieTabs extends PureComponent {
 					<StyledExpansionPanelDetails>{this.props.plot || ""}</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handlePanelChange("panel2")} >
+				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handlePanelChange("panel2")}>
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Cast</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
@@ -100,27 +97,16 @@ class MovieTabs extends PureComponent {
 					</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>
 
-				{this.props.imdbRating && this.props.imdbRating !== "N/A" && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")} >
+				{this.props.ratings && this.props.ratings.length > 0 && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")}>
 					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-
 						<StyledTypographyH6 color="inherit" variant="h6">Ratings</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{imdbRating}</StyledTypographyMg>
-
-						{/* <Rating
-							className="movieRatingStars"
-							initialRating={this.props.imdbRating}
-							stop={10}
-							fractions={10}
-							emptySymbol={<StarBorderIcon />}
-							fullSymbol={<StarIcon />}
-							readonly
-						/> */}
 					</StyledExpansionPanelSummary>
 					<StyledExpansionPanelDetails>{ratings}</StyledExpansionPanelDetails>
 				</StyledExpansionPanel>}
 
 				{userEmail === "m141084@gmail.com" &&
-					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handlePanelChange("panel4")} >
+					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handlePanelChange("panel4")}>
 						<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
 							<StyledTypographyH6 color="inherit" variant="h6">Downloads</StyledTypographyH6>
 							<StyledTypographyMg color="inherit" variant="subtitle2">Torrents & Subtitles</StyledTypographyMg>

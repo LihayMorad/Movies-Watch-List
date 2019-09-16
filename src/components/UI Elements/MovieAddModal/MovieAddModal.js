@@ -45,10 +45,10 @@ class movieAddModal extends Component {
 
     handleAddMovie = () => {
         if (this.state.imdbID) {
-            const { NameHeb, imdbID, Comments } = this.state;
-            const movieDetails = { NameHeb, NameEng: this.state.selectedTitle, imdbID, imdbRating: "", Comments, Year: parseInt(this.state.selectedYear), Watched: false };
+            const { NameHeb, imdbID, tmdbID, Comments, selectedTitle, selectedYear } = this.state;
+            const movieDetails = { NameHeb, NameEng: selectedTitle, imdbID, imdbRating: "", Comments, Year: parseInt(selectedYear), Watched: false, imdbRatingTimestamp: Date.now() };
             if (this.state.tmdbID) { // save poster if we are adding movie from 'Popular Movies' search results
-                const poster = this.state.movieSearchResults.find(movie => movie.id === this.state.tmdbID).poster_path;
+                const poster = this.state.movieSearchResults.find(movie => movie.id === tmdbID).poster_path;
                 if (poster) movieDetails.Poster = poster;
             }
             this.props.addMovie(movieDetails);
