@@ -41,7 +41,7 @@ class movieAddModal extends Component {
 
     componentDidUpdate(prevProps) { if (prevProps.isOpen !== this.props.isOpen) this.setState({ ...initialState }); }
 
-    handleChange = event => { this.setState({ [event.target.name]: event.target.value }); }
+    handleChange = event => { this.setState({ [event.target.name]: event.target.value.trim() }); }
 
     handleAddMovie = () => {
         if (this.state.imdbID) {
