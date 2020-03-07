@@ -136,9 +136,9 @@ class FiltersMenu extends Component {
         });
     }
 
-    handleChangeFilter = e => {
+    handleChangeFilter = ({ target: { name, value } }) => {
         this.setState(state => {
-            const currentFilters = { ...state.currentFilters, [e.target.name]: e.target.value };
+            const currentFilters = { ...state.currentFilters, [name]: value };
             if (currentFilters.year !== "All" && currentFilters.filter === "releaseYear") currentFilters.filter = "NameEng";
             return { filtersChanged: true, currentFilters }
         });

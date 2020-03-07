@@ -72,8 +72,7 @@ class Movie extends Component {
 		});
 	}
 
-	toggleMovieWatched = e => {
-		const { checked } = e.target;
+	toggleMovieWatched = ({ target: { checked } }) => {
 		const label = checked ? 'watched' : 'unwatched';
 		MoviesService.UpdateMovie(this.props.dbMovieID, "Watched", checked)
 			.then(() => {

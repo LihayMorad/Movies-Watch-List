@@ -6,6 +6,8 @@ import * as actionTypes from '../../store/actions';
 import MoviesService from '../../Services/MoviesService';
 import AccountsService from '../../Services/AccountsService';
 
+import { debounce } from '../../utils/debounce';
+
 import Movie from '../../components/Movie/Movie';
 import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddModal';
 import MovieTrailerModal from '../../components/UI Elements/MovieTrailerModal/MovieTrailerModal';
@@ -35,7 +37,7 @@ const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: '
 class MoviesContainer extends PureComponent {
 
     state = {
-        showInformationModal: false, informationModalTitle: "",
+        showInformationModal: false, informationModalTitle: "", freeSearch: "",
         watchingTrailer: false, searchTrailerParams: "", searchID: "",
         editingComments: false, comments: "",
         addingMovie: false
@@ -135,6 +137,15 @@ class MoviesContainer extends PureComponent {
             )
     }
 
+    handleFreeSearchChange = ({ target: { value } }) => {
+        this.setState({ freeSearch: value });
+        this.applyFreeSearchFilter(value);
+    }
+
+    applyFreeSearchFilter = debounce(value => {
+        this.props.onFreeSearch(value);
+    }, 350);
+
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;
         let moviesContainer = null;
@@ -174,13 +185,13 @@ class MoviesContainer extends PureComponent {
                     name="freeSearch" margin="normal"
                     label="Filter search results"
                     placeholder="Enter movie name"
-                    value={this.props.freeSearchFilter}
+                    value={this.state.freeSearch}
                     InputProps={{
                         type: "text",
                         startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
                     }}
                     InputLabelProps={{ style: { color: 'inherit' } }}
-                    onChange={e => { this.props.onFreeSearch(e.target.value); }} />;
+                    onChange={this.handleFreeSearchChange} />;
 
                 addMovieBtn = <div id="addMovieBtn">
                     <Fab color="primary" variant="extended" size="large" onClick={this.toggleAddMovie}>

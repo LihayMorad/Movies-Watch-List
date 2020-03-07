@@ -23,7 +23,7 @@ class movieCommentsModal extends Component {
 
     componentDidUpdate(prevProps) { if (prevProps.comments !== this.props.comments) this.setState({ comments: this.props.comments }); }
 
-    handleChange = e => { this.setState({ comments: e.target.value, commentsChanged: true }); }
+    handleChange = ({ target: { value } }) => { this.setState({ comments: value, commentsChanged: true }); }
 
     handleClose = () => { this.setState({ commentsChanged: false }); this.props.toggle(); }
 
