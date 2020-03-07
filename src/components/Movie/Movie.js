@@ -100,7 +100,7 @@ class Movie extends Component {
 
 	render() {
 		const movieDBError = this.state.Error;
-		const { imdbID, dbMovieID, Title, NameEng, NameHeb, Comments, Year, Poster, Country, Runtime, Watched, imdbRating, loading } = this.state;
+		const { imdbID, dbMovieID, Title, NameEng, NameHeb, Comments, Year, Poster, Country, Runtime, Watched, imdbRating, loading, watchingList } = this.state;
 
 		return (
 			<div id="movieCardContainer">
@@ -166,37 +166,40 @@ class Movie extends Component {
 								imdbID={this.state.imdbID}
 								plot={this.state.Plot}
 								actors={this.state.Actors}
-								genre={this.state.Genre} />
+								genre={this.state.Genre}
+								watchingList={watchingList} />
 							: <MovieSpinner />
 						}
 					</CardActions>
 
-					<StyledTooltip title="Edit movie's personal note" TransitionComponent={Zoom}>
-						<Fab className="movieCardFab" color="primary" size="small"
-							onClick={() => { this.props.toggleEditComments(dbMovieID, Comments); }}>
-							<EditIcon />
-						</Fab>
-					</StyledTooltip>
+					{!watchingList && <>
+						<StyledTooltip title="Edit movie's personal note" TransitionComponent={Zoom}>
+							<Fab className="movieCardFab" color="primary" size="small"
+								onClick={() => { this.props.toggleEditComments(dbMovieID, Comments); }}>
+								<EditIcon />
+							</Fab>
+						</StyledTooltip>
 
-					<StyledTooltip title={`Mark movie as ${Watched ? 'unseen' : 'watched'}`} TransitionComponent={Zoom}>
-						<Fab className="movieCardFab" color="default" size="small">
-							<Checkbox style={{ height: 'inherit' }}
-								checked={Watched || false}
-								icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
-								checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
-								onChange={this.toggleMovieWatched} />
-						</Fab>
-					</StyledTooltip>
+						<StyledTooltip title={`Mark movie as ${Watched ? 'unseen' : 'watched'}`} TransitionComponent={Zoom}>
+							<Fab className="movieCardFab" color="default" size="small">
+								<Checkbox style={{ height: 'inherit' }}
+									checked={Watched || false}
+									icon={<RemoveRedEyeOutlined fontSize="large" color="action" />}
+									checkedIcon={<RemoveRedEye fontSize="large" color="primary" />}
+									onChange={this.toggleMovieWatched} />
+							</Fab>
+						</StyledTooltip>
 
-					<StyledTooltip title="Delete movie" TransitionComponent={Zoom}>
-						<Fab className="movieCardFab" color="secondary" size="small"
-							onClick={() => {
-								if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(dbMovieID, imdbID, !movieDBError ? Title : NameEng, Year, Watched); }
-							}}>
-							<DeleteIcon />
-						</Fab>
-					</StyledTooltip>
-
+						<StyledTooltip title="Delete movie" TransitionComponent={Zoom}>
+							<Fab className="movieCardFab" color="secondary" size="small"
+								onClick={() => {
+									if (window.confirm("Are you sure you want to delete this movie?")) { this.props.delete(dbMovieID, imdbID, !movieDBError ? Title : NameEng, Year, Watched); }
+								}}>
+								<DeleteIcon />
+							</Fab>
+						</StyledTooltip>
+					</>
+					}
 				</Card>
 			</div>
 		);

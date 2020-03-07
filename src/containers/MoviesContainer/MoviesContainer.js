@@ -19,6 +19,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
+import ShareIcon from '@material-ui/icons/Share';
 import Fab from '@material-ui/core/Fab';
 import Badge from '@material-ui/core/Badge';
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
@@ -38,6 +39,23 @@ class MoviesContainer extends PureComponent {
         watchingTrailer: false, searchTrailerParams: "", searchID: "",
         editingComments: false, comments: "",
         addingMovie: false
+    }
+
+    componentDidMount() {
+        if (this.props.watchingList) {
+            this.handleQueryMovies();
+        }
+    }
+
+    handleQueryMovies = () => {
+        const paramsString = window.location.search;
+        const searchParams = new URLSearchParams(paramsString);
+        if (searchParams.has("imdbIDs")) {
+            const imdbIDsString = searchParams.get("imdbIDs");
+            const imdbIDsArr = imdbIDsString.split(",");
+            const moviesArr = imdbIDsArr.map(imdbID => ({ imdbID: imdbID, NameEng: "" }))
+            this.props.saveMovies(moviesArr);
+        }
     }
 
     handleDeleteMovie = async (movieID, imdbID, movieName, movieYear, isMovieWatched) => {
@@ -108,6 +126,15 @@ class MoviesContainer extends PureComponent {
 
     toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => { setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000) }); }
 
+    shareList = (userInfo, movies) => {
+        const text = `${window.location.origin}?watchingList=true&user=${userInfo}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
+        navigator.clipboard.writeText(text)
+            .then(
+                () => { alert(`You list's sharable link copied to clipboard: ${text}`); },
+                () => { window.prompt("Copy your list's sharable link:", text); }
+            )
+    }
+
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;
         let moviesContainer = null;
@@ -115,81 +142,104 @@ class MoviesContainer extends PureComponent {
         let counter = null;
         let freeSearch = null;
         let addMovieBtn = null;
+        let shareListBtn = null;
         const loggedInUser = AccountsService.GetLoggedInUser();
+        let loggedInUserInfo = "";
         const dbMovies = this.props.movies || [];
-        const { loadingMovies, moviesCounter, filters } = this.props;
+        const { loadingMovies, moviesCounter, filters, watchingList, watchingListUserInfo } = this.props;
         const unseenCounter = moviesCounter.unwatched;
         const watchedCounter = moviesCounter.total - moviesCounter.unwatched;
 
-        if (loggedInUser) {
+        if (!watchingList) {
+            if (loggedInUser) {
+                counter = <div id="moviesCounter">
+                    {unseenCounter > 0 && <StyledTooltip title="Total unseen movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                        <StyledIconButton>
+                            <Badge badgeContent={unseenCounter} color="secondary">
+                                <RemoveRedEyeOutlined fontSize="default" />
+                            </Badge>
+                        </StyledIconButton>
+                    </StyledTooltip>}
+                    {watchedCounter > 0 && <StyledTooltip title="Total watched movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                        <StyledIconButton>
+                            <Badge badgeContent={watchedCounter} color="secondary">
+                                <RemoveRedEye fontSize="default" />
+                            </Badge>
+                        </StyledIconButton>
+                    </StyledTooltip>}
+                </div>;
 
-            counter = <div id="moviesCounter">
-                {unseenCounter > 0 && <StyledTooltip title="Total unseen movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                    <StyledIconButton>
-                        <Badge badgeContent={unseenCounter} color="secondary">
-                            <RemoveRedEyeOutlined fontSize="default" />
-                        </Badge>
+                freeSearch = <TextField
+                    className="MenuElementMg freeSearch"
+                    name="freeSearch" margin="normal"
+                    label="Filter search results"
+                    placeholder="Enter movie name"
+                    value={this.props.freeSearchFilter}
+                    InputProps={{
+                        type: "text",
+                        startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
+                    }}
+                    InputLabelProps={{ style: { color: 'inherit' } }}
+                    onChange={e => { this.props.onFreeSearch(e.target.value); }} />;
+
+                addMovieBtn = <div id="addMovieBtn">
+                    <Fab color="primary" variant="extended" size="large" onClick={this.toggleAddMovie}>
+                        <AddIcon />Add Movie
+                    </Fab>
+                </div>;
+
+                const movies = dbMovies
+                    .filter(movie => (
+                        movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()) ||
+                        movie.NameHeb.includes(this.props.freeSearchFilter)
+                    ))
+                    .map(movie => (
+                        <Movie
+                            key={movie['key'] || movie['imdbID']}
+                            dbMovieID={movie['key']}
+                            {...movie}
+                            imdbID={movie['imdbID'] || null}
+                            delete={this.handleDeleteMovie}
+                            toggleWatchTrailer={this.toggleWatchTrailer}
+                            toggleEditComments={this.toggleEditComments}
+                            watchingList={watchingList} />
+                    ));
+
+                moviesContainer = !loadingMovies
+                    ? moviesContainer = movies.length === 0
+                        ? <>
+                            <h3 className="informationH3">No results</h3>
+                            <h4 className="informationH4">Add a movie or change list filters</h4>
+                        </>
+                        : <div className="MoviesContainer">{movies}</div>
+                    : <MoviesSpinner />;
+                loggedInUserInfo = loggedInUser.displayName || loggedInUser.email;
+                shareListBtn = !loadingMovies && <StyledTooltip title="Share currently list" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                    <StyledIconButton onClick={() => this.shareList(loggedInUserInfo, dbMovies)}>
+                        <ShareIcon />
                     </StyledIconButton>
-                </StyledTooltip>}
-                {watchedCounter > 0 && <StyledTooltip title="Total watched movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                    <StyledIconButton>
-                        <Badge badgeContent={watchedCounter} color="secondary">
-                            <RemoveRedEye fontSize="default" />
-                        </Badge>
-                    </StyledIconButton>
-                </StyledTooltip>}
-            </div>
-
-            freeSearch = <TextField
-                className="MenuElementMg freeSearch"
-                name="freeSearch" margin="normal"
-                label="Filter search results"
-                placeholder="Enter movie name"
-                value={this.props.freeSearchFilter}
-                InputProps={{
-                    type: "text",
-                    startAdornment: (<InputAdornment position="start"><SearchIcon /></InputAdornment>)
-                }}
-                InputLabelProps={{ style: { color: 'inherit' } }}
-                onChange={e => { this.props.onFreeSearch(e.target.value); }} />
-
-            addMovieBtn = <div id="addMovieBtn">
-                <Fab color="primary" variant="extended" size="large" onClick={this.toggleAddMovie}>
-                    <AddIcon />Add Movie
-                </Fab>
-            </div>
-
+                </StyledTooltip>
+            } else {
+                loggedOutMessage = <>
+                    <h3 className="informationH3">Welcome!</h3><br />
+                    <h4 className="informationH4">Sign in to start editing your movie watch list</h4>
+                    <h4 className="informationH4">* You can use your Google account or a guest account</h4>
+                </>;
+            }
+        } else {
             const movies = dbMovies
-                .filter(movie => (
-                    movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()) ||
-                    movie.NameHeb.includes(this.props.freeSearchFilter)
-                ))
                 .map(movie => (
                     <Movie
-                        key={movie['key']}
-                        dbMovieID={movie['key']}
+                        key={movie['imdbID']}
+                        dbMovieID={movie['imdbID']}
                         {...movie}
                         imdbID={movie['imdbID'] || null}
-                        delete={this.handleDeleteMovie}
                         toggleWatchTrailer={this.toggleWatchTrailer}
-                        toggleEditComments={this.toggleEditComments} />
+                        watchingList={watchingList} />
                 ));
-
-            moviesContainer = !loadingMovies
-                ? moviesContainer = movies.length === 0
-                    ? <>
-                        <h3 className="informationH3">No results</h3>
-                        <h4 className="informationH4">Add a movie or change list filters</h4>
-                    </>
-                    : <div className="MoviesContainer">{movies}</div>
-                : <MoviesSpinner />;
-
-        } else {
-            loggedOutMessage = <>
-                <h3 className="informationH3">Welcome!</h3><br />
-                <h4 className="informationH4">Sign in to start editing your movie watch list</h4>
-                <h4 className="informationH4">* You can use your Google account or a guest account</h4>
-            </>
+            moviesContainer = movies.length === 0
+                ? <h4 className="informationH4">The list is empty. Ask the owner for an updated link.</h4>
+                : <div className="MoviesContainer">{movies}</div>;
         }
 
         return (
@@ -202,6 +252,10 @@ class MoviesContainer extends PureComponent {
                 {counter}
 
                 {addMovieBtn}
+
+                {shareListBtn}
+
+                {watchingListUserInfo && <h3 className="informationH3">You are watching {watchingListUserInfo}'s list</h3>}
 
                 {moviesContainer}
 
@@ -237,6 +291,7 @@ class MoviesContainer extends PureComponent {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
+    saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),
     onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
     onFreeSearch: (value) => dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value })
 });

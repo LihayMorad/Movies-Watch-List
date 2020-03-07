@@ -21,42 +21,65 @@ const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: '
 class Layout extends Component {
 
     state = {
-        showScrollToMenuButton: false
+        showScrollToMenuButton: false,
+        watchingList: true
     }
 
-    componentDidMount() { this.topMenuRef = React.createRef(); }
+    componentDidMount() {
+        this.topMenuRef = React.createRef();
+        this.handleQueryParams();
+    }
 
     scrollToMenu = () => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }
 
+    handleQueryParams = () => {
+        const paramsString = window.location.search;
+        const searchParams = new URLSearchParams(paramsString);
+        this.setState({
+            watchingList: searchParams.has("watchingList") && searchParams.get("watchingList") === "true",
+            watchingListUserInfo: searchParams.has("user") && searchParams.get("user")
+        });
+    }
+
     render() {
+        const { watchingList, watchingListUserInfo } = this.state;
+        let scrollToMenu = null;
+        let filtersMenu = null;
+        let accountMenu = null;
+        let snackbar = null;
 
-        const scrollToMenu = <StyledTooltip title="Scroll up to filters menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-            <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
-                <NavigationIcon />
-            </Fab>
-        </StyledTooltip>;
+        if (!watchingList) {
+            scrollToMenu = <StyledTooltip title="Scroll up to filters menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
+                    <NavigationIcon />
+                </Fab>
+            </StyledTooltip>;
 
-        const filtersMenu = ({ isVisible }) => {
-            setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
-            return <div ref={this.topMenuRef}><FiltersMenu /></div>;
+            filtersMenu = ({ isVisible }) => {
+                setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
+                return <div ref={this.topMenuRef}><FiltersMenu /></div>;
+            };
+            accountMenu = <AccountMenu />;
+            snackbar = <Snackbar />;
         }
+
 
         return <>
             <Header />
 
-            <AccountMenu />
+            {accountMenu}
 
-            <TrackVisibility partialVisibility>
+            {!watchingList && <TrackVisibility partialVisibility>
                 {filtersMenu}
-            </TrackVisibility>
+            </TrackVisibility>}
 
-            <MoviesContainer />
+            <MoviesContainer watchingList={watchingList} watchingListUserInfo={watchingListUserInfo} />
 
             {this.state.showScrollToMenuButton && scrollToMenu}
 
             <Attributions />
 
-            <Snackbar />
+            {snackbar}
         </>
     }
 };

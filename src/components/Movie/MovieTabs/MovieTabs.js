@@ -31,7 +31,8 @@ class MovieTabs extends PureComponent {
 
 	render() {
 		const { expanded } = this.state;
-		const userEmail = AccountsService.GetLoggedInUser().email;
+		const {watchingList} = this.props;
+		const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : "";
 		const searchParams = `${this.props.title}+${this.props.year}`;
 		let ratings = "";
 
@@ -116,7 +117,7 @@ class MovieTabs extends PureComponent {
 						<StyledExpansionPanelDetailsFlexWrap>{subtitles}</StyledExpansionPanelDetailsFlexWrap>
 					</StyledExpansionPanel>}
 
-			</div >
+			</div>
 		);
 	}
 }
