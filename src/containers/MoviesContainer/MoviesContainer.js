@@ -127,11 +127,11 @@ class MoviesContainer extends PureComponent {
     toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => { setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000) }); }
 
     shareList = (userInfo, movies) => {
-        const text = `${window.location.origin}?watchingList=true&user=${userInfo}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
+        const text = `${window.location.origin}?watchingList=true&user=${userInfo.replace(/\s/g, "+")}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
         navigator.clipboard.writeText(text)
             .then(
-                () => { alert(`You list's sharable link copied to clipboard: ${text}`); },
-                () => { window.prompt("Copy your list's sharable link:", text); }
+                () => { alert("Your list's sharable link was copied to clipboard. Just paste it wherever you need."); },
+                () => { window.prompt("Please copy your list's sharable link and paste it wherever you need:", text); }
             )
     }
 
