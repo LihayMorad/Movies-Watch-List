@@ -7,6 +7,7 @@ import MoviesService from '../../Services/MoviesService';
 import AccountsService from '../../Services/AccountsService';
 
 import { debounce } from '../../utils/debounce';
+import { getShortURL } from '../../utils/urlShortener';
 
 import Movie from '../../components/Movie/Movie';
 import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddModal';
@@ -128,13 +129,16 @@ class MoviesContainer extends PureComponent {
 
     toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => { setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000) }); }
 
-    shareList = (userInfo, movies) => {
-        const text = `${window.location.origin}?watchingList=true&user=${userInfo.replace(/\s/g, "+")}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
-        navigator.clipboard.writeText(text)
-            .then(
-                () => { alert("Your list's sharable link was copied to clipboard. Just paste it wherever you need."); },
-                () => { window.prompt("Please copy your list's sharable link and paste it wherever you need:", text); }
-            )
+    shareList = async (userInfo, movies) => {
+        const url = `https://movies-watch-list.netlify.com/?watchingList=true&user=${userInfo.replace(/\s/g, "+")}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
+        try {
+            const shortURL = await getShortURL(url);
+            navigator.clipboard.writeText(shortURL)
+                .then(
+                    () => { alert("Your list's sharable link was copied to clipboard. Just paste it wherever you need."); },
+                    () => { throw new Error(); }
+                )
+        } catch (error) { window.prompt("Please copy your list's sharable link and paste it wherever you need:", url); }
     }
 
     handleFreeSearchChange = ({ target: { value } }) => {
@@ -224,8 +228,8 @@ class MoviesContainer extends PureComponent {
                         </>
                         : <div className="MoviesContainer">{movies}</div>
                     : <MoviesSpinner />;
-                loggedInUserInfo = loggedInUser.displayName || loggedInUser.email;
-                shareListBtn = !loadingMovies && <StyledTooltip title="Share currently list" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                loggedInUserInfo = !loggedInUser.isAnonymous ? loggedInUser.displayName || loggedInUser.email : "a guest";
+                shareListBtn = !loadingMovies && movies.length !== 0 && <StyledTooltip title="Share currently list" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
                     <StyledIconButton onClick={() => this.shareList(loggedInUserInfo, dbMovies)}>
                         <ShareIcon />
                     </StyledIconButton>
