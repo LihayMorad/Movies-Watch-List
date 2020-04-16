@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
+import ReactGA from 'react-ga';
 
 const firestoreConfig = {
   apiKey: process.env.REACT_APP_FIRESTORE_API_KEY,
@@ -13,6 +14,7 @@ const firestoreConfig = {
 };
 
 firebase.initializeApp(firestoreConfig);
+ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS);
 
 export default firebase;
 export const firestore = firebase.firestore();

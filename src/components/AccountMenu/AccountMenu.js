@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactGA from 'react-ga';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
@@ -33,6 +34,10 @@ class AccountMenu extends Component {
             .then((result) => { // Successful sign-in.
                 this.props.onSnackbarToggle(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information");
                 this.handleCloseAccountMenu();
+                ReactGA.event({
+                    category: 'User',
+                    action: 'User Signed in with Google account'
+                });
             })
             .catch((error) => { this.props.onSnackbarToggle(true, `Sign in error`, "error"); }); // Sign-in failed.
     }
@@ -42,6 +47,10 @@ class AccountMenu extends Component {
             .then((result) => { // Successful sign-in anonymously.
                 this.props.onSnackbarToggle(true, `Hi, you are now logged in as a guest user.`, "information");
                 this.handleCloseAccountMenu();
+                ReactGA.event({
+                    category: 'User',
+                    action: 'User Signed in anonymously'
+                });
             })
             .catch((error) => { this.props.onSnackbarToggle(true, `Error! cannot sign in as a guest user.`, "error"); }); // Sign-in anonymously failed.
     }
@@ -51,6 +60,10 @@ class AccountMenu extends Component {
             .then((result) => { // Successful accounts linking.
                 this.props.onSnackbarToggle(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information");
                 this.handleCloseAccountMenu();
+                ReactGA.event({
+                    category: 'User',
+                    action: 'User linked his anonymous account to his Google account'
+                });
             })
             .catch((error) => { this.props.onSnackbarToggle(true, `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login with this account.`, "error"); }); // Accounts linking failed.
     }
@@ -65,6 +78,10 @@ class AccountMenu extends Component {
                 .then((result) => { // Successful sign-out.
                     this.props.onSnackbarToggle(true, "You are now logged out", "information");
                     this.handleCloseAccountMenu();
+                    ReactGA.event({
+                        category: 'User',
+                        action: 'User signed out'
+                    });
                 })
                 .catch((error) => { this.props.onSnackbarToggle(true, `Sign out error`, "error"); }); // Sign-out failed.
         }
