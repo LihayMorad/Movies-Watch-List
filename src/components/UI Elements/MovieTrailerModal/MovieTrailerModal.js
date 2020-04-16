@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+import AnalyticsService from '../../../Services/AnalyticsService';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -51,6 +53,10 @@ class MovieTrailerModal extends Component {
 			this.setState({ searchError: "Search ID is missing" });
 			this.getTrailerFromYouTubeAPI();
 		}
+		AnalyticsService({
+			category: 'Movie',
+			action: 'Searching movie trailer by TMDB API'
+		});
 	}
 
 	getTrailerFromYouTubeAPI = () => {
@@ -68,6 +74,10 @@ class MovieTrailerModal extends Component {
 				})
 				.catch((error) => { this.setState({ searchError: error.response ? error.response.data : error.message, loading: false }); })
 		} else { this.setState({ searchError: "Search parameters are missing" }); }
+		AnalyticsService({
+			category: 'Movie',
+			action: 'Searching movie trailer by YouTube API'
+		});
 	}
 
 	handleClose = () => {

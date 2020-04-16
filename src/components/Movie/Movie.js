@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
 
 import MoviesService from '../../Services/MoviesService';
+import AnalyticsService from '../../Services/AnalyticsService';
 
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
@@ -78,6 +79,10 @@ class Movie extends Component {
 			.then(() => {
 				this.props.onSnackbarToggle(true, `Movie marked as ${label} successfully`, "information");
 				this.handleUpdateCounter("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
+				AnalyticsService({
+					category: 'Movie',
+					action: 'Toggle movie watched status'
+				});
 			})
 			.catch(() => { this.props.onSnackbarToggle(true, `There was an error marking the movie as ${label}`, "error"); })
 	}

@@ -4,6 +4,8 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions';
 
+import AnalyticsService from '../../../Services/AnalyticsService';
+
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 import MovieTrailerModal from '../MovieTrailerModal/MovieTrailerModal';
 import SearchResultsSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
@@ -73,7 +75,11 @@ class movieAddModal extends Component {
                 })
                 .catch((error) => { this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error"); })
                 .finally(() => { this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType }); })
-        })
+        });
+        AnalyticsService({
+            category: 'Movie',
+            action: 'Searching movies'
+        });
     }
 
     handleTrendingMovieSearch = () => {
@@ -91,6 +97,10 @@ class movieAddModal extends Component {
                 })
                 .catch((error) => { this.props.onSnackbarToggle(true, "Network error. Something went wrong!", "error"); })
                 .finally(() => { this.setState({ loading: false, movieSearchResults, imdbID: "", tmdbID: "", resultsType }); })
+        });
+        AnalyticsService({
+            category: 'Movie',
+            action: 'Searching trending movies'
         });
     }
 

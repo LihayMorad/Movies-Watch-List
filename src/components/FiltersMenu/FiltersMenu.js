@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
 
 import AccountsService from '../../Services/AccountsService';
+import AnalyticsService from '../../Services/AnalyticsService';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -145,7 +146,13 @@ class FiltersMenu extends Component {
     }
 
     handleApplyFilters = () => {
-        if (this.state.filtersChanged) { this.props.onFiltersChange(this.state.currentFilters); }
+        if (this.state.filtersChanged) {
+            this.props.onFiltersChange(this.state.currentFilters);
+            AnalyticsService({
+                category: 'User',
+                action: 'Filtering movies watch list'
+            });
+        }
         this.handleCloseFiltersMenu();
     }
 

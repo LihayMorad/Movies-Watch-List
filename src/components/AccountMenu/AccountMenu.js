@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import ReactGA from 'react-ga';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
 
 import AccountsService from '../../Services/AccountsService';
+import AnalyticsService from '../../Services/AnalyticsService';
 
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -34,7 +34,7 @@ class AccountMenu extends Component {
             .then((result) => { // Successful sign-in.
                 this.props.onSnackbarToggle(true, `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`, "information");
                 this.handleCloseAccountMenu();
-                ReactGA.event({
+                AnalyticsService({
                     category: 'User',
                     action: 'User Signed in with Google account'
                 });
@@ -47,7 +47,7 @@ class AccountMenu extends Component {
             .then((result) => { // Successful sign-in anonymously.
                 this.props.onSnackbarToggle(true, `Hi, you are now logged in as a guest user.`, "information");
                 this.handleCloseAccountMenu();
-                ReactGA.event({
+                AnalyticsService({
                     category: 'User',
                     action: 'User Signed in anonymously'
                 });
@@ -60,7 +60,7 @@ class AccountMenu extends Component {
             .then((result) => { // Successful accounts linking.
                 this.props.onSnackbarToggle(true, `You guest account was successfully linked with your Google account '${result.user.email}'.`, "information");
                 this.handleCloseAccountMenu();
-                ReactGA.event({
+                AnalyticsService({
                     category: 'User',
                     action: 'User linked his anonymous account to his Google account'
                 });
@@ -78,7 +78,7 @@ class AccountMenu extends Component {
                 .then((result) => { // Successful sign-out.
                     this.props.onSnackbarToggle(true, "You are now logged out", "information");
                     this.handleCloseAccountMenu();
-                    ReactGA.event({
+                    AnalyticsService({
                         category: 'User',
                         action: 'User signed out'
                     });

@@ -5,6 +5,7 @@ import * as actionTypes from '../../store/actions';
 
 import MoviesService from '../../Services/MoviesService';
 import AccountsService from '../../Services/AccountsService';
+import AnalyticsService from '../../Services/AnalyticsService';
 
 import { debounce } from '../../utils/debounce';
 import { getShortURL } from '../../utils/urlShortener';
@@ -47,6 +48,10 @@ class MoviesContainer extends PureComponent {
     componentDidMount() {
         if (this.props.watchingList) {
             this.handleQueryMovies();
+            AnalyticsService({
+                category: 'User',
+                action: 'Viewing another user list'
+            });
         }
     }
 
@@ -74,6 +79,10 @@ class MoviesContainer extends PureComponent {
                 })
                 .catch(() => { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); })
         } catch (error) { this.props.onSnackbarToggle(true, `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`, "error"); }
+        AnalyticsService({
+            category: 'Movie',
+            action: 'Deleting a movie'
+        });
     }
 
     handleDeleteYear = yearToDelete => {
@@ -99,6 +108,10 @@ class MoviesContainer extends PureComponent {
                 this.handleUpdateCounter(["total", "unwatched"], "Add Movie");
             })
             .catch((error) => { this.props.onSnackbarToggle(true, `There was an error adding '${NameEng} (${Year})'`, "error"); })
+        AnalyticsService({
+            category: 'Movie',
+            action: 'Adding a movie'
+        });
     }
 
     handleAddYear = year => {
