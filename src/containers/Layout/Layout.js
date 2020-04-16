@@ -22,7 +22,7 @@ class Layout extends Component {
 
     state = {
         showScrollToMenuButton: false,
-        watchingList: true
+        watchingList: false
     }
 
     componentDidMount() {
