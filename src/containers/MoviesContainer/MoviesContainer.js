@@ -45,8 +45,8 @@ class MoviesContainer extends PureComponent {
         addingMovie: false
     }
 
-    componentDidMount() {
-        if (this.props.watchingList) {
+    componentDidUpdate(prevProps) {
+        if (this.props.watchingList !== prevProps.watchingList && this.props.watchingList) {
             this.handleQueryMovies();
             AnalyticsService({
                 category: 'User',
