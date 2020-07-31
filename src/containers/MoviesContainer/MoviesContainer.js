@@ -15,6 +15,7 @@ import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddMo
 import MovieTrailerModal from '../../components/UI Elements/MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from '../../components/UI Elements/MovieCommentsModal/MovieCommentsModal';
 import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
+import MoviesCounter from '../../components/UI Elements/MoviesCounter/MoviesCounter';
 // import InformationModal from '../UI Elements/InformationModal/InformationModal';
 
 import TextField from '@material-ui/core/TextField';
@@ -25,9 +26,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import ShareIcon from '@material-ui/icons/Share';
 import Fab from '@material-ui/core/Fab';
-import Badge from '@material-ui/core/Badge';
-import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
-import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
 import Zoom from '@material-ui/core/Zoom';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -180,22 +178,7 @@ class MoviesContainer extends PureComponent {
 
         if (!watchingList) {
             if (loggedInUser) {
-                counter = <div id="moviesCounter">
-                    {unseenCounter > 0 && <StyledTooltip title="Total unseen movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                        <StyledIconButton>
-                            <Badge badgeContent={unseenCounter} color="secondary">
-                                <RemoveRedEyeOutlined fontSize="default" />
-                            </Badge>
-                        </StyledIconButton>
-                    </StyledTooltip>}
-                    {watchedCounter > 0 && <StyledTooltip title="Total watched movies" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                        <StyledIconButton>
-                            <Badge badgeContent={watchedCounter} color="secondary">
-                                <RemoveRedEye fontSize="default" />
-                            </Badge>
-                        </StyledIconButton>
-                    </StyledTooltip>}
-                </div>;
+                counter = <MoviesCounter unseenCounter={unseenCounter} watchedCounter={watchedCounter} />;
 
                 freeSearch = <TextField
                     className="MenuElementMg freeSearch"

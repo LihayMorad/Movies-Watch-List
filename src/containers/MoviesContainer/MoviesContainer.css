@@ -25,12 +25,6 @@
     border-bottom-color: inherit !important;
 }
 
-#moviesCounter {
-    position: absolute;
-    top: 10px;
-    left: 0;
-}
-
 #addMovieBtn {
     margin: 4px auto;
 }
