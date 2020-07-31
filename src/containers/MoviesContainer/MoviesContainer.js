@@ -218,8 +218,8 @@ class MoviesContainer extends PureComponent {
 
                 const movies = dbMovies
                     .filter(movie => (
-                        movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.toLowerCase()) ||
-                        movie.NameHeb.includes(this.props.freeSearchFilter)
+                        movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.trim().toLowerCase()) ||
+                        movie.NameHeb.includes(this.props.freeSearchFilter.trim())
                     ))
                     .map(movie => (
                         <Movie
@@ -275,7 +275,7 @@ class MoviesContainer extends PureComponent {
 
                 {loggedOutMessage}
 
-                {this.props.movies.length > 0 && filters.year === "All" && filters.maxResults === 1000 && !loadingMovies && freeSearch}
+                {dbMovies.length > 0 && filters.year === "All" && filters.maxResults === 1000 && !loadingMovies && freeSearch}
 
                 {counter}
 
@@ -309,7 +309,7 @@ class MoviesContainer extends PureComponent {
                         toggle={this.toggleInformationModal}
                         title={informationModalTitle} /> */}
 
-            </div >
+            </div>
         );
 
     }
