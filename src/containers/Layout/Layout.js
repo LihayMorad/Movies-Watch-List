@@ -49,29 +49,31 @@ class Layout extends Component {
         let snackbar = null;
 
         if (!watchingList) {
-            scrollToMenu = <StyledTooltip title="Scroll up to filters menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
-                    <NavigationIcon />
-                </Fab>
-            </StyledTooltip>;
-
-            filtersMenu = ({ isVisible }) => {
-                setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
-                return <div ref={this.topMenuRef}><FiltersMenu /></div>;
-            };
+            scrollToMenu = (
+                <StyledTooltip title="Scroll up to filters menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                    <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
+                        <NavigationIcon />
+                    </Fab>
+                </StyledTooltip>
+            );
+            filtersMenu = (
+                <TrackVisibility partialVisibility>
+                    {({ isVisible }) => {
+                        setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
+                        return <div ref={this.topMenuRef}><FiltersMenu /></div>;
+                    }}
+                </TrackVisibility>
+            );
             accountMenu = <AccountMenu />;
             snackbar = <Snackbar />;
         }
-
 
         return <>
             <Header />
 
             {accountMenu}
 
-            {!watchingList && <TrackVisibility partialVisibility>
-                {filtersMenu}
-            </TrackVisibility>}
+            {filtersMenu}
 
             <MoviesContainer watchingList={watchingList} watchingListUserInfo={watchingListUserInfo} />
 
