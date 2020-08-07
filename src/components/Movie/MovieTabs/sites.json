@@ -25,10 +25,6 @@
     ],
     "subtitlesSites": [
         {
-            "name": "Subcenter",
-            "url": "http://www.subscenter.biz/he/subtitle/search/?q="
-        },
-        {
             "name": "ScrewZira",
             "url": "https://www.screwzira.com/Search.aspx?q="
         },
