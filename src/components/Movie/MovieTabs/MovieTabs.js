@@ -20,6 +20,7 @@ const StyledExpansionPanelDetailsFlexWrap = withStyles({ root: { color: 'inherit
 const StyledExpansionPanelSummary = withStyles({ content: { color: 'inherit' }, expanded: { color: 'inherit' }, expandIcon: { color: 'inherit' } })(ExpansionPanelSummary);
 const StyledTypographyH6 = withStyles({ root: { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0', color: 'white' } })(Typography);
 const StyledTypographyMg = withStyles({ root: { margin: 'auto' } })(Typography);
+const StyledDivider = withStyles({ root: { height: '0.5px', backgroundColor: 'rgb(255 255 255 / 50%)' } })(Divider);
 
 class MovieTabs extends PureComponent {
 
@@ -31,7 +32,7 @@ class MovieTabs extends PureComponent {
 
 	render() {
 		const { expanded } = this.state;
-		const {watchingList} = this.props;
+		const { watchingList } = this.props;
 		const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : "";
 		const searchParams = `${this.props.title}+${this.props.year}`;
 		let ratings = "";
@@ -113,7 +114,7 @@ class MovieTabs extends PureComponent {
 							<StyledTypographyMg color="inherit" variant="subtitle2">Torrents & Subtitles</StyledTypographyMg>
 						</StyledExpansionPanelSummary>
 						<StyledExpansionPanelDetailsFlexWrap>{torrents}</StyledExpansionPanelDetailsFlexWrap>
-						<Divider variant="middle"></Divider>
+						<StyledDivider variant="middle"></StyledDivider>
 						<StyledExpansionPanelDetailsFlexWrap>{subtitles}</StyledExpansionPanelDetailsFlexWrap>
 					</StyledExpansionPanel>}
 
