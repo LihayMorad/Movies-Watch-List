@@ -61,7 +61,6 @@ class MovieTabs extends PureComponent {
 		const subtitles = subtitlesSites.map(site => {
 			let attributes = "";
 			switch (site.name) {
-				case "Subcenter":
 				case "ScrewZira": attributes = `${site.url}${this.props.title}`; break;
 				case "Wizdom": attributes = `${site.url}${this.props.imdbID}`; break;
 				default: return <p></p>;
