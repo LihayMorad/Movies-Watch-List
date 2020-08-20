@@ -28,15 +28,3 @@
 .tabsPanel a:visited {
     color: #d300ff;
 }
-
-.tabsPanel::before {
-    height: 0px !important;
-}
-
-.tabsPanel .movieRatingStars {
-    position: initial !important;
-}
-
-.tabsPanel .movieRatingStars svg {
-    font-size: 20px !important;
-}

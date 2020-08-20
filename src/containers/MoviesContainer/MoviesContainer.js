@@ -31,7 +31,7 @@ import Zoom from '@material-ui/core/Zoom';
 import { withStyles } from '@material-ui/core/styles';
 import './MoviesContainer.css';
 
-const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
+const StyledIconButton = withStyles({ root: { color: 'inherit' } })(IconButton);
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '0px' } })(Tooltip);
 
 class MoviesContainer extends PureComponent {
