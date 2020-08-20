@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 
 import AccountsService from '../../../Services/AccountsService';
 
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
@@ -14,10 +14,10 @@ import { torrentsSites, subtitlesSites } from './sites.json';
 import { withStyles } from '@material-ui/core/styles';
 import './MovieTabs.css';
 
-const StyledExpansionPanel = withStyles({ root: { color: 'inherit' } })(ExpansionPanel);
-const StyledExpansionPanelDetails = withStyles({ root: { color: 'inherit', padding: '8px 10px' } })(ExpansionPanelDetails);
-const StyledExpansionPanelDetailsFlexWrap = withStyles({ root: { color: 'inherit', padding: '8px 10px', flexWrap: 'wrap' } })(ExpansionPanelDetails);
-const StyledExpansionPanelSummary = withStyles({ content: { color: 'inherit' }, expanded: { color: 'inherit' }, expandIcon: { color: 'inherit' } })(ExpansionPanelSummary);
+const StyledExpansionPanel = withStyles({ root: { color: 'inherit' } })(Accordion);
+const StyledAccordionDetails = withStyles({ root: { color: 'inherit', padding: '8px 10px' } })(AccordionDetails);
+const StyledAccordionDetailsFlexWrap = withStyles({ root: { color: 'inherit', padding: '8px 10px', flexWrap: 'wrap' } })(AccordionDetails);
+const StyledAccordionSummary = withStyles({ content: { color: 'inherit' }, expanded: { color: 'inherit' }, expandIcon: { color: 'inherit' } })(AccordionSummary);
 const StyledTypographyH6 = withStyles({ root: { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0', color: 'white' } })(Typography);
 const StyledTypographyMg = withStyles({ root: { margin: 'auto' } })(Typography);
 const StyledDivider = withStyles({ root: { height: '0.5px', backgroundColor: 'rgb(255 255 255 / 50%)' } })(Divider);
@@ -81,40 +81,40 @@ class MovieTabs extends PureComponent {
 			<div>
 
 				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handlePanelChange("panel1")}>
-					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+					<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Plot</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{this.props.genre}</StyledTypographyMg>
-					</StyledExpansionPanelSummary>
-					<StyledExpansionPanelDetails>{this.props.plot || ""}</StyledExpansionPanelDetails>
+					</StyledAccordionSummary>
+					<StyledAccordionDetails>{this.props.plot || ""}</StyledAccordionDetails>
 				</StyledExpansionPanel>
 
 				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handlePanelChange("panel2")}>
-					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+					<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Cast</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
-					</StyledExpansionPanelSummary>
-					<StyledExpansionPanelDetails>
+					</StyledAccordionSummary>
+					<StyledAccordionDetails>
 						<StyledTypographyMg color="inherit" variant="body2">{actors.slice(1)}</StyledTypographyMg>
-					</StyledExpansionPanelDetails>
+					</StyledAccordionDetails>
 				</StyledExpansionPanel>
 
 				{this.props.ratings && this.props.ratings.length > 0 && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")}>
-					<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+					<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 color="inherit" variant="h6">Ratings</StyledTypographyH6>
 						<StyledTypographyMg color="inherit" variant="subtitle2">{imdbRating}</StyledTypographyMg>
-					</StyledExpansionPanelSummary>
-					<StyledExpansionPanelDetails>{ratings}</StyledExpansionPanelDetails>
+					</StyledAccordionSummary>
+					<StyledAccordionDetails>{ratings}</StyledAccordionDetails>
 				</StyledExpansionPanel>}
 
 				{userEmail === "m141084@gmail.com" &&
 					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handlePanelChange("panel4")}>
-						<StyledExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+						<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 							<StyledTypographyH6 color="inherit" variant="h6">Downloads</StyledTypographyH6>
 							<StyledTypographyMg color="inherit" variant="subtitle2">Torrents & Subtitles</StyledTypographyMg>
-						</StyledExpansionPanelSummary>
-						<StyledExpansionPanelDetailsFlexWrap>{torrents}</StyledExpansionPanelDetailsFlexWrap>
+						</StyledAccordionSummary>
+						<StyledAccordionDetailsFlexWrap>{torrents}</StyledAccordionDetailsFlexWrap>
 						<StyledDivider variant="middle"></StyledDivider>
-						<StyledExpansionPanelDetailsFlexWrap>{subtitles}</StyledExpansionPanelDetailsFlexWrap>
+						<StyledAccordionDetailsFlexWrap>{subtitles}</StyledAccordionDetailsFlexWrap>
 					</StyledExpansionPanel>}
 
 			</div>

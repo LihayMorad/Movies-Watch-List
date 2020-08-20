@@ -179,7 +179,7 @@ class FiltersMenu extends Component {
                 <StyledTooltip title="Change movies list filters" disableFocusListener TransitionComponent={Zoom}>
                     <Button id="filtersMenuBtn" color="secondary" variant="contained" onClick={this.handleOpenFiltersMenu}>
                         <MovieFilterIcon />&nbsp;Filters
-                </Button>
+                    </Button>
                 </StyledTooltip>
 
                 <StyledDialog
