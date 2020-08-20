@@ -5,16 +5,15 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
-    "axios": "^0.18.1",
+    "axios": "^0.19.2",
     "firebase": "^7.18.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-ga": "^2.7.0",
+    "react-ga": "^3.1.2",
     "react-on-screen": "^2.1.1",
-    "react-rating": "^1.7.2",
+    "react-rating": "^2.0.5",
     "react-redux": "^7.1.0",
     "react-scripts": "^3.4.3",
-    "react-swipeable-views": "^0.13.3",
     "redux": "^4.0.4"
   },
   "scripts": {
