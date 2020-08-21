@@ -8,6 +8,8 @@
 
 This project was made by **self-learning** ReactJS.
 
-> **Client-Side**: ReactJS + Redux, HTML, CSS, YouTube API, OMDb API, TMDb API.
+> **Client-Side**: React, Redux and Axios.
 
-> **Database**: Firebase.
+> **Database**: Firebase (Firestore).
+
+> **APIs**: YouTube API, OMDb API, TMDb API, Bitly API.
