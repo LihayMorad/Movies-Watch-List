@@ -225,7 +225,7 @@ class MoviesContainer extends PureComponent {
                         : <div className="MoviesContainer">{movies}</div>
                     : <MoviesSpinner />;
                 loggedInUserInfo = !loggedInUser.isAnonymous ? loggedInUser.displayName || loggedInUser.email : "a guest";
-                shareListBtn = !loadingMovies && movies.length !== 0 && <StyledTooltip title="Share currently list" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
+                shareListBtn = !loadingMovies && movies.length !== 0 && <StyledTooltip title="Share this list" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
                     <StyledIconButton onClick={() => this.shareList(loggedInUserInfo, dbMovies)}>
                         <ShareIcon />
                     </StyledIconButton>
