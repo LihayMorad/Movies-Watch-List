@@ -2,7 +2,7 @@
   <img src="https://www.tryimg.com/u/2020/03/07/LOGO-1-DARK-SMALL-400.png" alt="movies-watch-list">
 </p>
 
-## Live site: https://movies-watch-list.netlify.com (status: ![Netlify Status](https://api.netlify.com/api/v1/badges/62e2ed3b-15ea-4a4a-a466-c0b14133bf71/deploy-status))
+## Live site: https://movies-watch-list.netlify.app (status: ![Netlify Status](https://api.netlify.app/api/v1/badges/62e2ed3b-15ea-4a4a-a466-c0b14133bf71/deploy-status))
 
 ### A website for anyone who wants to save and access his movies watch list from anywhere anytime.
 

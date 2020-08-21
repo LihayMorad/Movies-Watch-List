@@ -141,7 +141,7 @@ class MoviesContainer extends PureComponent {
     toggleInformationModal = () => { this.setState(state => ({ showInformationModal: !state.showInformationModal }), () => { setTimeout(() => { this.setState({ showInformationModal: false }) }, 3000) }); }
 
     shareList = async (userInfo, movies) => {
-        const url = `https://movies-watch-list.netlify.com/?watchingList=true&user=${userInfo.replace(/\s/g, "+")}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
+        const url = `https://movies-watch-list.netlify.app/?watchingList=true&user=${userInfo.replace(/\s/g, "+")}&imdbIDs=${movies.map(movie => movie.imdbID).join()}`;
         try {
             const shortURL = await getShortURL(url);
             navigator.clipboard.writeText(shortURL)
