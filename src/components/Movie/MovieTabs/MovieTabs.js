@@ -15,8 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 import './MovieTabs.css';
 
 const StyledExpansionPanel = withStyles({ root: { color: 'white' } })(Accordion);
-const StyledAccordionDetails = withStyles({ root: { padding: '8px 10px' } })(AccordionDetails);
-const StyledAccordionDetailsFlexWrap = withStyles({ root: { padding: '8px 10px', flexWrap: 'wrap' } })(AccordionDetails);
+const StyledAccordionDetails = withStyles({ root: { flexWrap: 'wrap', justifyContent: 'space-around' } })(AccordionDetails);
 const StyledAccordionSummary = withStyles({ expandIcon: { color: 'inherit' } })(AccordionSummary);
 const StyledTypographyH6 = withStyles({ root: { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' } })(Typography);
 const StyledTypographyMg = withStyles({ root: { margin: 'auto', color: 'inherit' } })(Typography);
@@ -85,7 +84,7 @@ class MovieTabs extends PureComponent {
 						<StyledTypographyH6 variant="h6">Plot</StyledTypographyH6>
 						<StyledTypographyMg variant="subtitle2">{this.props.genre}</StyledTypographyMg>
 					</StyledAccordionSummary>
-					<StyledAccordionDetails>{this.props.plot || ""}</StyledAccordionDetails>
+					<AccordionDetails>{this.props.plot || ""}</AccordionDetails>
 				</StyledExpansionPanel>
 
 				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handlePanelChange("panel2")}>
@@ -93,9 +92,9 @@ class MovieTabs extends PureComponent {
 						<StyledTypographyH6 variant="h6">Cast</StyledTypographyH6>
 						<StyledTypographyMg variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
 					</StyledAccordionSummary>
-					<StyledAccordionDetails>
+					<AccordionDetails>
 						<StyledTypographyMg variant="body2">{actors.slice(1)}</StyledTypographyMg>
-					</StyledAccordionDetails>
+					</AccordionDetails>
 				</StyledExpansionPanel>
 
 				{this.props.ratings && this.props.ratings.length > 0 && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")}>
@@ -103,7 +102,7 @@ class MovieTabs extends PureComponent {
 						<StyledTypographyH6 variant="h6">Ratings</StyledTypographyH6>
 						<StyledTypographyMg variant="subtitle2">{imdbRating}</StyledTypographyMg>
 					</StyledAccordionSummary>
-					<StyledAccordionDetails>{ratings}</StyledAccordionDetails>
+					<AccordionDetails>{ratings}</AccordionDetails>
 				</StyledExpansionPanel>}
 
 				{userEmail === "m141084@gmail.com" &&
@@ -112,9 +111,9 @@ class MovieTabs extends PureComponent {
 							<StyledTypographyH6 variant="h6">Downloads</StyledTypographyH6>
 							<StyledTypographyMg variant="subtitle2">Torrents & Subtitles</StyledTypographyMg>
 						</StyledAccordionSummary>
-						<StyledAccordionDetailsFlexWrap>{torrents}</StyledAccordionDetailsFlexWrap>
+						<StyledAccordionDetails>{torrents}</StyledAccordionDetails>
 						<StyledDivider variant="middle"></StyledDivider>
-						<StyledAccordionDetailsFlexWrap>{subtitles}</StyledAccordionDetailsFlexWrap>
+						<StyledAccordionDetails>{subtitles}</StyledAccordionDetails>
 					</StyledExpansionPanel>}
 
 			</div>

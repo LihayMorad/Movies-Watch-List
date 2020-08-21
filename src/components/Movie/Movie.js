@@ -160,7 +160,7 @@ class Movie extends Component {
 						</StyledTooltip>
 					</CardActionArea>
 
-					<CardActions id="movieCardActions">
+					<CardActions>
 						{!loading
 							? !movieDBError && <MovieTabs
 								title={this.state.Title}

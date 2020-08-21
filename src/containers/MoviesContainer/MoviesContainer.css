@@ -13,10 +13,6 @@
     margin: 0px auto;
 }
 
-.freeSearch {
-    margin-top: 10px !important;
-}
-
 .freeSearch div, .freeSearch input, .freeSearch svg {
     color: white !important;
 }

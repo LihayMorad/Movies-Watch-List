@@ -159,7 +159,7 @@ class MoviesContainer extends PureComponent {
 
     applyFreeSearchFilter = debounce(value => {
         this.props.onFreeSearch(value);
-    }, 350);
+    }, 250);
 
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;
@@ -169,15 +169,15 @@ class MoviesContainer extends PureComponent {
         let freeSearch = null;
         let addMovieBtn = null;
         let shareListBtn = null;
-        const loggedInUser = AccountsService.GetLoggedInUser();
-        let loggedInUserInfo = "";
         const dbMovies = this.props.movies || [];
         const { loadingMovies, moviesCounter, filters, watchingList, watchingListUserInfo } = this.props;
-        const unseenCounter = moviesCounter.unwatched;
-        const watchedCounter = moviesCounter.total - moviesCounter.unwatched;
 
         if (!watchingList) {
+            const loggedInUser = AccountsService.GetLoggedInUser();
             if (loggedInUser) {
+                let loggedInUserInfo = "";
+                const unseenCounter = moviesCounter.unwatched;
+                const watchedCounter = moviesCounter.total - moviesCounter.unwatched;
                 counter = <MoviesCounter unseenCounter={unseenCounter} watchedCounter={watchedCounter} />;
 
                 freeSearch = <TextField

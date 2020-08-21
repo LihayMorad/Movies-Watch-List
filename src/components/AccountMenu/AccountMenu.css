@@ -1,13 +1,9 @@
 #accountMenu {
     position: absolute;
-    top: 0;
     right: 0;
-    font-size: 30px;
-    cursor: pointer;
     color: inherit;
 }
 
 #loggedInBtn {
-    color: white;
     background-color: forestgreen;
 }

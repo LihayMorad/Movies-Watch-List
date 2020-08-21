@@ -4,9 +4,7 @@
 
 #scrollToMenu {
     position: sticky;
-    margin: 15px auto;
     bottom: 15px;
-    right: 0;
-    left: 0;
     background-color: black;
+    z-index: 10;
 }
