@@ -9,28 +9,16 @@ import AnalyticsService from '../../Services/AnalyticsService';
 
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
+
+import { Card, CardActionArea, CardActions, CardContent, Typography, Checkbox, Tooltip, Fab, Divider, Zoom } from '@material-ui/core';
+import { Star as StarIcon, StarBorder as StarBorderIcon, Delete as DeleteIcon, Edit as EditIcon, RemoveRedEye, RemoveRedEyeOutlined } from '@material-ui/icons';
+import { withStyles } from '@material-ui/core/styles';
+
 import Rating from 'react-rating'; // https://github.com/dreyescat/react-rating
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import Divider from '@material-ui/core/Divider';
-import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
-import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
-import Zoom from '@material-ui/core/Zoom';
 
 import MovieNotFound from '../../assets/MovieNotFound.png';
 import youTubeIcon from '../../assets/youtube_icon.png';
 
-import { withStyles } from '@material-ui/core/styles';
 import './Movie.css';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);

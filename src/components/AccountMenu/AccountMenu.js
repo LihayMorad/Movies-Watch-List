@@ -6,19 +6,10 @@ import * as actionTypes from '../../store/actions';
 import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutlined';
-import PersonIcon from '@material-ui/icons/Person';
-import LinkIcon from '@material-ui/icons/Link';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Fade from '@material-ui/core/Fade';
-import Zoom from '@material-ui/core/Zoom';
-
+import { Menu, MenuItem, Tooltip, Button, IconButton, Fade, Zoom } from '@material-ui/core';
+import { PersonOutline as PersonOutlineIcon, Person as PersonIcon, Link as LinkIcon, AccountCircle } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+
 import './AccountMenu.css';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '5px' } })(Tooltip);

@@ -18,17 +18,10 @@ import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner/M
 import MoviesCounter from '../../components/UI Elements/MoviesCounter/MoviesCounter';
 // import InformationModal from '../UI Elements/InformationModal/InformationModal';
 
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import AddIcon from '@material-ui/icons/Add';
-import ShareIcon from '@material-ui/icons/Share';
-import Fab from '@material-ui/core/Fab';
-import Zoom from '@material-ui/core/Zoom';
-
+import { TextField, InputAdornment, Tooltip, IconButton, Fab, Zoom } from '@material-ui/core';
+import { Search as SearchIcon, Add as AddIcon, Share as ShareIcon, } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+
 import './MoviesContainer.css';
 
 const StyledIconButton = withStyles({ root: { color: 'inherit' } })(IconButton);

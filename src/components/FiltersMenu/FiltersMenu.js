@@ -6,29 +6,10 @@ import * as actionTypes from '../../store/actions';
 import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import MovieFilterIcon from '@material-ui/icons/MovieFilter';
-import CloseIcon from '@material-ui/icons/Close';
-import SaveIcon from '@material-ui/icons/Save';
-import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
-import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
-import Zoom from '@material-ui/core/Zoom';
-
+import { Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormGroup, FormControl, FormControlLabel, OutlinedInput, Select, Checkbox, MenuItem, Button, Tooltip, IconButton, Zoom } from '@material-ui/core';
+import { MovieFilter as MovieFilterIcon, Close as CloseIcon, Save as SaveIcon, RemoveRedEye, RemoveRedEyeOutlined } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+
 import './FiltersMenu.css';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);

@@ -1,11 +1,9 @@
 import React from 'react';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
+import { Tooltip, Zoom } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 import youTubeIcon from '../../../../assets/youtube_icon.png';
-
-import { withStyles } from '@material-ui/core/styles';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '-27px' } })(Tooltip);
 

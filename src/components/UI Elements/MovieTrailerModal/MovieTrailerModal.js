@@ -3,17 +3,12 @@ import axios from 'axios';
 
 import AnalyticsService from '../../../Services/AnalyticsService';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Zoom from '@material-ui/core/Zoom';
+import { Button, Dialog, DialogActions, DialogTitle, Typography, IconButton, Zoom } from '@material-ui/core';
+import { Close as CloseIcon } from '@material-ui/icons';
+import { withStyles } from '@material-ui/core/styles';
+
 import LoadingSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
-import { withStyles } from '@material-ui/core/styles';
 import './MovieTrailerModal.css';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);

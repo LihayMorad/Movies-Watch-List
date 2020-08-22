@@ -3,15 +3,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions';
 
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import WarningIcon from '@material-ui/icons/Warning';
-
+import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core';
+import { Close as CloseIcon, CheckCircle as CheckCircleIcon, Error as ErrorIcon, Info as InfoIcon, Warning as WarningIcon } from '@material-ui/icons';
 import { grey, green, red, blue, amber } from '@material-ui/core/colors';
 
 import './Snackbar.css';

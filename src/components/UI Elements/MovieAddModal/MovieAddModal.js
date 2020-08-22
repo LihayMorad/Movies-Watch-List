@@ -9,20 +9,11 @@ import AnalyticsService from '../../../Services/AnalyticsService';
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 import MovieTrailerModal from '../MovieTrailerModal/MovieTrailerModal';
 import SearchResultsSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import SearchIcon from '@material-ui/icons/Search';
-import WhatshotIcon from '@material-ui/icons/Whatshot';
-import Zoom from '@material-ui/core/Zoom';
 
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Zoom } from '@material-ui/core';
+import { Close as CloseIcon, Search as SearchIcon, Whatshot as WhatshotIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+
 import './MovieAddModal.css';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);

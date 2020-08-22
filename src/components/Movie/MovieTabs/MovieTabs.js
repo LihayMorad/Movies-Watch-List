@@ -2,16 +2,12 @@ import React, { PureComponent } from 'react';
 
 import AccountsService from '../../../Services/AccountsService';
 
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Divider from '@material-ui/core/Divider';
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Divider } from '@material-ui/core';
+import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { withStyles } from '@material-ui/core/styles';
 
 import { torrentsSites, subtitlesSites } from './sites.json';
 
-import { withStyles } from '@material-ui/core/styles';
 import './MovieTabs.css';
 
 const StyledExpansionPanel = withStyles({ root: { color: 'white' } })(Accordion);

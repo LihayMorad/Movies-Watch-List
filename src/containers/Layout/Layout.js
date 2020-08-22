@@ -6,15 +6,14 @@ import FiltersMenu from '../../components/FiltersMenu/FiltersMenu';
 import MoviesContainer from '../MoviesContainer/MoviesContainer';
 import Attributions from '../../components/UI Elements/Attributions/Attributions';
 import Snackbar from '../../components/UI Elements/Snackbar/Snackbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
-import NavigationIcon from '@material-ui/icons/Navigation';
+
+import { Tooltip, Fab, Zoom } from '@material-ui/core';
+import { Navigation as NavigationIcon } from '@material-ui/icons';
+import { withStyles } from '@material-ui/core/styles';
+
 import TrackVisibility from 'react-on-screen';
-import Zoom from '@material-ui/core/Zoom';
 
 import './Layout.css';
-
-import { withStyles } from '@material-ui/core/styles';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);
 

@@ -1,13 +1,9 @@
 import React from 'react';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import RemoveRedEye from '@material-ui/icons/RemoveRedEye';
-import RemoveRedEyeOutlined from '@material-ui/icons/RemoveRedEyeOutlined';
-import Zoom from '@material-ui/core/Zoom';
-
+import { Tooltip, IconButton, Badge, Zoom } from '@material-ui/core';
+import { RemoveRedEye, RemoveRedEyeOutlined } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+
 import './MoviesCounter.css';
 
 const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
