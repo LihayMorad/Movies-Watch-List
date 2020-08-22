@@ -105,7 +105,7 @@ class MovieTabs extends PureComponent {
 					<AccordionDetails>{ratings}</AccordionDetails>
 				</StyledExpansionPanel>}
 
-				{userEmail === "m141084@gmail.com" &&
+				{userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) &&
 					<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel4"} onChange={this.handlePanelChange("panel4")}>
 						<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 							<StyledTypographyH6 variant="h6">Downloads</StyledTypographyH6>
