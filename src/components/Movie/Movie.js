@@ -10,6 +10,8 @@ import AnalyticsService from '../../Services/AnalyticsService';
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
 
+import { hasExpired } from '../../utils/common';
+
 import { Card, CardActionArea, CardActions, CardContent, Typography, Checkbox, Tooltip, Fab, Divider, Zoom } from '@material-ui/core';
 import { Star as StarIcon, StarBorder as StarBorderIcon, Delete as DeleteIcon, Edit as EditIcon, RemoveRedEye, RemoveRedEyeOutlined } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
@@ -47,11 +49,10 @@ class Movie extends Component {
 						movieData.Year = parseInt(response.data.Year);
 						if (this.props.Poster) movieData.Poster = POSTER_BASE_URL + this.props.Poster;
 
-						const timestampNow = Date.now();
-						const shouldUpdateIMDBRating = !this.state.imdbRating || !this.state.imdbRatingTimestamp || (timestampNow - this.state.imdbRatingTimestamp) / 1000 / 60 / 60 / 24 > 1;
+						const shouldUpdateIMDBRating = !this.state.imdbRating || !this.state.imdbRatingTimestamp || hasExpired(this.state.imdbRatingTimestamp);
 						if (shouldUpdateIMDBRating) {
 							const imdbRating = movieData.imdbRating && movieData.imdbRating !== "N/A" ? movieData.imdbRating : "";
-							this.handleUpdateIMDBRating(imdbRating, timestampNow);
+							this.handleUpdateIMDBRating(imdbRating);
 						}
 					}
 					else { error = response.data.Error }
@@ -81,18 +82,17 @@ class Movie extends Component {
 			.catch(() => { })
 	}
 
-	handleUpdateIMDBRating = (imdbRating, timestampNow) => {
+	handleUpdateIMDBRating = (imdbRating) => {
 		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRating", imdbRating)
 			.then(() => { })
 			.catch(() => { })
-		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRatingTimestamp", timestampNow)
+		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRatingTimestamp", Date.now())
 			.then(() => { })
 			.catch(() => { })
 	}
 
 	render() {
-		const movieDBError = this.state.Error;
-		const { imdbID, dbMovieID, Title, NameEng, NameHeb, Comments, Year, Poster, Country, Runtime, Watched, imdbRating, loading, watchingList } = this.state;
+		const { imdbID, dbMovieID, Title, NameEng, NameHeb, Comments, Year, Poster, Country, Runtime, Watched, imdbRating, loading, Error: movieDBError, watchingList } = this.state;
 
 		return (
 			<div id="movieCardContainer">

@@ -6,13 +6,13 @@ import { withStyles } from '@material-ui/core/styles';
 const Transition = props => <Slide direction="up" {...props} />;
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 
-const informationModal = props => (
+const informationModal = ({ isOpen, toggle, title }) => (
     <StyledDialog
-        open={props.isOpen}
-        onClose={props.toggle}
+        open={isOpen}
+        onClose={toggle}
         TransitionComponent={Transition}>
-        <DialogTitle>{props.title}</DialogTitle>
-        <DialogActions><Button color="primary" onClick={props.toggle}>Ok</Button></DialogActions>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogActions><Button color="primary" onClick={toggle}>Ok</Button></DialogActions>
     </StyledDialog>
 );
 

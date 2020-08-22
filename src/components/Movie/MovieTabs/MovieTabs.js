@@ -27,17 +27,17 @@ class MovieTabs extends PureComponent {
 
 	render() {
 		const { expanded } = this.state;
-		const { watchingList } = this.props;
+		const { watchingList, imdbID, title, year, genre, plot } = this.props;
 		const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : "";
-		const searchParams = `${this.props.title}+${this.props.year}`;
+		const searchParams = `${title}+${year}`;
 		let ratings = "";
 
-		if (this.props.ratings) {
+		if (this.props.ratings && this.props.ratings.length > 0) {
 			ratings = this.props.ratings.map(rating => <Typography key={rating.Source} className="ratingsText" variant="body2">
 				{rating.Source}: {rating.Value}</Typography>);
 		}
 
-		const imdbRating = <a href={`https://www.imdb.com/title/${this.props.imdbID}`} target="_blank" rel="noopener noreferrer">
+		const imdbRating = <a href={`https://www.imdb.com/title/${imdbID}`} target="_blank" rel="noopener noreferrer">
 			IMDb: {!this.props.imdbRating || this.props.imdbRating === "N/A" ? "N/A" : this.props.imdbRating}</a>;
 
 		const torrents = torrentsSites.map(site => {
@@ -47,7 +47,7 @@ class MovieTabs extends PureComponent {
 				case "TorrentDownloads":
 				case "LimeTorrents": attributes = `${site.url}${searchParams}`; break;
 				case "1337X": attributes = `${site.url}${searchParams}${site.urlExt}`; break;
-				case "KickassTorrents": attributes = `${site.url}${this.props.title} ${this.props.year}${site.urlExt}`; break;
+				case "KickassTorrents": attributes = `${site.url}${title} ${year}${site.urlExt}`; break;
 				default: return <p></p>;
 			}
 			return <a key={site.name} className="downloadSitesLinks" href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
@@ -56,8 +56,8 @@ class MovieTabs extends PureComponent {
 		const subtitles = subtitlesSites.map(site => {
 			let attributes = "";
 			switch (site.name) {
-				case "ScrewZira": attributes = `${site.url}${this.props.title}`; break;
-				case "Wizdom": attributes = `${site.url}${this.props.imdbID}`; break;
+				case "ScrewZira": attributes = `${site.url}${title}`; break;
+				case "Wizdom": attributes = `${site.url}${imdbID}`; break;
 				default: return <p></p>;
 			}
 			return <a key={site.name} className="downloadSitesLinks" href={attributes} target="_blank" rel="noopener noreferrer">{site.name}</a>
@@ -69,7 +69,7 @@ class MovieTabs extends PureComponent {
 		));
 
 		const mainActor = actors[0];
-		const fullcast = <a href={`https://www.imdb.com/title/${this.props.imdbID}/fullcredits/`} target="_blank" rel="noopener noreferrer"
+		const fullCast = <a href={`https://www.imdb.com/title/${imdbID}/fullcredits/`} target="_blank" rel="noopener noreferrer"
 			onClick={e => e.stopPropagation()}>more</a>;
 
 		return (
@@ -78,22 +78,22 @@ class MovieTabs extends PureComponent {
 				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel1"} onChange={this.handlePanelChange("panel1")}>
 					<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 variant="h6">Plot</StyledTypographyH6>
-						<StyledTypographyMg variant="subtitle2">{this.props.genre}</StyledTypographyMg>
+						<StyledTypographyMg variant="subtitle2">{genre}</StyledTypographyMg>
 					</StyledAccordionSummary>
-					<AccordionDetails>{this.props.plot || ""}</AccordionDetails>
+					<AccordionDetails>{plot || ""}</AccordionDetails>
 				</StyledExpansionPanel>
 
 				<StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel2"} onChange={this.handlePanelChange("panel2")}>
 					<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 variant="h6">Cast</StyledTypographyH6>
-						<StyledTypographyMg variant="subtitle2">{mainActor}& {fullcast}</StyledTypographyMg>
+						<StyledTypographyMg variant="subtitle2">{mainActor}& {fullCast}</StyledTypographyMg>
 					</StyledAccordionSummary>
 					<AccordionDetails>
 						<StyledTypographyMg variant="body2">{actors.slice(1)}</StyledTypographyMg>
 					</AccordionDetails>
 				</StyledExpansionPanel>
 
-				{this.props.ratings && this.props.ratings.length > 0 && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")}>
+				{ratings && <StyledExpansionPanel className="tabsPanel" expanded={expanded === "panel3"} onChange={this.handlePanelChange("panel3")}>
 					<StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<StyledTypographyH6 variant="h6">Ratings</StyledTypographyH6>
 						<StyledTypographyMg variant="subtitle2">{imdbRating}</StyledTypographyMg>

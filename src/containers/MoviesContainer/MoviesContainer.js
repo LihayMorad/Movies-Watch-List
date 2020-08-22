@@ -7,7 +7,7 @@ import MoviesService from '../../Services/MoviesService';
 import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
-import { debounce } from '../../utils/debounce';
+import { debounce } from '../../utils/common';
 import { getShortURL } from '../../utils/urlShortener';
 
 import Movie from '../../components/Movie/Movie';
@@ -162,8 +162,8 @@ class MoviesContainer extends PureComponent {
         let freeSearch = null;
         let addMovieBtn = null;
         let shareListBtn = null;
-        const dbMovies = this.props.movies || [];
-        const { loadingMovies, moviesCounter, filters, watchingList, watchingListUserInfo } = this.props;
+        const { addingMovie, watchingTrailer, searchID, searchTrailerParams, comments, editingComments, } = this.state;
+        const { loadingMovies, movies: dbMovies = [], moviesCounter, filters, freeSearchFilter, watchingList, watchingListUserInfo } = this.props;
 
         if (!watchingList) {
             const loggedInUser = AccountsService.GetLoggedInUser();
@@ -194,8 +194,8 @@ class MoviesContainer extends PureComponent {
 
                 const movies = dbMovies
                     .filter(movie => (
-                        movie.NameEng.toLowerCase().includes(this.props.freeSearchFilter.trim().toLowerCase()) ||
-                        movie.NameHeb.includes(this.props.freeSearchFilter.trim())
+                        movie.NameEng.toLowerCase().includes(freeSearchFilter.trim().toLowerCase()) ||
+                        movie.NameHeb.includes(freeSearchFilter.trim())
                     ))
                     .map(movie => (
                         <Movie
@@ -264,20 +264,20 @@ class MoviesContainer extends PureComponent {
                 {moviesContainer}
 
                 <MovieAddModal
-                    isOpen={this.state.addingMovie}
+                    isOpen={addingMovie}
                     toggle={this.toggleAddMovie}
                     addMovie={this.handleAddMovie} />
 
                 <MovieTrailerModal
-                    isOpen={this.state.watchingTrailer}
+                    isOpen={watchingTrailer}
                     toggle={this.toggleWatchTrailer}
-                    searchID={this.state.searchID}
-                    searchParams={this.state.searchTrailerParams} />
+                    searchID={searchID}
+                    searchParams={searchTrailerParams} />
 
                 <MovieCommentsModal
-                    isOpen={this.state.editingComments}
+                    isOpen={editingComments}
                     toggle={this.toggleEditComments}
-                    comments={this.state.comments}
+                    comments={comments}
                     handleEditComments={this.handleEditComments} />
 
                 {/* <InformationModal

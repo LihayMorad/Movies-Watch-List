@@ -82,20 +82,20 @@ class MovieTrailerModal extends Component {
 
 	render() {
 		const { trailerId, trailerTitle, searchError, loading } = this.state;
+		const { isOpen, toggle } = this.props;
 
 		return (
-
 			<StyledDialog
 				fullWidth
 				maxWidth="lg"
 				TransitionComponent={Zoom}
-				open={this.props.isOpen}
+				open={isOpen}
 				onEnter={this.getTrailer}
 				onClose={this.handleClose}>
 
 				<div className="DialogTitleDiv">
 					{!loading && <DialogTitle>{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>}
-					<IconButton color="inherit" className="modalCloseBtn" onClick={this.props.toggle} aria-label="Close"><CloseIcon /></IconButton>
+					<IconButton color="inherit" className="modalCloseBtn" onClick={toggle} aria-label="Close"><CloseIcon /></IconButton>
 				</div>
 
 				{!loading
@@ -111,11 +111,10 @@ class MovieTrailerModal extends Component {
 
 				<DialogActions id="TrailerModalActions">
 					{!loading && <Typography variant="body1" align="left">*based on YouTube search results</Typography>}
-					<Button onClick={this.props.toggle}>Close</Button>
+					<Button onClick={toggle}>Close</Button>
 				</DialogActions>
 
 			</StyledDialog>
-
 		);
 	}
 }

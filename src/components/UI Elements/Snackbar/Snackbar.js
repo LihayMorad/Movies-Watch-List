@@ -30,26 +30,25 @@ const snackbarStyles = {
         "color": green[600],
         "icon": <CheckCircleIcon />
     }
-}
+};
 
-const simpleSnackbar = props => {
+const simpleSnackbar = ({ isSnackbarOpen, snackbarType, snackbarMessage = "", onSnackbarToggle }) => {
 
-    const handleClose = () => { props.onSnackbarToggle(false, "", "default"); };
+    const handleClose = () => { onSnackbarToggle(false, "", "default"); };
 
-    const color = props.snackbarType ? snackbarStyles[props.snackbarType].color : snackbarStyles['default'].color;
-    const icon = props.snackbarType ? snackbarStyles[props.snackbarType].icon : snackbarStyles['default'].icon;
-    const message = props.snackbarMessage || "";
+    const color = snackbarType ? snackbarStyles[snackbarType].color : snackbarStyles['default'].color;
+    const icon = snackbarType ? snackbarStyles[snackbarType].icon : snackbarStyles['default'].icon;
 
     return (
         <Snackbar
             id="snackbarRoot"
-            open={props.isSnackbarOpen}
+            open={isSnackbarOpen}
             onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             autoHideDuration={4000}>
             <SnackbarContent
                 style={{ backgroundColor: color }}
-                message={<span id="snackbarMessage" >{icon}&nbsp;{message}</span>}
+                message={<span id="snackbarMessage" >{icon}&nbsp;{snackbarMessage}</span>}
                 action={[
                     <IconButton
                         id="snackbarCloseBtn"
@@ -62,12 +61,12 @@ const simpleSnackbar = props => {
         </Snackbar>
     );
 
-}
+};
 
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
     onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(simpleSnackbar);

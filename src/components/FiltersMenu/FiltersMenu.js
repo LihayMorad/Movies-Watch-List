@@ -90,10 +90,10 @@ class FiltersMenu extends Component {
         const DBListener = moviesDBRef.where("Watched", "==", showWatchedMovies).limit(maxResults).onSnapshot( // { includeMetadataChanges: true },
             response => {
                 if (!response.empty) { // && !response.metadata.hasPendingWrites
-                    this.handleFirebaseData(response, filterToShow, order, year);
+                    this.handleFirebaseData(response);
                 }
                 else {
-                    this.handleFirebaseData([], filterToShow, order, year);
+                    this.handleFirebaseData([]);
                     this.props.toggleLoadingMovies(false);
                 }
             },
@@ -111,7 +111,7 @@ class FiltersMenu extends Component {
         this.props.saveMovies(sortedMovies);
     }
 
-    handleChangeShowWatchedMoviesFilter = e => {
+    handleChangeShowWatchedMoviesFilter = () => {
         this.setState(state => {
             const currentFilters = { ...state.currentFilters, showWatchedMovies: !state.currentFilters.showWatchedMovies };
             return { filtersChanged: true, currentFilters }
@@ -152,11 +152,14 @@ class FiltersMenu extends Component {
     }
 
     render() {
-        const loggedInUser = AccountsService.GetLoggedInUser();
         const { isFiltersMenuOpen, currentFilters } = this.state;
+        const { loadingMovies, moviesYears } = this.props;
+
+        const loggedInUser = AccountsService.GetLoggedInUser();
+        if (!loggedInUser || loadingMovies) return null;
 
         return (
-            loggedInUser && !this.props.loadingMovies && <>
+            <>
                 <StyledTooltip title="Change movies list filters" disableFocusListener TransitionComponent={Zoom}>
                     <Button id="filtersMenuBtn" color="secondary" variant="contained" onClick={this.handleOpenFiltersMenu}>
                         <MovieFilterIcon />&nbsp;Filters
@@ -180,11 +183,11 @@ class FiltersMenu extends Component {
                             <FormControl id="sortByFilter" className="MenuElementMg" variant="outlined">
                                 <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                                 <Select
-                                    value={this.state.currentFilters.filter}
+                                    value={currentFilters.filter}
                                     onChange={this.handleChangeFilter}
                                     input={<StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />}
                                     autoWidth>
-                                    {this.state.currentFilters.year === "All" && <MenuItem value="releaseYear"><em>Year</em></MenuItem>}
+                                    {currentFilters.year === "All" && <MenuItem value="releaseYear"><em>Year</em></MenuItem>}
                                     <MenuItem value="NameEng">English Name</MenuItem>
                                     <MenuItem value="NameHeb">Hebrew Name</MenuItem>
                                     <MenuItem value="imdbRating">IMDB Rating</MenuItem>
@@ -194,7 +197,7 @@ class FiltersMenu extends Component {
                             <FormControl id="orderByFilter" className="MenuElementMg" variant="outlined">
                                 <InputLabel htmlFor="orderBy">Order</InputLabel>
                                 <Select
-                                    value={this.state.currentFilters.order}
+                                    value={currentFilters.order}
                                     onChange={this.handleChangeFilter}
                                     input={<StyledOutlinedInput labelWidth={41} name="order" id="orderBy" />}
                                     autoWidth>
@@ -206,19 +209,19 @@ class FiltersMenu extends Component {
                             <FormControl id="menuYear" className="MenuElementMg" variant="outlined">
                                 <InputLabel htmlFor="showYear">Year</InputLabel>
                                 <Select
-                                    value={this.state.currentFilters.year}
+                                    value={currentFilters.year}
                                     onChange={this.handleChangeFilter}
                                     input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
                                     autoWidth>
                                     <MenuItem value="All"><em>All</em></MenuItem>
-                                    {this.props.moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>)}
+                                    {moviesYears.map(year => <MenuItem key={year} value={year}>{year}</MenuItem>)}
                                 </Select>
                             </FormControl>
 
                             <FormControl id="menuMaxResults" className="MenuElementMg" variant="outlined">
                                 <InputLabel htmlFor="maxResults">Results</InputLabel>
                                 <Select
-                                    value={this.state.currentFilters.maxResults}
+                                    value={currentFilters.maxResults}
                                     onChange={this.handleChangeFilter}
                                     input={<StyledOutlinedInput labelWidth={54} name="maxResults" id="maxResults" />}
                                     autoWidth>
@@ -234,7 +237,7 @@ class FiltersMenu extends Component {
                                 <StyledFormControlLabel
                                     control={<StyledCheckbox
                                         name="showWatchedMovies"
-                                        checked={this.state.currentFilters.showWatchedMovies}
+                                        checked={currentFilters.showWatchedMovies}
                                         onChange={this.handleChangeShowWatchedMoviesFilter}
                                         icon={<StyledIconButton color="default">
                                             <RemoveRedEyeOutlined fontSize="large" />
