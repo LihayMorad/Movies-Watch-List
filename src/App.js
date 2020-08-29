@@ -6,9 +6,12 @@ import rootReducer from './store/rootReducer';
 
 import './App.css';
 
-const store = createStore(rootReducer);
+const inDev = process.env.NODE_ENV === "development";
 
-if (process.env.NODE_ENV === "development") window.store = store;
+const store = createStore(
+	rootReducer,
+	inDev ? window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() : undefined
+);
 
 const App = () => (
 	<div className="App">
