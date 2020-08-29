@@ -20,6 +20,11 @@
     height: 100%;
 }
 
+.DialogContentYoutubeDivWrapper.error {
+    padding: 0;
+    text-align: center;
+}
+
 #TrailerModalActions {
     margin: 4px;
     color: black;

@@ -7,6 +7,7 @@ import { Button, Dialog, DialogActions, DialogTitle, Typography, IconButton, Zoo
 import { Close as CloseIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
+import ErrorIcon from '../../../assets/ErrorIcon.png';
 import LoadingSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
 
 import './MovieTrailerModal.css';
@@ -30,10 +31,10 @@ class MovieTrailerModal extends Component {
 				.then((response) => {
 					if (response.status === 200 && response.statusText === "OK") {
 						const results = response.data.results || [];
-						if (results.length === 0) throw Error({ message: "No results from TMDB" });
-						const youTubeTrailerID = results.find(movie => movie.site === "YouTube" && movie.type === "Trailer").key;
+						const trailer = results.length && results.find(movie => movie.site === "YouTube" && movie.type === "Trailer");
+						if (!trailer) throw Error({ message: "No results from TMDB" });
 						this.setState({
-							trailerId: youTubeTrailerID || "",
+							trailerId: trailer.key || "",
 							trailerTitle: `${this.props.searchParams} Trailer`,
 							searchError: "",
 							loading: false
@@ -59,8 +60,11 @@ class MovieTrailerModal extends Component {
 			axios(`https://content.googleapis.com/youtube/v3/search?part=snippet&maxResults=3&q=${this.props.searchParams}%20trailer&type=video&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`)
 				.then((response) => {
 					if (response.status === 200) {
+						const results = response.data.items || [];
+						const trailer = results.length && results[0].id;
+						if (!trailer) throw Error({ message: "No results from YouTube" });
 						this.setState({
-							trailerId: response.data.items[0].id.videoId,
+							trailerId: trailer.videoId,
 							trailerTitle: `${this.props.searchParams} Trailer`,
 							searchError: "",
 							loading: false
@@ -83,7 +87,11 @@ class MovieTrailerModal extends Component {
 	render() {
 		const { trailerId, trailerTitle, searchError, loading } = this.state;
 		const { isOpen, toggle } = this.props;
-
+		const title = !loading
+			? !searchError
+				? trailerTitle
+				: "Error! Something went wrong"
+			: "Loading...";
 		return (
 			<StyledDialog
 				fullWidth
@@ -94,23 +102,26 @@ class MovieTrailerModal extends Component {
 				onClose={this.handleClose}>
 
 				<div className="DialogTitleDiv">
-					{!loading && <DialogTitle>{!searchError ? trailerTitle : "Error! Something went wrong"}</DialogTitle>}
+					<DialogTitle>{title}</DialogTitle>
 					<IconButton color="inherit" className="modalCloseBtn" onClick={toggle} aria-label="Close"><CloseIcon /></IconButton>
 				</div>
 
 				{!loading
-					? <div className="DialogContentYoutubeDivWrapper">
-						<iframe
-							src={`https://www.youtube.com/embed/${trailerId}?autoplay=0`}
-							allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-							allowFullScreen frameBorder="0" title="Movie Trailer">
-						</iframe>
+					? <div className={`DialogContentYoutubeDivWrapper ${searchError ? 'error' : ''}`}>
+						{!searchError ?
+							<iframe
+								src={`https://www.youtube.com/embed/${trailerId}?autoplay=0`}
+								allow="autoplay; encrypted-media; picture-in-picture"
+								allowFullScreen frameBorder="0" title="Movie Trailer">
+							</iframe>
+							: <img src={ErrorIcon} alt="Error! Something went wrong" />
+						}
 					</div>
 					: <LoadingSpinner />
 				}
 
 				<DialogActions id="TrailerModalActions">
-					{!loading && <Typography variant="body1" align="left">*based on YouTube search results</Typography>}
+					{!loading && !searchError && <Typography variant="body1" align="left">*based on YouTube search results</Typography>}
 					<Button onClick={toggle}>Close</Button>
 				</DialogActions>
 

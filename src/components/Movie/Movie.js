@@ -18,7 +18,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import Rating from 'react-rating'; // https://github.com/dreyescat/react-rating
 
-import MovieNotFound from '../../assets/MovieNotFound.png';
+import ErrorIcon from '../../assets/ErrorIcon.png';
 import youTubeIcon from '../../assets/youtube_icon.png';
 
 import './Movie.css';
@@ -120,7 +120,7 @@ class Movie extends Component {
 												<img src={youTubeIcon} id="movieCardContentYouTubeImg" alt="YouTube icon" />
 											</>
 											: <div id="movieCardContentImgDivError">
-												<img src={MovieNotFound} alt={movieDBError === true ? "Error" : movieDBError} />
+												<img src={ErrorIcon} alt={movieDBError === true ? "Error" : movieDBError} />
 												<h1>Database error {movieDBError}</h1>
 											</div>
 										: <MovieSpinner />
