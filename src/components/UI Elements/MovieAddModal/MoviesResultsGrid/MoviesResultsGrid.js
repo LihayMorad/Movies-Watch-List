@@ -1,8 +1,6 @@
 import React from 'react';
 import MoviesResultsItem from './MoviesResultsCard';
 
-import './MoviesResultsGrid.css';
-
 const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500/";
 
 const moviesResultsGrid = ({ type, results, imdbID, tmdbID, updateCurrentMovie, toggleWatchTrailer, getIMDBID }) => {

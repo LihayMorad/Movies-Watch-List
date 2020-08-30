@@ -1,0 +1,29 @@
+.MoviesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: 10px;
+}
+
+.freeSearch {
+    * {
+        color: white !important;
+    }
+    &:hover,
+    div:before {
+        border-bottom-color: inherit !important;
+    }
+}
+
+.information {
+    &H3 {
+        margin: 20px auto 5px auto;
+    }
+    &H4 {
+        margin: 0px auto;
+    }
+}
+
+#addMovieBtn {
+    margin: 4px auto;
+}

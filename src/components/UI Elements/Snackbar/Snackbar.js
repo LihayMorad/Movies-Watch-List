@@ -7,8 +7,6 @@ import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core';
 import { Close as CloseIcon, CheckCircle as CheckCircleIcon, Error as ErrorIcon, Info as InfoIcon, Warning as WarningIcon } from '@material-ui/icons';
 import { grey, green, red, blue, amber } from '@material-ui/core/colors';
 
-import './Snackbar.css';
-
 const snackbarStyles = {
     "default": {
         "color": grey[900],

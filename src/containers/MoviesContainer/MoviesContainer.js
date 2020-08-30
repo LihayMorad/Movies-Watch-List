@@ -14,15 +14,13 @@ import Movie from '../../components/Movie/Movie';
 import MovieAddModal from '../../components/UI Elements/MovieAddModal/MovieAddModal';
 import MovieTrailerModal from '../../components/UI Elements/MovieTrailerModal/MovieTrailerModal';
 import MovieCommentsModal from '../../components/UI Elements/MovieCommentsModal/MovieCommentsModal';
-import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner/MoviesSpinner';
+import MoviesSpinner from '../../components/UI Elements/Spinners/MoviesSpinner';
 import MoviesCounter from '../../components/UI Elements/MoviesCounter/MoviesCounter';
 // import InformationModal from '../UI Elements/InformationModal/InformationModal';
 
 import { TextField, InputAdornment, Tooltip, IconButton, Fab, Zoom } from '@material-ui/core';
 import { Search as SearchIcon, Add as AddIcon, Share as ShareIcon, } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-
-import './MoviesContainer.css';
 
 const StyledIconButton = withStyles({ root: { color: 'inherit' } })(IconButton);
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '0px' } })(Tooltip);

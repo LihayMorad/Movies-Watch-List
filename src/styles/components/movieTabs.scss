@@ -1,0 +1,24 @@
+.tabsPanel {
+    border: 1px solid #ffffff24;
+    border-top: solid 1px white;
+    border-radius: 10px !important;
+    background-color: #0000001c !important;
+    a {
+        color: #00e8c4ed;
+        :visited {
+            color: #d300ff;
+        }
+    }
+    .actorsList {
+        display: inline-block;
+        padding: 0px 3px;
+    }
+    .ratingsText {
+        margin: 0 auto !important;
+        padding: 5px;
+        color: inherit !important;
+    }
+    .downloadSitesLinks {
+        padding: 4px;
+    }
+}

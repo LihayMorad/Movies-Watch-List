@@ -8,13 +8,11 @@ import AnalyticsService from '../../../Services/AnalyticsService';
 
 import MoviesResultsGrid from './MoviesResultsGrid/MoviesResultsGrid';
 import MovieTrailerModal from '../MovieTrailerModal/MovieTrailerModal';
-import SearchResultsSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
+import SearchResultsSpinner from '../Spinners/SearchResultsSpinner';
 
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Zoom } from '@material-ui/core';
 import { Close as CloseIcon, Search as SearchIcon, Whatshot as WhatshotIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-
-import './MovieAddModal.css';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 const StyledDialogContent = withStyles({ root: { padding: '0 24px 12px !important' } })(DialogContent);

@@ -1,0 +1,77 @@
+#moviesSearchResults {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: 7px auto;
+    padding: unset;
+    list-style: none;
+    .movieElem {
+        width: 30%;
+        min-width: 250px;
+        min-height: 350px;
+        margin: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 1px 1.5px black;
+        position: relative;
+        text-align: center;
+        cursor: pointer;
+        color: white;
+        transition: all 0.2s;
+        &:hover {
+            opacity: 0.9;
+        }
+        &.chosenMovie {
+            box-sizing: border-box;
+            box-shadow: 0px 0px 4px 4px #0e388d;
+        }
+        img {
+            height: 100%;
+            width: 100%;
+            border-radius: inherit;
+            filter: brightness(0.75);
+            -webkit-filter: brightness(0.75);
+        }
+        #youTubeIcon {
+            position: absolute;
+            right: 0;
+            max-width: 15%;
+            height: auto;
+            filter: drop-shadow(0px 0px 1px black);
+            -webkit-filter: drop-shadow(0px 0px 1px black);
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+        .overlay {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            width: 80%;
+            min-height: 50%;
+            left: 10%;
+            top: 25%;
+            border-bottom: 1px solid #fff;
+            border-top: 1px solid #fff;
+            h3,
+            h2 {
+                margin: 5px auto;
+            }
+            &-black {
+                color: black;
+                border-color: black;
+            }
+        }
+        @media only screen and (max-width: 992px) {
+            .movieElem {
+                width: 45%;
+            }
+        }
+        @media only screen and (max-width: 768px) {
+            .movieElem {
+                width: 100%;
+            }
+        }
+    }
+}

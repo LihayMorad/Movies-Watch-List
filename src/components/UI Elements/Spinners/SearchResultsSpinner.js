@@ -1,7 +1,5 @@
 import React from 'react';
 
-import './SearchResultsSpinner.css';
-
 export default () => (
     <div className="sk-circle">
         <div className="sk-circle1 sk-child"></div>

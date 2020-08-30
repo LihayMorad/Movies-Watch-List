@@ -1,0 +1,106 @@
+#movieCardContainer {
+    position: relative;
+    display: flex;
+    margin: 0px 20px 20px 20px;
+    transition-duration: 0.2s;
+    &:hover,
+    &:focus,
+    &:active {
+        transform: scale(1.02);
+    }
+    .movieCard {
+        width: 300px;
+        margin-top: 20px;
+        box-shadow: 0px 1px 20px 5px rgba(0, 0, 0, 0.68) !important;
+        border-radius: 10px !important;
+        background-color: #00000026 !important;
+        #movieCardContent {
+            padding: 0px;
+            .movieCardContentImgDiv {
+                height: 460px;
+                display: flex;
+                border-radius: 0px 0px 15px 15px;
+                filter: drop-shadow(0px 1px 5px black);
+                -webkit-filter: drop-shadow(0px 1px 5px black);
+                #movieCardContentYouTubeImg {
+                    position: absolute;
+                    top: 445px;
+                    margin: auto;
+                    left: 0;
+                    right: 0;
+                    max-width: 15%;
+                }
+                #movieCardContentImgDivPoster {
+                    width: 100%;
+                    height: 100%;
+                    line-height: 480px;
+                    border-radius: inherit;
+                    filter: brightness(1.1);
+                    -webkit-filter: brightness(1.1);
+                }
+                #movieCardContentImgDivError {
+                    width: 100%;
+                    margin-top: 15px;
+                    color: red;
+                }
+            }
+            .movieCardContentTextDiv {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                min-height: 200px;
+                margin: 8px auto;
+                padding: 8px 5px;
+                div {
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-evenly;
+                    flex: auto;
+                }
+                h4 {
+                    color: white;
+                    font-size: 2.425rem;
+                    word-break: break-word;
+                }
+                h5 {
+                    color: white;
+                    direction: rtl;
+                }
+                p {
+                    color: white;
+                    font-size: 14px;
+                    margin-top: 4px;
+                    margin-bottom: 0;
+                }
+                span {
+                    display: inline-block;
+                }
+                #commentsSpan {
+                    word-break: break-word;
+                }
+            }
+        }
+        .movieCardFab {
+            margin: 7px 10px 13px !important;
+            span {
+                position: absolute;
+            }
+        }
+        .movieRatingStars {
+            position: absolute;
+            top: 7px;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            > span {
+                color: #ffcf00;
+                filter: drop-shadow(0px 1px 2px black) drop-shadow(0px 0px 0px black);
+                -webkit-filter: drop-shadow(0px 1px 2px black) drop-shadow(0px 0px 0px black);
+            }
+            svg {
+                font-size: 26px;
+            }
+        }
+    }
+}

@@ -10,8 +10,6 @@ import { Menu, MenuItem, Tooltip, Button, IconButton, Fade, Zoom } from '@materi
 import { PersonOutline as PersonOutlineIcon, Person as PersonIcon, Link as LinkIcon, AccountCircle } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
-import './AccountMenu.css';
-
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' }, tooltipPlacementBottom: { marginTop: '5px' } })(Tooltip);
 
 class AccountMenu extends Component {

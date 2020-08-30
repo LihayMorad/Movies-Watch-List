@@ -8,8 +8,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { torrentsSites, subtitlesSites } from './sites.json';
 
-import './MovieTabs.css';
-
 const StyledExpansionPanel = withStyles({ root: { color: 'white' } })(Accordion);
 const StyledAccordionDetails = withStyles({ root: { flexWrap: 'wrap', justifyContent: 'space-around' } })(AccordionDetails);
 const StyledAccordionSummary = withStyles({ expandIcon: { color: 'inherit' } })(AccordionSummary);

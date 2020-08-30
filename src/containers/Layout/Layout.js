@@ -13,8 +13,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 import TrackVisibility from 'react-on-screen';
 
-import './Layout.css';
-
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);
 
 class Layout extends Component {

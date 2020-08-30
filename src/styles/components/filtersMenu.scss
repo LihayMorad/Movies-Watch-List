@@ -1,18 +1,13 @@
 #filtersForm {
     justify-content: center;
     align-items: center;
-}
-
-.MenuElementMg {
-    margin: 10px 8px !important;
+    .MenuElementMg {
+        margin: 10px 8px !important;
+    }
 }
 
 #filtersMenuBtn {
     margin: 8px 0px;
-}
-
-.btnPadding {
-    padding: 6px 8px !important;
 }
 
 #applyFiltersBtn {
@@ -26,8 +21,7 @@
     border: 1px solid rgba(0, 0, 0, 0.23);
     border-radius: 4px;
     transition: border-color 0.2s ease-out;
-}
-
-#showWatchedMovies:hover {
-    border-color: black;
+    &:hover {
+        border-color: black;
+    }
 }

@@ -8,9 +8,7 @@ import { Close as CloseIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
 import ErrorIcon from '../../../assets/ErrorIcon.png';
-import LoadingSpinner from '../Spinners/SearchResultsSpinner/SearchResultsSpinner';
-
-import './MovieTrailerModal.css';
+import LoadingSpinner from '../Spinners/SearchResultsSpinner';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 

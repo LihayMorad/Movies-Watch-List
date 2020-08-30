@@ -1,0 +1,22 @@
+/* Base */
+@import "base.scss";
+@import "app.scss";
+@import "layout.scss";
+
+@import "components/moviesContainer.scss";
+@import "components/accountMenu.scss";
+@import "components/movie.scss";
+@import "components/movieTabs.scss";
+@import "components/attributions.scss";
+@import "components/moviesResultsGrid.scss";
+@import "components/filtersMenu.scss";
+@import "components/snackbar.scss";
+
+/* Modals */
+@import "components/modals/movieAddModal.scss";
+@import "components/modals/movieTrailerModal.scss";
+
+/* Spinners */
+@import "components/spinners/moviesSpinner.scss";
+@import "components/spinners/movieSpinner.scss";
+@import "components/spinners/searchResultsSpinner.scss";

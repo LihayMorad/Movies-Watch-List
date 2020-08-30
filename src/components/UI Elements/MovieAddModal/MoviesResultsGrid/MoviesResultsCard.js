@@ -13,7 +13,7 @@ const moviesResultsCard = ({ id, isSelectedMovie, onClick, poster, hasValidPoste
             <li className={`movieElem ${isSelectedMovie && 'chosenMovie'}`}
                 onClick={onClick}>
                 <img src={poster} alt={hasValidPoster ? "Movie poster" : "Movie poster not found"} />
-                <div className={`overlay ${!hasValidPoster && 'overlayBlack'}`}>
+                <div className={`overlay ${!hasValidPoster && 'overlay-black'}`}>
                     <h2>{title}</h2>
                     <h3>{year}</h3>
                 </div>

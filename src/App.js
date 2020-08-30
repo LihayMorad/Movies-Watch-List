@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import rootReducer from './store/rootReducer';
 
-import './App.css';
+import './styles/main.scss';
 
 const inDev = process.env.NODE_ENV === "development";
 

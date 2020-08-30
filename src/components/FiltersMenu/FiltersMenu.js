@@ -10,8 +10,6 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormGrou
 import { MovieFilter as MovieFilterIcon, Close as CloseIcon, Save as SaveIcon, RemoveRedEye, RemoveRedEyeOutlined } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
-import './FiltersMenu.css';
-
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 const StyledDialogTitle = withStyles({ root: { padding: '16px 24px 12px !important' } })(DialogTitle);
 const StyledDialogContent = withStyles({ root: { padding: '0 16px !important' } })(DialogContent);

@@ -8,7 +8,7 @@ import MoviesService from '../../Services/MoviesService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
 import MovieTabs from './MovieTabs/MovieTabs';
-import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner/MovieSpinner';
+import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner';
 
 import { hasExpired } from '../../utils/common';
 
@@ -20,8 +20,6 @@ import Rating from 'react-rating'; // https://github.com/dreyescat/react-rating
 
 import ErrorIcon from '../../assets/ErrorIcon.png';
 import youTubeIcon from '../../assets/youtube_icon.png';
-
-import './Movie.css';
 
 const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);
 

@@ -5,14 +5,15 @@
     left: 0;
     margin: 5px;
     font-size: small;
-}
-
-#attributions img {
-    margin-left: 5px;
+    img {
+        margin-left: 5px;
+    }
 }
 
 @media only screen and (max-width: 600px) {
-    #attributions img {
-        float: right;
+    #attributions {
+        img {
+            float: right;
+        }
     }
 }
