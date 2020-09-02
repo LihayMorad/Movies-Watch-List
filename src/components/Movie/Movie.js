@@ -65,19 +65,13 @@ class Movie extends Component {
 		MoviesService.UpdateMovie(this.props.dbMovieID, { Watched: checked })
 			.then(() => {
 				this.props.onSnackbarToggle(true, `Movie marked as ${label} successfully`, "information");
-				this.handleUpdateCounter("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
+				this.props.handleUpdateCounter(null, checked ? "Mark as watched" : "Mark as unwatched");
 				AnalyticsService({
 					category: 'Movie',
 					action: 'Toggle movie watched status'
 				});
 			})
 			.catch(() => { this.props.onSnackbarToggle(true, `There was an error marking the movie as ${label}`, "error"); })
-	}
-
-	handleUpdateCounter = (properties, type) => {
-		MoviesService.UpdateCounter(this.props.moviesCounter, properties, type)
-			.then(() => { })
-			.catch(() => { })
 	}
 
 	handleUpdateIMDBRating = (imdbRating) => {
@@ -195,10 +189,4 @@ class Movie extends Component {
 
 }
 
-const mapStateToProps = state => ({ moviesCounter: state.moviesCounter });
-
-const mapDispatchToProps = dispatch => ({
-	onSnackbarToggle: (open, message, type) => dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } })
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Movie);
+export default Movie;

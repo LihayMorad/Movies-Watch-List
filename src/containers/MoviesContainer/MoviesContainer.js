@@ -204,6 +204,8 @@ class MoviesContainer extends PureComponent {
                             delete={this.handleDeleteMovie}
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
+                            handleUpdateCounter={this.handleUpdateCounter}
+                            onSnackbarToggle={this.props.onSnackbarToggle}
                             watchingList={watchingList} />
                     ));
 
