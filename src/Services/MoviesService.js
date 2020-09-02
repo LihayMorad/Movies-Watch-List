@@ -63,8 +63,8 @@ const moviesService = {
         })
     },
 
-    UpdateMovie(dbMovieID, property, value) {
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${dbMovieID}`).update({ [property]: value });
+    UpdateMovie(dbMovieID, movieData) {
+        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${dbMovieID}`).update(movieData);
     }
 
 }

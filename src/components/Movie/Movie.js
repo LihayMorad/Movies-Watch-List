@@ -62,7 +62,7 @@ class Movie extends Component {
 
 	toggleMovieWatched = ({ target: { checked } }) => {
 		const label = checked ? 'watched' : 'unwatched';
-		MoviesService.UpdateMovie(this.props.dbMovieID, "Watched", checked)
+		MoviesService.UpdateMovie(this.props.dbMovieID, { Watched: checked })
 			.then(() => {
 				this.props.onSnackbarToggle(true, `Movie marked as ${label} successfully`, "information");
 				this.handleUpdateCounter("unwatched", checked ? "Mark as watched" : "Mark as unwatched");
@@ -81,10 +81,7 @@ class Movie extends Component {
 	}
 
 	handleUpdateIMDBRating = (imdbRating) => {
-		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRating", imdbRating)
-			.then(() => { })
-			.catch(() => { })
-		MoviesService.UpdateMovie(this.props.dbMovieID, "imdbRatingTimestamp", Date.now())
+		MoviesService.UpdateMovie(this.props.dbMovieID, { imdbRating, imdbRatingTimestamp: Date.now() })
 			.then(() => { })
 			.catch(() => { })
 	}
