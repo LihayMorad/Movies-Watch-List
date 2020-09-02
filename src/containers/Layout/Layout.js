@@ -60,7 +60,7 @@ class Layout extends Component {
             filtersMenu = (
                 <TrackVisibility partialVisibility>
                     {({ isVisible }) => {
-                        setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 300);
+                        setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 150);
                         return <div ref={this.topMenuRef}><FiltersMenu /></div>;
                     }}
                 </TrackVisibility>
