@@ -17,13 +17,17 @@ const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: '
 
 class Layout extends Component {
 
+    constructor(props) {
+        super(props);
+        this.topMenuRef = React.createRef();
+    }
+
     state = {
         showScrollToMenuButton: false,
         watchingList: false
     }
 
     componentDidMount() {
-        this.topMenuRef = React.createRef();
         this.handleQueryParams();
     }
 
