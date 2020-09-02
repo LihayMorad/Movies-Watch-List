@@ -1,11 +1,9 @@
-import { firestore } from '../config/firebase';
-
 import AccountsService from './AccountsService';
 
 const moviesService = {
 
     UpdateYears(updatedYears) {
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}`).set({ years: [...updatedYears] }, { merge: true });
+        return AccountsService.GetDBRef("user").set({ years: [...updatedYears] }, { merge: true });
     },
 
     UpdateCounter(counter, properties, type) {
@@ -18,23 +16,23 @@ const moviesService = {
             default: break;
         }
 
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}`).set({ counter: updatedCounter }, { merge: true })
+        return AccountsService.GetDBRef("user").set({ counter: updatedCounter }, { merge: true })
     },
 
     AddMovie(movieToBeAdded) {
-        return firestore.collection(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies`).add({ ...movieToBeAdded })
+        return AccountsService.GetDBRef("userMovies").add({ ...movieToBeAdded })
     },
 
     DeleteMovie(movieID) {
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${movieID}`).delete()
+        return AccountsService.GetDBRef("userMovies").doc(movieID).delete();
     },
 
     IsMovieAlreadyExists(imdbID) {
         return new Promise((resolve, reject) => {
-            firestore.collection(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies`).where("imdbID", "==", imdbID).get()
+            AccountsService.GetDBRef("userMovies").where("imdbID", "==", imdbID).get()
                 .then(querySnapshot => {
                     if (!querySnapshot.empty || querySnapshot.size > 0)
-                        resolve(true); // movie exists
+                        resolve(true);  // movie exists
                     else
                         resolve(false); // movie doesn't exists
                 })
@@ -44,12 +42,12 @@ const moviesService = {
 
     ShouldDeleteYear(imdbID, year) { // there is no '!=' clause in Firestore so we should split the query into a greater-than query and a less-than query.
         return new Promise((resolve, reject) => {
-            firestore.collection(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies`).where("Year", "==", year).where("imdbID", ">", imdbID).get()
+            AccountsService.GetDBRef("userMovies").where("Year", "==", year).where("imdbID", ">", imdbID).get()
                 .then(querySnapshot => {
                     if (!querySnapshot.empty || querySnapshot.size > 0) {
                         resolve(false);
                     } else {
-                        firestore.collection(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies`).where("Year", "==", year).where("imdbID", "<", imdbID).get()
+                        AccountsService.GetDBRef("userMovies").where("Year", "==", year).where("imdbID", "<", imdbID).get()
                             .then(querySnapshot => {
                                 if (!querySnapshot.empty || querySnapshot.size > 0)
                                     resolve(false);
@@ -64,7 +62,7 @@ const moviesService = {
     },
 
     UpdateMovie(dbMovieID, movieData) {
-        return firestore.doc(`mymovies/${AccountsService.GetLoggedInUser().uid}/movies/${dbMovieID}`).update(movieData);
+        return AccountsService.GetDBRef("userMovies").doc(dbMovieID).update(movieData);
     }
 
 }
