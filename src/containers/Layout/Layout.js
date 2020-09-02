@@ -13,34 +13,38 @@ import { withStyles } from '@material-ui/core/styles';
 
 import TrackVisibility from 'react-on-screen';
 
-const StyledTooltip = withStyles({ tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' } })(Tooltip);
+const StyledTooltip = withStyles({
+    tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
+})(Tooltip);
 
 class Layout extends Component {
-
     constructor(props) {
         super(props);
-        this.topMenuRef = React.createRef();
-    }
 
-    state = {
-        showScrollToMenuButton: false,
-        watchingList: false
+        this.topMenuRef = React.createRef();
+        this.state = {
+            showScrollToMenuButton: false,
+            watchingList: false,
+        };
     }
 
     componentDidMount() {
         this.handleQueryParams();
     }
 
-    scrollToMenu = () => { window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: "smooth" }); }
+    scrollToMenu = () => {
+        window.scrollTo({ top: this.topMenuRef.current.offsetTop, behavior: 'smooth' });
+    };
 
     handleQueryParams = () => {
         const paramsString = window.location.search;
         const searchParams = new URLSearchParams(paramsString);
         this.setState({
-            watchingList: searchParams.has("watchingList") && searchParams.get("watchingList") === "true",
-            watchingListUserInfo: searchParams.has("user") && searchParams.get("user")
+            watchingList:
+                searchParams.has('watchingList') && searchParams.get('watchingList') === 'true',
+            watchingListUserInfo: searchParams.has('user') && searchParams.get('user'),
         });
-    }
+    };
 
     render() {
         const { watchingList, watchingListUserInfo } = this.state;
@@ -51,8 +55,19 @@ class Layout extends Component {
 
         if (!watchingList) {
             scrollToMenu = (
-                <StyledTooltip title="Scroll up to filters menu" disableFocusListener disableTouchListener TransitionComponent={Zoom}>
-                    <Fab id="scrollToMenu" color="primary" variant="extended" size="small" onClick={this.scrollToMenu}>
+                <StyledTooltip
+                    title="Scroll up to filters menu"
+                    disableFocusListener
+                    disableTouchListener
+                    TransitionComponent={Zoom}
+                >
+                    <Fab
+                        id="scrollToMenu"
+                        color="primary"
+                        variant="extended"
+                        size="small"
+                        onClick={this.scrollToMenu}
+                    >
                         <NavigationIcon />
                     </Fab>
                 </StyledTooltip>
@@ -60,8 +75,14 @@ class Layout extends Component {
             filtersMenu = (
                 <TrackVisibility partialVisibility>
                     {({ isVisible }) => {
-                        setTimeout(() => { this.setState({ showScrollToMenuButton: !isVisible }); }, 150);
-                        return <div ref={this.topMenuRef}><FiltersMenu /></div>;
+                        setTimeout(() => {
+                            this.setState({ showScrollToMenuButton: !isVisible });
+                        }, 150);
+                        return (
+                            <div ref={this.topMenuRef}>
+                                <FiltersMenu />
+                            </div>
+                        );
                     }}
                 </TrackVisibility>
             );
@@ -69,22 +90,27 @@ class Layout extends Component {
             snackbar = <Snackbar />;
         }
 
-        return <>
-            <Header />
+        return (
+            <>
+                <Header />
 
-            {accountMenu}
+                {accountMenu}
 
-            {filtersMenu}
+                {filtersMenu}
 
-            <MoviesContainer watchingList={watchingList} watchingListUserInfo={watchingListUserInfo} />
+                <MoviesContainer
+                    watchingList={watchingList}
+                    watchingListUserInfo={watchingListUserInfo}
+                />
 
-            {this.state.showScrollToMenuButton && scrollToMenu}
+                {this.state.showScrollToMenuButton && scrollToMenu}
 
-            <Attributions />
+                <Attributions />
 
-            {snackbar}
-        </>
+                {snackbar}
+            </>
+        );
     }
-};
+}
 
 export default Layout;

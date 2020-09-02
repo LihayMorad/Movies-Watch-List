@@ -2,67 +2,65 @@ import * as actionTypes from './actions';
 
 const initialState = {
     isSnackbarOpen: false,
-    snackbarMessage: "",
-    snackbarType: "default",
-    freeSearchFilter: "",
+    snackbarMessage: '',
+    snackbarType: 'default',
+    freeSearchFilter: '',
     movies: [],
     moviesYears: [],
     moviesCounter: {
         total: 0,
-        unwatched: 0
+        unwatched: 0,
     },
     filters: {
-        filter: "releaseYear",
-        order: "descending",
-        year: "All",
+        filter: 'releaseYear',
+        order: 'descending',
+        year: 'All',
         maxResults: 10,
-        showWatchedMovies: false
+        showWatchedMovies: false,
     },
-    loadingMovies: false
+    loadingMovies: false,
 };
 
 const rootReducer = (state = initialState, action) => {
-
     switch (action.type) {
-
         case actionTypes.TOGGLE_SNACKBAR:
             return {
                 ...state,
                 isSnackbarOpen: action.payload.open,
                 snackbarMessage: action.payload.message,
-                snackbarType: action.payload.type
+                snackbarType: action.payload.type,
             };
 
         case actionTypes.TOGGLE_LOADING_MOVIES:
             return {
                 ...state,
-                loadingMovies: action.payload
+                loadingMovies: action.payload,
             };
 
         case actionTypes.SAVE_MOVIES:
             return {
                 ...state,
                 movies: action.payload,
-                loadingMovies: false
+                loadingMovies: false,
             };
 
         case actionTypes.SAVE_MOVIES_YEARS:
             return {
                 ...state,
-                moviesYears: action.payload
-            }
+                moviesYears: action.payload,
+            };
 
         case actionTypes.ON_FREE_SEARCH_FILTER_CHANGE:
             return {
                 ...state,
-                freeSearchFilter: action.payload
-            }
+                freeSearchFilter: action.payload,
+            };
 
         case actionTypes.ON_MOVIES_COUNTER_CHANGE:
             if (action.payload) {
                 return {
                     ...state,
-                    moviesCounter: { ...action.payload }
+                    moviesCounter: { ...action.payload },
                 };
             } else return state;
 
@@ -70,12 +68,13 @@ const rootReducer = (state = initialState, action) => {
             if (action.payload) {
                 return {
                     ...state,
-                    filters: { ...action.payload }
+                    filters: { ...action.payload },
                 };
             } else return state;
 
-        default: return state;
+        default:
+            return state;
     }
-}
+};
 
 export default rootReducer;

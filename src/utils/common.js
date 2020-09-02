@@ -12,5 +12,5 @@ export const debounce = (func, wait, immediate) => {
     };
 };
 
-const timestampToDays = timestamp => timestamp / 1000 / 60 / 60 / 24;
-export const hasExpired = timestamp => timestampToDays(Date.now() - timestamp) > 1;
+const timestampToDays = (timestamp) => timestamp / 1000 / 60 / 60 / 24;
+export const hasExpired = (timestamp) => timestampToDays(Date.now() - timestamp) > 1;
