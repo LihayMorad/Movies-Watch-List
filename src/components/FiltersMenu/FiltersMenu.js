@@ -255,7 +255,7 @@ class FiltersMenu extends Component {
                 >
                     <StyledDialogTitle>
                         List filters
-                        <IconButton className="modalCloseBtn" onClick={this.onClose}>
+                        <IconButton className="closeModalBtn" onClick={this.onClose}>
                             <CloseIcon />
                         </IconButton>
                     </StyledDialogTitle>

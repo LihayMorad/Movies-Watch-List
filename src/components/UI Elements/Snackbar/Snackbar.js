@@ -13,7 +13,7 @@ import {
 } from '@material-ui/icons';
 import { grey, green, red, blue, amber } from '@material-ui/core/colors';
 
-const snackbarStyles = {
+const styles = {
     default: {
         color: grey[900],
         icon: null,
@@ -36,21 +36,14 @@ const snackbarStyles = {
     },
 };
 
-const simpleSnackbar = ({ isSnackbarOpen, snackbarType, snackbarMessage = '', toggleSnackbar }) => {
-    const handleClose = () => {
-        toggleSnackbar(false, '', 'default');
-    };
-
-    const color = snackbarType
-        ? snackbarStyles[snackbarType].color
-        : snackbarStyles['default'].color;
-    const icon = snackbarType ? snackbarStyles[snackbarType].icon : snackbarStyles['default'].icon;
+const snackbar = ({ isOpen, type, message = '', close }) => {
+    const { color, icon } = styles[type || 'default'];
 
     return (
         <Snackbar
             id="snackbarRoot"
-            open={isSnackbarOpen}
-            onClose={handleClose}
+            open={isOpen}
+            onClose={close}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             autoHideDuration={4000}
         >
@@ -58,16 +51,11 @@ const simpleSnackbar = ({ isSnackbarOpen, snackbarType, snackbarMessage = '', to
                 style={{ backgroundColor: color }}
                 message={
                     <span id="snackbarMessage">
-                        {icon}&nbsp;{snackbarMessage}
+                        {icon}&nbsp;{message}
                     </span>
                 }
                 action={[
-                    <IconButton
-                        id="snackbarCloseBtn"
-                        key="close"
-                        color="inherit"
-                        onClick={handleClose}
-                    >
+                    <IconButton id="snackbarCloseBtn" key="close" color="inherit" onClick={close}>
                         <CloseIcon />
                     </IconButton>,
                 ]}
@@ -76,10 +64,14 @@ const simpleSnackbar = ({ isSnackbarOpen, snackbarType, snackbarMessage = '', to
     );
 };
 
-const mapStateToProps = (state) => state;
-
-const mapDispatchToProps = (dispatch) => ({
-    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
+const mapStateToProps = ({ isSnackbarOpen, snackbarType, snackbarMessage }) => ({
+    isOpen: isSnackbarOpen,
+    type: snackbarType,
+    message: snackbarMessage,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(simpleSnackbar);
+const mapDispatchToProps = (dispatch) => ({
+    close: () => dispatch(toggleSnackbar({ open: false, message: null, type: 'default' })),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(snackbar);

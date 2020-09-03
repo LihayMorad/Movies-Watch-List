@@ -108,7 +108,7 @@ class MovieTrailerModal extends Component {
         });
     };
 
-    handleClose = () => {
+    onClose = () => {
         this.setState({ trailerId: '', trailerTitle: '', searchError: false, loading: false });
         this.props.toggle();
     };
@@ -128,13 +128,13 @@ class MovieTrailerModal extends Component {
                 TransitionComponent={Zoom}
                 open={isOpen}
                 onEnter={this.getTrailer}
-                onClose={this.handleClose}
+                onClose={this.onClose}
             >
                 <div className="DialogTitleDiv">
                     <DialogTitle>{title}</DialogTitle>
                     <IconButton
                         color="inherit"
-                        className="modalCloseBtn"
+                        className="closeModalBtn"
                         onClick={toggle}
                         aria-label="Close"
                     >

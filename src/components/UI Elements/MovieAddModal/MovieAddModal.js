@@ -39,7 +39,7 @@ const initialState = {
     NameEng: '',
     Year: currYear,
     Comments: '',
-    movieSearchResults: [],
+    results: [],
     imdbID: '',
     tmdbID: '',
     imdbRating: '',
@@ -54,7 +54,7 @@ class movieAddModal extends Component {
     constructor(props) {
         super(props);
 
-        this.personalNote = React.createRef();
+        this.personalNoteRef = React.createRef();
         this.state = { ...initialState };
     }
 
@@ -62,13 +62,21 @@ class movieAddModal extends Component {
         if (prevProps.isOpen !== this.props.isOpen) this.setState({ ...initialState });
     }
 
-    handleChange = ({ target: { name, value } }) => {
+    onChange = ({ target: { name, value } }) => {
         this.setState({ [name]: value.trim() });
     };
 
-    handleAddMovie = () => {
+    addMovie = () => {
         if (this.state.imdbID) {
-            const { NameHeb, imdbID, tmdbID, Comments, selectedTitle, selectedYear } = this.state;
+            const {
+                NameHeb,
+                imdbID,
+                tmdbID,
+                Comments,
+                selectedTitle,
+                selectedYear,
+                results,
+            } = this.state;
             const movieDetails = {
                 NameHeb,
                 NameEng: selectedTitle,
@@ -81,9 +89,8 @@ class movieAddModal extends Component {
             };
             if (this.state.tmdbID) {
                 // save poster if we are adding movie from 'Popular Movies' search results
-                const poster = this.state.movieSearchResults.find((movie) => movie.id === tmdbID)
-                    .poster_path;
-                if (poster) movieDetails.Poster = poster;
+                const poster = results.find((movie) => movie.id === tmdbID);
+                if (poster && poster.poster_path) movieDetails.Poster = poster;
             }
             this.props.addMovie(movieDetails);
         } else {
@@ -95,16 +102,17 @@ class movieAddModal extends Component {
         }
     };
 
-    handleMovieSearch = () => {
+    searchMovie = (e) => {
+        e.preventDefault();
         this.setState({ loading: true }, () => {
-            let movieSearchResults = [];
+            let results = [];
             let resultsType = '';
             axios(
                 `https://www.omdbapi.com/?s=${this.state.NameEng}&y=${this.state.Year}&type=movie&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
             )
                 .then((response) => {
                     if (response.status === 200 && response.data.Response === 'True') {
-                        movieSearchResults = response.data.Search;
+                        results = response.data.Search;
                         resultsType = 'search';
                     } else {
                         const message =
@@ -124,7 +132,7 @@ class movieAddModal extends Component {
                 .finally(() => {
                     this.setState({
                         loading: false,
-                        movieSearchResults,
+                        results,
                         imdbID: '',
                         tmdbID: '',
                         resultsType,
@@ -137,16 +145,16 @@ class movieAddModal extends Component {
         });
     };
 
-    handleTrendingMovieSearch = () => {
+    searchTrendingMovies = () => {
         this.setState({ loading: true }, () => {
-            let movieSearchResults = [];
+            let results = [];
             let resultsType = '';
             axios(
                 `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_TMDB_API_KEY}`
             )
                 .then((response) => {
                     if (response.status === 200) {
-                        movieSearchResults = response.data.results;
+                        results = response.data.results;
                         resultsType = 'trending';
                     } else {
                         this.props.toggleSnackbar(
@@ -166,7 +174,7 @@ class movieAddModal extends Component {
                 .finally(() => {
                     this.setState({
                         loading: false,
-                        movieSearchResults,
+                        results,
                         imdbID: '',
                         tmdbID: '',
                         resultsType,
@@ -206,7 +214,7 @@ class movieAddModal extends Component {
 
     handleUpdateCurrentMovie = (imdbID, tmdbID, title, year) => {
         this.setState({ imdbID, tmdbID, selectedTitle: title, selectedYear: year }, () => {
-            this.personalNote.current.scrollIntoView({ behavior: 'smooth' });
+            this.personalNoteRef.current.scrollIntoView({ behavior: 'smooth' });
         });
     };
 
@@ -219,7 +227,7 @@ class movieAddModal extends Component {
     };
 
     render() {
-        const { imdbID, tmdbID, Year, movieSearchResults, loading } = this.state;
+        const { imdbID, tmdbID, Year, results, loading } = this.state;
 
         return (
             <>
@@ -232,18 +240,12 @@ class movieAddModal extends Component {
                 >
                     <DialogTitle id="movieAddModalTitle">
                         Add a movie to your watch list
-                        <IconButton className="modalCloseBtn" onClick={this.props.toggle}>
+                        <IconButton className="closeModalBtn" onClick={this.props.toggle}>
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
 
-                    <form
-                        id="movieAddModalForm"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            this.handleMovieSearch();
-                        }}
-                    >
+                    <form id="movieAddModalForm" onSubmit={this.searchMovie}>
                         <StyledDialogContent>
                             <DialogContentText>
                                 Search a movie or see popular movies now and then choose one from
@@ -264,7 +266,7 @@ class movieAddModal extends Component {
                                 name="NameEng"
                                 label="Movie's English name"
                                 inputProps={{ type: 'text', placeholder: 'Enter english name' }}
-                                onChange={this.handleChange}
+                                onChange={this.onChange}
                             />
                             <TextField
                                 fullWidth
@@ -280,7 +282,7 @@ class movieAddModal extends Component {
                                     min: '1950',
                                     max: currYear + 2,
                                 }}
-                                onChange={this.handleChange}
+                                onChange={this.onChange}
                             />
 
                             <Button
@@ -298,16 +300,17 @@ class movieAddModal extends Component {
                                 color="secondary"
                                 variant="outlined"
                                 className="movieAddModalBtn"
-                                onClick={this.handleTrendingMovieSearch}
+                                onClick={this.searchTrendingMovies}
                             >
                                 <WhatshotIcon />
                                 &nbsp;Popular Movies
                             </Button>
 
                             {!loading ? (
-                                this.state.resultsType && (
+                                this.state.results &&
+                                this.state.results.length > 0 && (
                                     <MoviesResultsGrid
-                                        results={movieSearchResults}
+                                        results={results}
                                         type={this.state.resultsType}
                                         imdbID={imdbID}
                                         tmdbID={tmdbID}
@@ -331,7 +334,7 @@ class movieAddModal extends Component {
                                         label="Movie's Hebrew name"
                                         placeholder="Enter hebrew name (optional)"
                                         inputProps={{ type: 'text' }}
-                                        onChange={this.handleChange}
+                                        onChange={this.onChange}
                                     />
                                     <TextField
                                         fullWidth
@@ -342,25 +345,24 @@ class movieAddModal extends Component {
                                         name="Comments"
                                         label="Movie's Personal Note"
                                         placeholder="Enter Personal Note (optional)"
-                                        onChange={this.handleChange}
-                                        inputProps={{ type: 'text', ref: this.personalNote }}
+                                        onChange={this.onChange}
+                                        inputProps={{ type: 'text', ref: this.personalNoteRef }}
                                     />
                                 </>
                             )}
                         </StyledDialogContent>
 
-                        {imdbID && (
-                            <DialogActions>
-                                <Button
-                                    color="primary"
-                                    variant="contained"
-                                    id="movieAddModalAddBtn"
-                                    onClick={this.handleAddMovie}
-                                >
-                                    Add
-                                </Button>
-                            </DialogActions>
-                        )}
+                        <DialogActions>
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                id="movieAddModalAddBtn"
+                                onClick={this.addMovie}
+                                disabled={loading || !imdbID}
+                            >
+                                Add
+                            </Button>
+                        </DialogActions>
                     </form>
                 </StyledDialog>
 

@@ -26,11 +26,11 @@ class movieCommentsModal extends Component {
             this.setState({ comments: this.props.comments });
     }
 
-    handleChange = ({ target: { value } }) => {
+    onChange = ({ target: { value } }) => {
         this.setState({ comments: value, commentsChanged: true });
     };
 
-    handleClose = () => {
+    onClose = () => {
         this.setState({ commentsChanged: false });
         this.props.toggle();
     };
@@ -39,15 +39,10 @@ class movieCommentsModal extends Component {
         const { commentsChanged } = this.state;
 
         return (
-            <StyledDialog
-                open={this.props.isOpen}
-                onClose={this.handleClose}
-                fullWidth
-                maxWidth="md"
-            >
+            <StyledDialog open={this.props.isOpen} onClose={this.onClose} fullWidth maxWidth="md">
                 <DialogTitle>
                     Movie note
-                    <IconButton className="modalCloseBtn" onClick={this.props.toggle}>
+                    <IconButton className="closeModalBtn" onClick={this.props.toggle}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -61,7 +56,7 @@ class movieCommentsModal extends Component {
                         margin="dense"
                         type="text"
                         value={commentsChanged ? this.state.comments : this.props.comments}
-                        onChange={this.handleChange}
+                        onChange={this.onChange}
                         fullWidth
                     />
                 </DialogContent>
