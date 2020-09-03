@@ -32,39 +32,39 @@ class MovieTabs extends PureComponent {
         expanded: false,
     };
 
-    handlePanelChange = (panel) => (e, expanded) => {
+    onTabChange = (panel) => (e, expanded) => {
         this.setState({ expanded: expanded && panel });
     };
 
-    render() {
-        const { expanded } = this.state;
-        const { watchingList, imdbID, title, year, genre, plot } = this.props;
-        const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : '';
-        const searchParams = `${title}+${year}`;
-        let ratings = '';
+    getRatings = () => {
+        const { ratings } = this.props;
 
-        if (this.props.ratings && this.props.ratings.length > 0) {
-            ratings = this.props.ratings.map((rating) => (
-                <Typography key={rating.Source} className="ratingsText" variant="body2">
-                    {rating.Source}: {rating.Value}
-                </Typography>
-            ));
-        }
+        if (!ratings || !ratings.length) return null;
 
-        const imdbRating = (
+        return ratings.map((rating) => (
+            <Typography key={rating.Source} className="ratingsText" variant="body2">
+                {rating.Source}: {rating.Value}
+            </Typography>
+        ));
+    };
+
+    getImdbRating = () => {
+        const { imdbID, imdbRating } = this.props;
+        return (
             <a
                 href={`https://www.imdb.com/title/${imdbID}`}
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                IMDb:{' '}
-                {!this.props.imdbRating || this.props.imdbRating === 'N/A'
-                    ? 'N/A'
-                    : this.props.imdbRating}
+                IMDb: {!imdbRating || imdbRating === 'N/A' ? 'N/A' : imdbRating}
             </a>
         );
+    };
 
-        const torrents = torrentsSites.map((site) => {
+    getTorrentsLinks = () => {
+        const { title, year } = this.props;
+        const searchParams = `${title}+${year}`;
+        return torrentsSites.map((site) => {
             let attributes = '';
             switch (site.name) {
                 case 'RarBG':
@@ -93,8 +93,11 @@ class MovieTabs extends PureComponent {
                 </a>
             );
         });
+    };
 
-        const subtitles = subtitlesSites.map((site) => {
+    getSubtitlesLinks = () => {
+        const { imdbID, title } = this.props;
+        return subtitlesSites.map((site) => {
             let attributes = '';
             switch (site.name) {
                 case 'ScrewZira':
@@ -118,8 +121,10 @@ class MovieTabs extends PureComponent {
                 </a>
             );
         });
+    };
 
-        const actors = this.props.actors.split(',').map((actor) => (
+    getActors = () => {
+        return this.props.actors.split(',').map((actor) => (
             <a
                 key={actor.trim()}
                 className="actorsList"
@@ -131,11 +136,12 @@ class MovieTabs extends PureComponent {
                 {actor.trim()}
             </a>
         ));
+    };
 
-        const mainActor = actors[0];
-        const fullCast = (
+    getFullCast = () => {
+        return (
             <a
-                href={`https://www.imdb.com/title/${imdbID}/fullcredits/`}
+                href={`https://www.imdb.com/title/${this.props.imdbID}/fullcredits/`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
@@ -143,13 +149,27 @@ class MovieTabs extends PureComponent {
                 more
             </a>
         );
+    };
+
+    render() {
+        const { expanded } = this.state;
+        const { watchingList, genre, plot } = this.props;
+        const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : '';
+
+        const ratings = this.getRatings();
+        const imdbRating = this.getImdbRating();
+        const torrents = this.getTorrentsLinks();
+        const subtitles = this.getSubtitlesLinks();
+        const actors = this.getActors();
+        const mainActor = actors[0];
+        const fullCast = this.getFullCast();
 
         return (
             <div>
                 <StyledExpansionPanel
                     className="tabsPanel"
                     expanded={expanded === 'panel1'}
-                    onChange={this.handlePanelChange('panel1')}
+                    onChange={this.onTabChange('panel1')}
                 >
                     <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <StyledTypographyH6 variant="h6">Plot</StyledTypographyH6>
@@ -161,7 +181,7 @@ class MovieTabs extends PureComponent {
                 <StyledExpansionPanel
                     className="tabsPanel"
                     expanded={expanded === 'panel2'}
-                    onChange={this.handlePanelChange('panel2')}
+                    onChange={this.onTabChange('panel2')}
                 >
                     <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <StyledTypographyH6 variant="h6">Cast</StyledTypographyH6>
@@ -178,7 +198,7 @@ class MovieTabs extends PureComponent {
                     <StyledExpansionPanel
                         className="tabsPanel"
                         expanded={expanded === 'panel3'}
-                        onChange={this.handlePanelChange('panel3')}
+                        onChange={this.onTabChange('panel3')}
                     >
                         <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <StyledTypographyH6 variant="h6">Ratings</StyledTypographyH6>
@@ -194,7 +214,7 @@ class MovieTabs extends PureComponent {
                     <StyledExpansionPanel
                         className="tabsPanel"
                         expanded={expanded === 'panel4'}
-                        onChange={this.handlePanelChange('panel4')}
+                        onChange={this.onTabChange('panel4')}
                     >
                         <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <StyledTypographyH6 variant="h6">Downloads</StyledTypographyH6>

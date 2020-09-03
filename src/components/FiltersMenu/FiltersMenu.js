@@ -62,15 +62,15 @@ const StyledTooltip = withStyles({
 
 class FiltersMenu extends Component {
     state = {
-        isFiltersMenuOpen: false,
-        currentFilters: this.props.filters,
+        isOpen: false,
+        filters: this.props.filters,
     };
 
     componentDidMount() {
         AccountsService.InitAccountService().onAuthStateChanged((user) => {
             if (user) {
                 // User is signed in.
-                this.getMoviesToWatch();
+                this.getMovies();
                 this.setDBListeners();
             } else {
                 // User is signed off.
@@ -81,7 +81,7 @@ class FiltersMenu extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.filters !== prevProps.filters) {
-            this.setState({ currentFilters: this.props.filters }, this.getMoviesToWatch);
+            this.setState({ filters: this.props.filters }, this.getMovies);
         }
     }
 
@@ -101,11 +101,11 @@ class FiltersMenu extends Component {
         this.clearDBListeners(['yearsAndCounter']);
         const DBListener = AccountsService.GetDBRef('user').onSnapshot(
             (response) => {
-                if (response.exists) {
-                    if (response.data() && response.data().counter) {
+                if (response.exists && response.data()) {
+                    if (response.data().counter) {
                         this.props.updateMoviesCounter(response.data().counter);
                     }
-                    if (response.data() && response.data().years) {
+                    if (response.data().years) {
                         const years = new Set([...response.data().years]) || [];
                         this.props.saveMoviesYears([...years].sort((a, b) => b - a));
                     }
@@ -117,7 +117,7 @@ class FiltersMenu extends Component {
         this.setState({ DBListeners: { ...this.state.DBListeners, yearsAndCounter: DBListener } });
     };
 
-    getMoviesToWatch = () => {
+    getMovies = () => {
         this.props.toggleLoadingMovies(true);
 
         this.clearDBListeners(['movies']);
@@ -143,12 +143,15 @@ class FiltersMenu extends Component {
             .onSnapshot(
                 // { includeMetadataChanges: true },
                 (response) => {
-                    if (!response.empty) {
+                    if (!response.empty && response.docs) {
                         // && !response.metadata.hasPendingWrites
-                        this.handleFirebaseData(response);
+                        const mappedMovies = response.docs.map((doc) => ({
+                            key: doc.id,
+                            ...doc.data(),
+                        }));
+                        this.props.saveMovies(mappedMovies);
                     } else {
-                        this.handleFirebaseData([]);
-                        this.props.toggleLoadingMovies(false);
+                        this.props.saveMovies([]);
                     }
                 },
                 () => {
@@ -164,59 +167,48 @@ class FiltersMenu extends Component {
         this.setState({ DBListeners: { ...this.state.DBListeners, movies: DBListener } });
     };
 
-    handleFirebaseData = (response) => {
-        let sortedMovies = [];
-        response.forEach((doc) => {
-            sortedMovies.push({ key: doc.id, ...doc.data() });
-        });
-        this.props.saveMovies(sortedMovies);
-    };
-
-    handleChangeShowWatchedMoviesFilter = () => {
+    onShowWatchedMoviesFilterChange = () => {
         this.setState((state) => {
-            const currentFilters = {
-                ...state.currentFilters,
-                showWatchedMovies: !state.currentFilters.showWatchedMovies,
+            const filters = {
+                ...state.filters,
+                showWatchedMovies: !state.filters.showWatchedMovies,
             };
-            return { filtersChanged: true, currentFilters };
+            return { filtersChanged: true, filters };
         });
     };
 
-    handleChangeFilter = ({ target: { name, value } }) => {
+    onFilterChange = ({ target: { name, value } }) => {
         this.setState((state) => {
-            const currentFilters = { ...state.currentFilters, [name]: value };
-            if (currentFilters.year !== 'All' && currentFilters.filter === 'releaseYear')
-                currentFilters.filter = 'NameEng';
-            return { filtersChanged: true, currentFilters };
+            const filters = { ...state.filters, [name]: value };
+            if (filters.year !== 'All' && filters.filter === 'releaseYear') {
+                filters.filter = 'NameEng';
+            }
+            return { filtersChanged: true, filters };
         });
     };
 
-    handleApplyFilters = () => {
+    updateFilters = () => {
         if (this.state.filtersChanged) {
-            this.props.updateFilters(this.state.currentFilters);
+            this.props.updateFilters(this.state.filters);
             AnalyticsService({
                 category: 'User',
                 action: 'Filtering movies watch list',
             });
         }
-        this.handleCloseFiltersMenu();
+        this.onClose();
     };
 
-    handleOpenFiltersMenu = () => {
-        this.setState({
-            isFiltersMenuOpen: true,
-            filtersChanged: false,
-            currentFilters: this.props.filters,
-        });
+    onOpen = () => {
+        this.setState({ isOpen: true });
     };
 
-    handleCloseFiltersMenu = () => {
-        this.setState({ isFiltersMenuOpen: false });
+    onClose = () => {
+        this.setState({ isOpen: false, filters: this.props.filters, filtersChanged: false });
     };
 
     getOrderLabel = (order) => {
         const isDescending = order === 'descending';
-        switch (this.state.currentFilters.filter) {
+        switch (this.state.filters.filter) {
             case 'releaseYear':
                 return isDescending ? 'Newest first' : 'Oldest first';
             case 'NameEng':
@@ -231,7 +223,7 @@ class FiltersMenu extends Component {
     };
 
     render() {
-        const { isFiltersMenuOpen, currentFilters } = this.state;
+        const { isOpen, filters } = this.state;
         const { loadingMovies, moviesYears } = this.props;
 
         const loggedInUser = AccountsService.GetLoggedInUser();
@@ -248,7 +240,7 @@ class FiltersMenu extends Component {
                         id="filtersMenuBtn"
                         color="secondary"
                         variant="contained"
-                        onClick={this.handleOpenFiltersMenu}
+                        onClick={this.onOpen}
                     >
                         <MovieFilterIcon />
                         &nbsp;Filters
@@ -256,14 +248,14 @@ class FiltersMenu extends Component {
                 </StyledTooltip>
 
                 <StyledDialog
-                    open={isFiltersMenuOpen}
-                    onClose={this.handleCloseFiltersMenu}
+                    open={isOpen}
+                    onClose={this.onClose}
                     maxWidth="md"
                     TransitionComponent={Zoom}
                 >
                     <StyledDialogTitle>
                         List filters
-                        <IconButton className="modalCloseBtn" onClick={this.handleCloseFiltersMenu}>
+                        <IconButton className="modalCloseBtn" onClick={this.onClose}>
                             <CloseIcon />
                         </IconButton>
                     </StyledDialogTitle>
@@ -277,8 +269,8 @@ class FiltersMenu extends Component {
                             >
                                 <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                                 <Select
-                                    value={currentFilters.filter}
-                                    onChange={this.handleChangeFilter}
+                                    value={filters.filter}
+                                    onChange={this.onFilterChange}
                                     input={
                                         <StyledOutlinedInput
                                             labelWidth={52}
@@ -288,7 +280,7 @@ class FiltersMenu extends Component {
                                     }
                                     autoWidth
                                 >
-                                    {currentFilters.year === 'All' && (
+                                    {filters.year === 'All' && (
                                         <MenuItem value="releaseYear">
                                             <em>Year</em>
                                         </MenuItem>
@@ -306,8 +298,8 @@ class FiltersMenu extends Component {
                             >
                                 <InputLabel htmlFor="orderBy">Order</InputLabel>
                                 <Select
-                                    value={currentFilters.order}
-                                    onChange={this.handleChangeFilter}
+                                    value={filters.order}
+                                    onChange={this.onFilterChange}
                                     input={
                                         <StyledOutlinedInput
                                             labelWidth={41}
@@ -329,8 +321,8 @@ class FiltersMenu extends Component {
                             <FormControl id="menuYear" className="MenuElementMg" variant="outlined">
                                 <InputLabel htmlFor="showYear">Year</InputLabel>
                                 <Select
-                                    value={currentFilters.year}
-                                    onChange={this.handleChangeFilter}
+                                    value={filters.year}
+                                    onChange={this.onFilterChange}
                                     input={
                                         <StyledOutlinedInput
                                             labelWidth={33}
@@ -358,8 +350,8 @@ class FiltersMenu extends Component {
                             >
                                 <InputLabel htmlFor="maxResults">Results</InputLabel>
                                 <Select
-                                    value={currentFilters.maxResults}
-                                    onChange={this.handleChangeFilter}
+                                    value={filters.maxResults}
+                                    onChange={this.onFilterChange}
                                     input={
                                         <StyledOutlinedInput
                                             labelWidth={54}
@@ -388,8 +380,8 @@ class FiltersMenu extends Component {
                                     control={
                                         <StyledCheckbox
                                             name="showWatchedMovies"
-                                            checked={currentFilters.showWatchedMovies}
-                                            onChange={this.handleChangeShowWatchedMoviesFilter}
+                                            checked={filters.showWatchedMovies}
+                                            onChange={this.onShowWatchedMoviesFilterChange}
                                             icon={
                                                 <StyledIconButton color="default">
                                                     <RemoveRedEyeOutlined fontSize="large" />
@@ -403,7 +395,7 @@ class FiltersMenu extends Component {
                                         />
                                     }
                                     label={`Show ${
-                                        currentFilters.showWatchedMovies ? 'watched' : 'unseen'
+                                        filters.showWatchedMovies ? 'watched' : 'unseen'
                                     } movies`}
                                     labelPlacement="end"
                                 />
@@ -418,7 +410,7 @@ class FiltersMenu extends Component {
                             variant="contained"
                             size="small"
                             title="Apply filters"
-                            onClick={this.handleApplyFilters}
+                            onClick={this.updateFilters}
                         >
                             <SaveIcon />
                             &nbsp;Apply
