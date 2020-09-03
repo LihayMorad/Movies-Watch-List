@@ -50,13 +50,13 @@ const rootReducer = (state = initialState, action) => {
                 moviesYears: action.payload,
             };
 
-        case actionTypes.ON_FREE_SEARCH_FILTER_CHANGE:
+        case actionTypes.UPDATE_FREE_SEARCH_FILTER:
             return {
                 ...state,
                 freeSearchFilter: action.payload,
             };
 
-        case actionTypes.ON_MOVIES_COUNTER_CHANGE:
+        case actionTypes.UPDATE_MOVIES_COUNTER:
             if (action.payload) {
                 return {
                     ...state,
@@ -64,7 +64,7 @@ const rootReducer = (state = initialState, action) => {
                 };
             } else return state;
 
-        case actionTypes.ON_FILTERS_CHANGE:
+        case actionTypes.UPDATE_FILTERS:
             if (action.payload) {
                 return {
                     ...state,

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import { connect } from 'react-redux';
-import * as actionTypes from '../../store/actions';
+import { saveMovies, toggleSnackbar, updateFreeSearchFilter } from '../../store/actions';
 
 import MoviesService from '../../Services/MoviesService';
 import AccountsService from '../../Services/AccountsService';
@@ -76,21 +76,21 @@ class MoviesContainer extends PureComponent {
                         properties.push('unwatched');
                     }
                     this.handleUpdateCounter(properties, 'Delete Movie');
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         `The movie '${movieName} (${movieYear})' deleted successfully`,
                         'success'
                     );
                 })
                 .catch(() => {
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`,
                         'error'
                     );
                 });
         } catch (error) {
-            this.props.onSnackbarToggle(
+            this.props.toggleSnackbar(
                 true,
                 `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`,
                 'error'
@@ -115,7 +115,7 @@ class MoviesContainer extends PureComponent {
         try {
             const isMovieExists = await MoviesService.IsMovieAlreadyExists(imdbID);
             if (isMovieExists) {
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `The movie '${NameEng}' already exists in your list!`,
                     'warning'
@@ -123,7 +123,7 @@ class MoviesContainer extends PureComponent {
                 return;
             }
         } catch (error) {
-            this.props.onSnackbarToggle(
+            this.props.toggleSnackbar(
                 true,
                 `There was an error adding '${NameEng} (${Year})'.`,
                 'error'
@@ -132,7 +132,7 @@ class MoviesContainer extends PureComponent {
 
         MoviesService.AddMovie(movie)
             .then(() => {
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `The movie '${NameEng} (${Year})' added successfully`,
                     'success'
@@ -142,7 +142,7 @@ class MoviesContainer extends PureComponent {
                 this.handleUpdateCounter(['total', 'unwatched'], 'Add Movie');
             })
             .catch(() => {
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `There was an error adding '${NameEng} (${Year})'`,
                     'error'
@@ -170,7 +170,7 @@ class MoviesContainer extends PureComponent {
         MoviesService.UpdateMovie(this.state.dbMovieID, { Comments: comments })
             .then(() => {
                 this.setState({ comments: comments, editingComments: false }, () => {
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         'Personal note saved successfully',
                         'information'
@@ -179,7 +179,7 @@ class MoviesContainer extends PureComponent {
             })
             .catch(() => {
                 this.setState({ comments: comments, editingComments: false }, () => {
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         'There was an error saving your personal note',
                         'error'
@@ -256,7 +256,7 @@ class MoviesContainer extends PureComponent {
     };
 
     applyFreeSearchFilter = debounce((value) => {
-        this.props.onFreeSearch(value);
+        this.props.updateFreeSearchFilter(value);
     }, 250);
 
     render() {
@@ -347,7 +347,7 @@ class MoviesContainer extends PureComponent {
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
                             handleUpdateCounter={this.handleUpdateCounter}
-                            onSnackbarToggle={this.props.onSnackbarToggle}
+                            toggleSnackbar={this.props.toggleSnackbar}
                             watchingList={watchingList}
                         />
                     ));
@@ -475,11 +475,9 @@ class MoviesContainer extends PureComponent {
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-    saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),
-    onSnackbarToggle: (open, message, type) =>
-        dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
-    onFreeSearch: (value) =>
-        dispatch({ type: actionTypes.ON_FREE_SEARCH_FILTER_CHANGE, payload: value }),
+    saveMovies: (movies) => dispatch(saveMovies(movies)),
+    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
+    updateFreeSearchFilter: (value) => dispatch(updateFreeSearchFilter(value)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);

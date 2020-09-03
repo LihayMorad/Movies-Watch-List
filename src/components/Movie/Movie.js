@@ -107,7 +107,7 @@ class Movie extends Component {
         const label = checked ? 'watched' : 'unwatched';
         MoviesService.UpdateMovie(this.props.dbMovieID, { Watched: checked })
             .then(() => {
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `Movie marked as ${label} successfully`,
                     'information'
@@ -122,7 +122,7 @@ class Movie extends Component {
                 });
             })
             .catch(() => {
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `There was an error marking the movie as ${label}`,
                     'error'

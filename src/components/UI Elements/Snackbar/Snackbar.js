@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../store/actions';
+import { toggleSnackbar } from '../../../store/actions';
 
 import { Snackbar, SnackbarContent, IconButton } from '@material-ui/core';
 import {
@@ -36,14 +36,9 @@ const snackbarStyles = {
     },
 };
 
-const simpleSnackbar = ({
-    isSnackbarOpen,
-    snackbarType,
-    snackbarMessage = '',
-    onSnackbarToggle,
-}) => {
+const simpleSnackbar = ({ isSnackbarOpen, snackbarType, snackbarMessage = '', toggleSnackbar }) => {
     const handleClose = () => {
-        onSnackbarToggle(false, '', 'default');
+        toggleSnackbar(false, '', 'default');
     };
 
     const color = snackbarType
@@ -84,8 +79,7 @@ const simpleSnackbar = ({
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-    onSnackbarToggle: (open, message, type) =>
-        dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
+    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(simpleSnackbar);

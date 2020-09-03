@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../store/actions';
+import { toggleSnackbar } from '../../../store/actions';
 
 import AnalyticsService from '../../../Services/AnalyticsService';
 
@@ -87,7 +87,7 @@ class movieAddModal extends Component {
             }
             this.props.addMovie(movieDetails);
         } else {
-            this.props.onSnackbarToggle(
+            this.props.toggleSnackbar(
                 true,
                 'Please search and choose a movie from the search results.',
                 'information'
@@ -111,11 +111,11 @@ class movieAddModal extends Component {
                             response.data.Error === 'Too many results.'
                                 ? 'Too many results, please try to be more specific.'
                                 : response.data.Error;
-                        this.props.onSnackbarToggle(true, `Search error. ${message}`, 'warning');
+                        this.props.toggleSnackbar(true, `Search error. ${message}`, 'warning');
                     }
                 })
                 .catch((error) => {
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         'Network error. Something went wrong!',
                         'error'
@@ -149,7 +149,7 @@ class movieAddModal extends Component {
                         movieSearchResults = response.data.results;
                         resultsType = 'trending';
                     } else {
-                        this.props.onSnackbarToggle(
+                        this.props.toggleSnackbar(
                             true,
                             'Search error. Something went wrong!',
                             'warning'
@@ -157,7 +157,7 @@ class movieAddModal extends Component {
                     }
                 })
                 .catch(() => {
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         'Network error. Something went wrong!',
                         'error'
@@ -192,7 +192,7 @@ class movieAddModal extends Component {
                         movieYear
                     );
                 } else {
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         "Something went wrong! can't get movie data",
                         'warning'
@@ -200,7 +200,7 @@ class movieAddModal extends Component {
                 }
             })
             .catch(() => {
-                this.props.onSnackbarToggle(true, 'Network error. Something went wrong!', 'error');
+                this.props.toggleSnackbar(true, 'Network error. Something went wrong!', 'error');
             });
     };
 
@@ -378,8 +378,7 @@ class movieAddModal extends Component {
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-    onSnackbarToggle: (open, message, type) =>
-        dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
+    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(movieAddModal);

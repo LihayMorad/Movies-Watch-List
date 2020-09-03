@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import * as actionTypes from '../../store/actions';
+import { toggleSnackbar } from '../../store/actions';
 
 import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
@@ -29,7 +29,7 @@ class AccountMenu extends Component {
         AccountsService.SignIn()
             .then((result) => {
                 // Successful sign-in.
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`,
                     'information'
@@ -41,7 +41,7 @@ class AccountMenu extends Component {
                 });
             })
             .catch((error) => {
-                this.props.onSnackbarToggle(true, `Sign in error`, 'error');
+                this.props.toggleSnackbar(true, `Sign in error`, 'error');
             }); // Sign-in failed.
     };
 
@@ -49,7 +49,7 @@ class AccountMenu extends Component {
         AccountsService.SignInAnonymously()
             .then((result) => {
                 // Successful sign-in anonymously.
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `Hi, you are now logged in as a guest user.`,
                     'information'
@@ -62,11 +62,7 @@ class AccountMenu extends Component {
             })
             .catch((error) => {
                 // Sign-in anonymously failed.
-                this.props.onSnackbarToggle(
-                    true,
-                    `Error! cannot sign in as a guest user.`,
-                    'error'
-                );
+                this.props.toggleSnackbar(true, `Error! cannot sign in as a guest user.`, 'error');
             });
     };
 
@@ -74,7 +70,7 @@ class AccountMenu extends Component {
         AccountsService.LinkAccount()
             .then((result) => {
                 // Successful accounts linking.
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `You guest account was successfully linked with your Google account '${result.user.email}'.`,
                     'information'
@@ -87,7 +83,7 @@ class AccountMenu extends Component {
             })
             .catch((error) => {
                 // Accounts linking failed.
-                this.props.onSnackbarToggle(
+                this.props.toggleSnackbar(
                     true,
                     `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login with this account.`,
                     'error'
@@ -106,7 +102,7 @@ class AccountMenu extends Component {
             AccountsService.SignOut()
                 .then((result) => {
                     // Successful sign-out.
-                    this.props.onSnackbarToggle(true, 'You are now logged out', 'information');
+                    this.props.toggleSnackbar(true, 'You are now logged out', 'information');
                     this.handleCloseAccountMenu();
                     AnalyticsService({
                         category: 'User',
@@ -115,7 +111,7 @@ class AccountMenu extends Component {
                 })
                 .catch((error) => {
                     // Sign-out failed.
-                    this.props.onSnackbarToggle(true, `Sign out error`, 'error');
+                    this.props.toggleSnackbar(true, `Sign out error`, 'error');
                 });
         }
     };
@@ -235,8 +231,7 @@ class AccountMenu extends Component {
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-    onSnackbarToggle: (open, message, type) =>
-        dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
+    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountMenu);

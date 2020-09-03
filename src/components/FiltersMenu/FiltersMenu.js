@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import * as actionTypes from '../../store/actions';
+import {
+    saveMovies,
+    saveMoviesYears,
+    toggleLoadingMovies,
+    toggleSnackbar,
+    updateMoviesCounter,
+    updateFilters,
+} from '../../store/actions';
 
 import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
@@ -96,7 +103,7 @@ class FiltersMenu extends Component {
             (response) => {
                 if (response.exists) {
                     if (response.data() && response.data().counter) {
-                        this.props.onMoviesCounterChange(response.data().counter);
+                        this.props.updateMoviesCounter(response.data().counter);
                     }
                     if (response.data() && response.data().years) {
                         const years = new Set([...response.data().years]) || [];
@@ -146,7 +153,7 @@ class FiltersMenu extends Component {
                 },
                 () => {
                     this.props.toggleLoadingMovies(false);
-                    this.props.onSnackbarToggle(
+                    this.props.toggleSnackbar(
                         true,
                         `There was an error retrieving movies`,
                         'error'
@@ -186,7 +193,7 @@ class FiltersMenu extends Component {
 
     handleApplyFilters = () => {
         if (this.state.filtersChanged) {
-            this.props.onFiltersChange(this.state.currentFilters);
+            this.props.updateFilters(this.state.currentFilters);
             AnalyticsService({
                 category: 'User',
                 action: 'Filtering movies watch list',
@@ -426,17 +433,12 @@ class FiltersMenu extends Component {
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-    saveMovies: (movies) => dispatch({ type: actionTypes.SAVE_MOVIES, payload: movies }),
-    saveMoviesYears: (moviesYears) =>
-        dispatch({ type: actionTypes.SAVE_MOVIES_YEARS, payload: moviesYears }),
-    toggleLoadingMovies: (isLoading) =>
-        dispatch({ type: actionTypes.TOGGLE_LOADING_MOVIES, payload: isLoading }),
-    onSnackbarToggle: (open, message, type) =>
-        dispatch({ type: actionTypes.TOGGLE_SNACKBAR, payload: { open, message, type } }),
-    onMoviesCounterChange: (updatedCounter) =>
-        dispatch({ type: actionTypes.ON_MOVIES_COUNTER_CHANGE, payload: updatedCounter }),
-    onFiltersChange: (filters) =>
-        dispatch({ type: actionTypes.ON_FILTERS_CHANGE, payload: filters }),
+    saveMovies: (movies) => dispatch(saveMovies(movies)),
+    saveMoviesYears: (moviesYears) => dispatch(saveMoviesYears(moviesYears)),
+    toggleLoadingMovies: (isLoading) => dispatch(toggleLoadingMovies(isLoading)),
+    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
+    updateMoviesCounter: (updatedCounter) => dispatch(updateMoviesCounter(updatedCounter)),
+    updateFilters: (filters) => dispatch(updateFilters(filters)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersMenu);
