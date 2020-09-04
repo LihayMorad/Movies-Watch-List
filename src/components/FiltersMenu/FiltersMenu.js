@@ -222,9 +222,120 @@ class FiltersMenu extends Component {
         }
     };
 
+    getMenu = () => {
+        const { filters } = this.state;
+        const { moviesYears } = this.props;
+        return (
+            <FormGroup row id="filtersForm">
+                <FormControl id="sortByFilter" className="MenuElementMg" variant="outlined">
+                    <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
+                    <Select
+                        value={filters.filter}
+                        onChange={this.onFilterChange}
+                        input={
+                            <StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />
+                        }
+                        autoWidth
+                    >
+                        {filters.year === 'All' && (
+                            <MenuItem value="releaseYear">
+                                <em>Year</em>
+                            </MenuItem>
+                        )}
+                        <MenuItem value="NameEng">English Name</MenuItem>
+                        <MenuItem value="NameHeb">Hebrew Name</MenuItem>
+                        <MenuItem value="imdbRating">IMDB Rating</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl id="orderByFilter" className="MenuElementMg" variant="outlined">
+                    <InputLabel htmlFor="orderBy">Order</InputLabel>
+                    <Select
+                        value={filters.order}
+                        onChange={this.onFilterChange}
+                        input={<StyledOutlinedInput labelWidth={41} name="order" id="orderBy" />}
+                        autoWidth
+                    >
+                        <MenuItem value="descending">
+                            <em>{this.getOrderLabel('descending')}</em>
+                        </MenuItem>
+                        <MenuItem value="ascending">{this.getOrderLabel('ascending')}</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl id="menuYear" className="MenuElementMg" variant="outlined">
+                    <InputLabel htmlFor="showYear">Year</InputLabel>
+                    <Select
+                        value={filters.year}
+                        onChange={this.onFilterChange}
+                        input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
+                        autoWidth
+                    >
+                        <MenuItem value="All">
+                            <em>All</em>
+                        </MenuItem>
+                        {moviesYears.map((year) => (
+                            <MenuItem key={year} value={year}>
+                                {year}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <FormControl id="menuMaxResults" className="MenuElementMg" variant="outlined">
+                    <InputLabel htmlFor="maxResults">Results</InputLabel>
+                    <Select
+                        value={filters.maxResults}
+                        onChange={this.onFilterChange}
+                        input={
+                            <StyledOutlinedInput
+                                labelWidth={54}
+                                name="maxResults"
+                                id="maxResults"
+                            />
+                        }
+                        autoWidth
+                    >
+                        <MenuItem value={1000}>All</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={10}>
+                            <em>10</em>
+                        </MenuItem>
+                        <MenuItem value={25}>25</MenuItem>
+                        <MenuItem value={50}>50</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl id="showWatchedMovies" className="MenuElementMg" variant="outlined">
+                    <StyledFormControlLabel
+                        control={
+                            <StyledCheckbox
+                                name="showWatchedMovies"
+                                checked={filters.showWatchedMovies}
+                                onChange={this.onShowWatchedMoviesFilterChange}
+                                icon={
+                                    <StyledIconButton color="default">
+                                        <RemoveRedEyeOutlined fontSize="large" />
+                                    </StyledIconButton>
+                                }
+                                checkedIcon={
+                                    <StyledIconButton color="primary">
+                                        <RemoveRedEye fontSize="large" />
+                                    </StyledIconButton>
+                                }
+                            />
+                        }
+                        label={`Show ${filters.showWatchedMovies ? 'watched' : 'unseen'} movies`}
+                        labelPlacement="end"
+                    />
+                </FormControl>
+            </FormGroup>
+        );
+    };
+
     render() {
-        const { isOpen, filters } = this.state;
-        const { loadingMovies, moviesYears } = this.props;
+        const { isOpen } = this.state;
+        const { loadingMovies } = this.props;
 
         const loggedInUser = AccountsService.GetLoggedInUser();
         if (!loggedInUser || loadingMovies) return null;
@@ -260,148 +371,7 @@ class FiltersMenu extends Component {
                         </IconButton>
                     </StyledDialogTitle>
 
-                    <StyledDialogContent>
-                        <FormGroup row id="filtersForm">
-                            <FormControl
-                                id="sortByFilter"
-                                className="MenuElementMg"
-                                variant="outlined"
-                            >
-                                <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
-                                <Select
-                                    value={filters.filter}
-                                    onChange={this.onFilterChange}
-                                    input={
-                                        <StyledOutlinedInput
-                                            labelWidth={52}
-                                            name="filter"
-                                            id="sortFilter"
-                                        />
-                                    }
-                                    autoWidth
-                                >
-                                    {filters.year === 'All' && (
-                                        <MenuItem value="releaseYear">
-                                            <em>Year</em>
-                                        </MenuItem>
-                                    )}
-                                    <MenuItem value="NameEng">English Name</MenuItem>
-                                    <MenuItem value="NameHeb">Hebrew Name</MenuItem>
-                                    <MenuItem value="imdbRating">IMDB Rating</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <FormControl
-                                id="orderByFilter"
-                                className="MenuElementMg"
-                                variant="outlined"
-                            >
-                                <InputLabel htmlFor="orderBy">Order</InputLabel>
-                                <Select
-                                    value={filters.order}
-                                    onChange={this.onFilterChange}
-                                    input={
-                                        <StyledOutlinedInput
-                                            labelWidth={41}
-                                            name="order"
-                                            id="orderBy"
-                                        />
-                                    }
-                                    autoWidth
-                                >
-                                    <MenuItem value="descending">
-                                        <em>{this.getOrderLabel('descending')}</em>
-                                    </MenuItem>
-                                    <MenuItem value="ascending">
-                                        {this.getOrderLabel('ascending')}
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <FormControl id="menuYear" className="MenuElementMg" variant="outlined">
-                                <InputLabel htmlFor="showYear">Year</InputLabel>
-                                <Select
-                                    value={filters.year}
-                                    onChange={this.onFilterChange}
-                                    input={
-                                        <StyledOutlinedInput
-                                            labelWidth={33}
-                                            name="year"
-                                            id="showYear"
-                                        />
-                                    }
-                                    autoWidth
-                                >
-                                    <MenuItem value="All">
-                                        <em>All</em>
-                                    </MenuItem>
-                                    {moviesYears.map((year) => (
-                                        <MenuItem key={year} value={year}>
-                                            {year}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-
-                            <FormControl
-                                id="menuMaxResults"
-                                className="MenuElementMg"
-                                variant="outlined"
-                            >
-                                <InputLabel htmlFor="maxResults">Results</InputLabel>
-                                <Select
-                                    value={filters.maxResults}
-                                    onChange={this.onFilterChange}
-                                    input={
-                                        <StyledOutlinedInput
-                                            labelWidth={54}
-                                            name="maxResults"
-                                            id="maxResults"
-                                        />
-                                    }
-                                    autoWidth
-                                >
-                                    <MenuItem value={1000}>All</MenuItem>
-                                    <MenuItem value={5}>5</MenuItem>
-                                    <MenuItem value={10}>
-                                        <em>10</em>
-                                    </MenuItem>
-                                    <MenuItem value={25}>25</MenuItem>
-                                    <MenuItem value={50}>50</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <FormControl
-                                id="showWatchedMovies"
-                                className="MenuElementMg"
-                                variant="outlined"
-                            >
-                                <StyledFormControlLabel
-                                    control={
-                                        <StyledCheckbox
-                                            name="showWatchedMovies"
-                                            checked={filters.showWatchedMovies}
-                                            onChange={this.onShowWatchedMoviesFilterChange}
-                                            icon={
-                                                <StyledIconButton color="default">
-                                                    <RemoveRedEyeOutlined fontSize="large" />
-                                                </StyledIconButton>
-                                            }
-                                            checkedIcon={
-                                                <StyledIconButton color="primary">
-                                                    <RemoveRedEye fontSize="large" />
-                                                </StyledIconButton>
-                                            }
-                                        />
-                                    }
-                                    label={`Show ${
-                                        filters.showWatchedMovies ? 'watched' : 'unseen'
-                                    } movies`}
-                                    labelPlacement="end"
-                                />
-                            </FormControl>
-                        </FormGroup>
-                    </StyledDialogContent>
+                    <StyledDialogContent>{this.getMenu()}</StyledDialogContent>
 
                     <DialogActions>
                         <Button
