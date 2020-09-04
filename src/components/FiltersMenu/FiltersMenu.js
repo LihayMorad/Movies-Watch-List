@@ -334,11 +334,11 @@ class FiltersMenu extends Component {
     };
 
     render() {
+        const loggedInUser = AccountsService.GetLoggedInUser();
+        if (!loggedInUser) return null;
+
         const { isOpen } = this.state;
         const { loadingMovies } = this.props;
-
-        const loggedInUser = AccountsService.GetLoggedInUser();
-        if (!loggedInUser || loadingMovies) return null;
 
         return (
             <>
@@ -349,9 +349,10 @@ class FiltersMenu extends Component {
                 >
                     <Button
                         id="filtersMenuBtn"
+                        className={loadingMovies ? 'disabled' : ''}
                         color="secondary"
                         variant="contained"
-                        onClick={this.open}
+                        onClick={!loadingMovies && this.open}
                     >
                         <MovieFilterIcon />
                         &nbsp;Filters
