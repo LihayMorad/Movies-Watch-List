@@ -62,12 +62,12 @@ class MoviesContainer extends PureComponent {
         }
     };
 
-    handleDeleteMovie = async (movieID, imdbID, movieName, movieYear, isMovieWatched) => {
+    deleteMovie = async (movieID, imdbID, movieName, movieYear, isMovieWatched) => {
         try {
-            const shouldDeleteYear = await MoviesService.ShouldDeleteYear(imdbID, movieYear);
+            const shouldRemoveYear = await MoviesService.ShouldRemoveYear(imdbID, movieYear);
             MoviesService.DeleteMovie(movieID)
                 .then(() => {
-                    if (shouldDeleteYear) {
+                    if (shouldRemoveYear) {
                         this.handleDeleteYear(movieYear);
                     }
                     // there is another movie with the same year
@@ -343,7 +343,7 @@ class MoviesContainer extends PureComponent {
                             dbMovieID={movie['key']}
                             {...movie}
                             imdbID={movie['imdbID'] || null}
-                            delete={this.handleDeleteMovie}
+                            deleteMovie={this.deleteMovie}
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
                             handleUpdateCounter={this.handleUpdateCounter}

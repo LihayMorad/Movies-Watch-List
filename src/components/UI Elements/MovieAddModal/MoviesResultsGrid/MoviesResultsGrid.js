@@ -6,7 +6,7 @@ const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500/';
 const moviesResultsGrid = ({
     type,
     results,
-    imdbID,
+    imdbID: selectedIMDBID,
     tmdbID,
     updateCurrentMovie,
     toggleWatchTrailer,
@@ -16,22 +16,22 @@ const moviesResultsGrid = ({
 
     switch (type) {
         case 'search':
-            moviesSearchResultList = results.map((elem) => {
-                const hasValidPoster = elem.Poster && elem.Poster !== 'N/A';
-                const isSelectedMovie = imdbID === elem.imdbID;
+            moviesSearchResultList = results.map(({ imdbID, Poster, Title, Year }) => {
+                const hasValidPoster = Poster && Poster !== 'N/A';
+                const isSelectedMovie = selectedIMDBID === imdbID;
                 return (
                     <MoviesResultsItem
-                        key={elem.imdbID}
-                        id={elem.imdbID}
+                        key={imdbID}
+                        id={imdbID}
                         isSelectedMovie={isSelectedMovie}
-                        onClick={() => updateCurrentMovie(elem.imdbID, '', elem.Title, elem.Year)}
-                        poster={elem.Poster}
+                        onClick={() => updateCurrentMovie(imdbID, '', Title, Year)}
+                        poster={Poster}
                         hasValidPoster={hasValidPoster}
-                        title={elem.Title}
-                        year={elem.Year}
+                        title={Title}
+                        year={Year}
                         onTrailerClick={(e) => {
                             e.stopPropagation();
-                            toggleWatchTrailer(`${elem.Title} ${elem.Year}`, elem.imdbID);
+                            toggleWatchTrailer(`${Title} ${Year}`, imdbID);
                         }}
                     />
                 );
@@ -39,25 +39,22 @@ const moviesResultsGrid = ({
             break;
 
         case 'trending':
-            moviesSearchResultList = results.map((elem) => {
-                const hasValidPoster = elem.poster_path && elem.poster_path !== 'N/A';
-                const isSelectedMovie = tmdbID === elem.id;
-                const releaseDate = elem.release_date && new Date(elem.release_date);
-                const year = releaseDate.getFullYear();
+            moviesSearchResultList = results.map(({ id, poster_path, release_date, title }) => {
+                const hasValidPoster = poster_path && poster_path !== 'N/A';
+                const isSelectedMovie = tmdbID === id;
+                const year = release_date && new Date(release_date).getFullYear();
                 return (
                     <MoviesResultsItem
-                        key={elem.id}
+                        key={id}
                         isSelectedMovie={isSelectedMovie}
-                        onClick={() => {
-                            getIMDBID(elem.id, elem.title, year);
-                        }}
-                        poster={POSTER_BASE_URL + elem.poster_path}
+                        onClick={() => getIMDBID(id, title, year)}
+                        poster={POSTER_BASE_URL + poster_path}
                         hasValidPoster={hasValidPoster}
-                        title={elem.title}
+                        title={title}
                         year={year}
                         onTrailerClick={(e) => {
                             e.stopPropagation();
-                            toggleWatchTrailer(`${elem.title} ${year}`, elem.id);
+                            toggleWatchTrailer(`${title} ${year}`, id);
                         }}
                     />
                 );

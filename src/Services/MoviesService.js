@@ -59,7 +59,7 @@ const moviesService = {
         });
     },
 
-    ShouldDeleteYear(imdbID, year) {
+    ShouldRemoveYear(imdbID, year) {
         // there is no '!=' clause in Firestore so we should split the query into a greater-than query and a less-than query.
         return new Promise((resolve, reject) => {
             AccountsService.GetDBRef('userMovies')

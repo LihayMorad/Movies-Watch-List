@@ -195,14 +195,14 @@ class FiltersMenu extends Component {
                 action: 'Filtering movies watch list',
             });
         }
-        this.onClose();
+        this.close();
     };
 
-    onOpen = () => {
+    open = () => {
         this.setState({ isOpen: true });
     };
 
-    onClose = () => {
+    close = () => {
         this.setState({ isOpen: false, filters: this.props.filters, filtersChanged: false });
     };
 
@@ -240,7 +240,7 @@ class FiltersMenu extends Component {
                         id="filtersMenuBtn"
                         color="secondary"
                         variant="contained"
-                        onClick={this.onOpen}
+                        onClick={this.open}
                     >
                         <MovieFilterIcon />
                         &nbsp;Filters
@@ -249,13 +249,13 @@ class FiltersMenu extends Component {
 
                 <StyledDialog
                     open={isOpen}
-                    onClose={this.onClose}
+                    onClose={this.close}
                     maxWidth="md"
                     TransitionComponent={Zoom}
                 >
                     <StyledDialogTitle>
                         List filters
-                        <IconButton className="closeModalBtn" onClick={this.onClose}>
+                        <IconButton className="closeModalBtn" onClick={this.close}>
                             <CloseIcon />
                         </IconButton>
                     </StyledDialogTitle>

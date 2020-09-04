@@ -328,7 +328,7 @@ class Movie extends Component {
                                                 'Are you sure you want to delete this movie?'
                                             )
                                         ) {
-                                            this.props.delete(
+                                            this.props.deleteMovie(
                                                 dbMovieID,
                                                 imdbID,
                                                 !movieDBError ? Title : NameEng,

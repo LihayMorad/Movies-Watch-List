@@ -22,12 +22,12 @@ const moviesResultsCard = ({
 }) => {
     return (
         <StyledTooltip title="Click to add this movie" TransitionComponent={Zoom} key={id}>
-            <li className={`movieElem ${isSelectedMovie && 'chosenMovie'}`} onClick={onClick}>
+            <li className={`movieElem ${isSelectedMovie ? 'chosenMovie' : ''}`} onClick={onClick}>
                 <img
                     src={poster}
                     alt={hasValidPoster ? 'Movie poster' : 'Movie poster not found'}
                 />
-                <div className={`overlay ${!hasValidPoster && 'overlay-black'}`}>
+                <div className={`overlay ${!hasValidPoster ? 'overlay-black' : ''}`}>
                     <h2>{title}</h2>
                     <h3>{year}</h3>
                 </div>
