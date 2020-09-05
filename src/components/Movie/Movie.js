@@ -53,7 +53,7 @@ class Movie extends Component {
         Watched: false,
         imdbRatingTimestamp: '',
         loading: true,
-        Error: false,
+        error: false,
     };
 
     componentDidMount() {
@@ -98,7 +98,7 @@ class Movie extends Component {
                     error = true;
                 })
                 .finally(() => {
-                    this.setState({ loading: false, ...movieData, Error: error });
+                    this.setState({ loading: false, ...movieData, error });
                 });
         });
     };
@@ -150,8 +150,12 @@ class Movie extends Component {
             Runtime,
             Watched,
             imdbRating,
+            Ratings,
+            Plot,
+            Actors,
+            Genre,
             loading,
-            Error: movieDBError,
+            error: movieDBError,
             watchingList,
         } = this.state;
 
@@ -232,7 +236,7 @@ class Movie extends Component {
                                             <Typography variant="h4">
                                                 {!movieDBError ? Title : NameEng}
                                             </Typography>
-                                            <Typography variant="h5"> {NameHeb} </Typography>
+                                            <Typography variant="h5"> {NameHeb}</Typography>
                                             {!movieDBError ? (
                                                 <p>
                                                     {Country} {Year} <span>({Runtime})</span>
@@ -240,13 +244,11 @@ class Movie extends Component {
                                             ) : (
                                                 <p>{Year}</p>
                                             )}
-                                            {Comments ? (
+                                            {Comments && (
                                                 <p>
                                                     Personal note:{' '}
                                                     <span id="commentsSpan">{Comments}</span>
                                                 </p>
-                                            ) : (
-                                                ''
                                             )}
                                         </div>
                                     ) : (
@@ -261,14 +263,14 @@ class Movie extends Component {
                         {!loading ? (
                             !movieDBError && (
                                 <MovieTabs
-                                    title={this.state.Title}
-                                    year={this.state.Year}
-                                    ratings={this.state.Ratings}
-                                    imdbRating={this.state.imdbRating}
-                                    imdbID={this.state.imdbID}
-                                    plot={this.state.Plot}
-                                    actors={this.state.Actors}
-                                    genre={this.state.Genre}
+                                    title={Title}
+                                    year={Year}
+                                    ratings={Ratings}
+                                    imdbRating={imdbRating}
+                                    imdbID={imdbID}
+                                    plot={Plot}
+                                    actors={Actors}
+                                    genre={Genre}
                                     watchingList={watchingList}
                                 />
                             )
