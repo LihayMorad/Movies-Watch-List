@@ -43,26 +43,23 @@ const StyledTooltip = withStyles({
 const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500/';
 
 class Movie extends Component {
-    state = {
-        NameHeb: '',
-        NameEng: '',
-        Year: '',
-        Comments: '',
-        imdbRating: '',
-        dbMovieID: '',
-        Watched: false,
-        imdbRatingTimestamp: '',
-        loading: true,
-        error: false,
-    };
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            ...props.data,
+            loading: true,
+            error: false,
+        };
+    }
 
     componentDidMount() {
-        this.setState({ ...this.props }, this.getMovieDb);
+        this.getMovieDb();
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.Comments !== this.props.Comments)
-            this.setState({ Comments: this.props.Comments });
+        if (prevProps.data.Comments !== this.props.data.Comments)
+            this.setState({ Comments: this.props.data.Comments });
     }
 
     getMovieDb = () => {
@@ -70,14 +67,14 @@ class Movie extends Component {
             let movieData = {};
             let error = false;
             axios(
-                `https://www.omdbapi.com/?i=${this.props.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
+                `https://www.omdbapi.com/?i=${this.props.data.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
             )
                 .then((response) => {
                     if (response.status === 200 && response.data.Response === 'True') {
                         movieData = response.data;
                         movieData.Year = parseInt(response.data.Year);
-                        if (this.props.Poster)
-                            movieData.Poster = POSTER_BASE_URL + this.props.Poster;
+                        if (this.props.data.Poster)
+                            movieData.Poster = POSTER_BASE_URL + this.props.data.Poster;
 
                         const shouldUpdateIMDBRating =
                             !this.state.imdbRating ||

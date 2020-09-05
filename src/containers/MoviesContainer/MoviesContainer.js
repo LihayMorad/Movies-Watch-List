@@ -336,10 +336,9 @@ class MoviesContainer extends PureComponent {
                     .filter(this.filterByName)
                     .map((movie) => (
                         <Movie
-                            key={movie['key'] || movie['imdbID']}
-                            dbMovieID={movie['key']}
-                            {...movie}
-                            imdbID={movie['imdbID'] || null}
+                            key={movie.key || movie.imdbID}
+                            dbMovieID={movie.key}
+                            data={movie}
                             deleteMovie={this.deleteMovie}
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
