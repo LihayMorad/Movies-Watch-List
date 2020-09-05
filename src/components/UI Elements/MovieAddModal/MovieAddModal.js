@@ -193,12 +193,7 @@ class movieAddModal extends Component {
         )
             .then((response) => {
                 if (response.status === 200) {
-                    this.handleUpdateCurrentMovie(
-                        response.data.imdb_id,
-                        tmdbID,
-                        movieTitle,
-                        movieYear
-                    );
+                    this.updateCurrentMovie(response.data.imdb_id, tmdbID, movieTitle, movieYear);
                 } else {
                     this.props.toggleSnackbar(
                         true,
@@ -212,7 +207,7 @@ class movieAddModal extends Component {
             });
     };
 
-    handleUpdateCurrentMovie = (imdbID, tmdbID, title, year) => {
+    updateCurrentMovie = (imdbID, tmdbID, title, year) => {
         this.setState({ imdbID, tmdbID, selectedTitle: title, selectedYear: year }, () => {
             this.personalNoteRef.current.scrollIntoView({ behavior: 'smooth' });
         });
@@ -314,7 +309,7 @@ class movieAddModal extends Component {
                                         type={this.state.resultsType}
                                         imdbID={imdbID}
                                         tmdbID={tmdbID}
-                                        updateCurrentMovie={this.handleUpdateCurrentMovie}
+                                        updateCurrentMovie={this.updateCurrentMovie}
                                         toggleWatchTrailer={this.toggleWatchTrailer}
                                         getIMDBID={this.getIMDBID}
                                     />

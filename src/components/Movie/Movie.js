@@ -88,7 +88,7 @@ class Movie extends Component {
                                 movieData.imdbRating && movieData.imdbRating !== 'N/A'
                                     ? movieData.imdbRating
                                     : '';
-                            this.handleUpdateIMDBRating(imdbRating);
+                            this.updateIMDBRating(imdbRating);
                         }
                     } else {
                         error = response.data.Error;
@@ -112,10 +112,7 @@ class Movie extends Component {
                     `Movie marked as ${label} successfully`,
                     'information'
                 );
-                this.props.handleUpdateCounter(
-                    null,
-                    checked ? 'Mark as watched' : 'Mark as unwatched'
-                );
+                this.props.updateCounter(null, checked ? 'Mark as watched' : 'Mark as unwatched');
                 AnalyticsService({
                     category: 'Movie',
                     action: 'Toggle movie watched status',
@@ -130,7 +127,7 @@ class Movie extends Component {
             });
     };
 
-    handleUpdateIMDBRating = (imdbRating) => {
+    updateIMDBRating = (imdbRating) => {
         MoviesService.UpdateMovie(this.props.dbMovieID, {
             imdbRating,
             imdbRatingTimestamp: Date.now(),

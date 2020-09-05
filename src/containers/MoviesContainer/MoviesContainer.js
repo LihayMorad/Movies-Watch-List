@@ -68,14 +68,14 @@ class MoviesContainer extends PureComponent {
             MoviesService.DeleteMovie(movieID)
                 .then(() => {
                     if (shouldRemoveYear) {
-                        this.handleDeleteYear(movieYear);
+                        this.removeYear(movieYear);
                     }
                     // there is another movie with the same year
                     const properties = ['total'];
                     if (!isMovieWatched) {
                         properties.push('unwatched');
                     }
-                    this.handleUpdateCounter(properties, 'Delete Movie');
+                    this.updateCounter(properties, 'Delete Movie');
                     this.props.toggleSnackbar(
                         true,
                         `The movie '${movieName} (${movieYear})' deleted successfully`,
@@ -102,14 +102,14 @@ class MoviesContainer extends PureComponent {
         });
     };
 
-    handleDeleteYear = (yearToDelete) => {
+    removeYear = (yearToDelete) => {
         const years = this.props.moviesYears.filter((year) => year !== yearToDelete);
         MoviesService.UpdateYears(years)
             .then((res) => {})
             .catch((error) => {});
     };
 
-    handleAddMovie = async (movie) => {
+    addMovie = async (movie) => {
         const { NameEng, imdbID, Year } = movie;
 
         try {
@@ -138,8 +138,8 @@ class MoviesContainer extends PureComponent {
                     'success'
                 );
                 this.toggleAddMovie();
-                this.handleAddYear(Year);
-                this.handleUpdateCounter(['total', 'unwatched'], 'Add Movie');
+                this.addYear(Year);
+                this.updateCounter(['total', 'unwatched'], 'Add Movie');
             })
             .catch(() => {
                 this.props.toggleSnackbar(
@@ -154,13 +154,13 @@ class MoviesContainer extends PureComponent {
         });
     };
 
-    handleAddYear = (year) => {
+    addYear = (year) => {
         MoviesService.UpdateYears(new Set([...this.props.moviesYears, year]))
             .then((res) => {})
             .catch((error) => {});
     };
 
-    handleUpdateCounter = (properties, type) => {
+    updateCounter = (properties, type) => {
         MoviesService.UpdateCounter(this.props.moviesCounter, properties, type)
             .then((res) => {})
             .catch((error) => {});
@@ -346,7 +346,7 @@ class MoviesContainer extends PureComponent {
                             deleteMovie={this.deleteMovie}
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
-                            handleUpdateCounter={this.handleUpdateCounter}
+                            updateCounter={this.updateCounter}
                             toggleSnackbar={this.props.toggleSnackbar}
                             watchingList={watchingList}
                         />
@@ -446,7 +446,7 @@ class MoviesContainer extends PureComponent {
                 <MovieAddModal
                     isOpen={addingMovie}
                     toggle={this.toggleAddMovie}
-                    addMovie={this.handleAddMovie}
+                    addMovie={this.addMovie}
                 />
 
                 <MovieTrailerModal

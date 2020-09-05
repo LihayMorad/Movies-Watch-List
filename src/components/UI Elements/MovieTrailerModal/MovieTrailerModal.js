@@ -108,7 +108,7 @@ class MovieTrailerModal extends Component {
         });
     };
 
-    onClose = () => {
+    close = () => {
         this.setState({ trailerId: '', trailerTitle: '', searchError: false, loading: false });
         this.props.toggle();
     };
@@ -128,7 +128,7 @@ class MovieTrailerModal extends Component {
                 TransitionComponent={Zoom}
                 open={isOpen}
                 onEnter={this.getTrailer}
-                onClose={this.onClose}
+                onClose={this.close}
             >
                 <div className="DialogTitleDiv">
                     <DialogTitle>{title}</DialogTitle>
