@@ -4,7 +4,6 @@ const initialState = {
     isSnackbarOpen: false,
     snackbarMessage: '',
     snackbarType: 'default',
-    freeSearchFilter: '',
     movies: [],
     moviesYears: [],
     moviesCounter: {
@@ -48,12 +47,6 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 moviesYears: action.payload,
-            };
-
-        case actionTypes.UPDATE_FREE_SEARCH_FILTER:
-            return {
-                ...state,
-                freeSearchFilter: action.payload,
             };
 
         case actionTypes.UPDATE_MOVIES_COUNTER:

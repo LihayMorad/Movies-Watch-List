@@ -3,7 +3,6 @@ export const TOGGLE_LOADING_MOVIES = 'TOGGLE_LOADING_MOVIES';
 export const SAVE_MOVIES = 'SAVE_MOVIES';
 export const SAVE_MOVIES_YEARS = 'SAVE_MOVIES_YEARS';
 export const UPDATE_FILTERS = 'UPDATE_FILTERS';
-export const UPDATE_FREE_SEARCH_FILTER = 'UPDATE_FREE_SEARCH_FILTER';
 export const UPDATE_MOVIES_COUNTER = 'UPDATE_MOVIES_COUNTER';
 
 export const saveMovies = (movies) => ({
@@ -19,11 +18,6 @@ export const saveMoviesYears = (moviesYears) => ({
 export const toggleSnackbar = ({ open, message, type }) => ({
     type: TOGGLE_SNACKBAR,
     payload: { open, message, type },
-});
-
-export const updateFreeSearchFilter = (value) => ({
-    type: UPDATE_FREE_SEARCH_FILTER,
-    payload: value,
 });
 
 export const toggleLoadingMovies = (isLoading) => ({

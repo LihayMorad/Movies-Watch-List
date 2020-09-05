@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 
 import { connect } from 'react-redux';
-import { saveMovies, toggleSnackbar, updateFreeSearchFilter } from '../../store/actions';
+import { saveMovies, toggleSnackbar } from '../../store/actions';
 
 import MoviesService from '../../Services/MoviesService';
 import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
-import { debounce } from '../../utils/common';
 import { getShortURL } from '../../utils/urlShortener';
 
 import Movie from '../../components/Movie/Movie';
@@ -32,7 +31,7 @@ class MoviesContainer extends PureComponent {
     state = {
         showInformationModal: false,
         informationModalTitle: '',
-        freeSearch: '',
+        freeSearchFilter: '',
         watchingTrailer: false,
         searchTrailerParams: '',
         searchID: '',
@@ -250,14 +249,17 @@ class MoviesContainer extends PureComponent {
         }
     };
 
-    handleFreeSearchChange = ({ target: { value } }) => {
-        this.setState({ freeSearch: value });
-        this.applyFreeSearchFilter(value);
+    onFreeSearchFilterChange = ({ target: { value } }) => {
+        this.setState({ freeSearchFilter: value });
     };
 
-    applyFreeSearchFilter = debounce((value) => {
-        this.props.updateFreeSearchFilter(value);
-    }, 250);
+    filterByName = ({ NameEng, NameHeb }) => {
+        const freeSearchFilter = this.state.freeSearchFilter.trim();
+        return (
+            NameEng.toLowerCase().includes(freeSearchFilter.toLowerCase()) ||
+            NameHeb.includes(freeSearchFilter)
+        );
+    };
 
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;
@@ -274,13 +276,13 @@ class MoviesContainer extends PureComponent {
             searchTrailerParams,
             comments,
             editingComments,
+            freeSearchFilter,
         } = this.state;
         const {
             loadingMovies,
             movies: dbMovies = [],
             moviesCounter,
             filters,
-            freeSearchFilter,
             watchingList,
             watchingListUserInfo,
         } = this.props;
@@ -302,7 +304,7 @@ class MoviesContainer extends PureComponent {
                         margin="normal"
                         label="Filter search results"
                         placeholder="Enter movie name"
-                        value={this.state.freeSearch}
+                        value={freeSearchFilter}
                         InputProps={{
                             type: 'text',
                             startAdornment: (
@@ -312,7 +314,7 @@ class MoviesContainer extends PureComponent {
                             ),
                         }}
                         InputLabelProps={{ style: { color: 'inherit' } }}
-                        onChange={this.handleFreeSearchChange}
+                        onChange={this.onFreeSearchFilterChange}
                     />
                 );
 
@@ -331,12 +333,7 @@ class MoviesContainer extends PureComponent {
                 );
 
                 const movies = dbMovies
-                    .filter(
-                        (movie) =>
-                            movie.NameEng.toLowerCase().includes(
-                                freeSearchFilter.trim().toLowerCase()
-                            ) || movie.NameHeb.includes(freeSearchFilter.trim())
-                    )
+                    .filter(this.filterByName)
                     .map((movie) => (
                         <Movie
                             key={movie['key'] || movie['imdbID']}
@@ -477,7 +474,6 @@ const mapStateToProps = (state) => state;
 const mapDispatchToProps = (dispatch) => ({
     saveMovies: (movies) => dispatch(saveMovies(movies)),
     toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
-    updateFreeSearchFilter: (value) => dispatch(updateFreeSearchFilter(value)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);
