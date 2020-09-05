@@ -38,6 +38,7 @@ class MoviesContainer extends PureComponent {
         editingComments: false,
         comments: '',
         addingMovie: false,
+        moviesData: {},
     };
 
     componentDidUpdate(prevProps) {
@@ -261,14 +262,14 @@ class MoviesContainer extends PureComponent {
         );
     };
 
+    saveMovieData = (movieKey, movieData) => {
+        this.setState((state) => ({
+            moviesData: { ...state.moviesData, [movieKey]: movieData },
+        }));
+    };
+
     render() {
         // const { showInformationModal, informationModalTitle } = this.state;
-        let moviesContainer = null;
-        let loggedOutMessage = null;
-        let counter = null;
-        let freeSearch = null;
-        let addMovieBtn = null;
-        let shareListBtn = null;
         const {
             addingMovie,
             watchingTrailer,
@@ -277,6 +278,7 @@ class MoviesContainer extends PureComponent {
             comments,
             editingComments,
             freeSearchFilter,
+            moviesData,
         } = this.state;
         const {
             loadingMovies,
@@ -287,8 +289,16 @@ class MoviesContainer extends PureComponent {
             watchingListUserInfo,
         } = this.props;
 
+        const loggedInUser = AccountsService.GetLoggedInUser();
+
+        let moviesContainer = null;
+        let loggedOutMessage = null;
+        let counter = null;
+        let freeSearch = null;
+        let addMovieBtn = null;
+        let shareListBtn = null;
+
         if (!watchingList) {
-            const loggedInUser = AccountsService.GetLoggedInUser();
             if (loggedInUser) {
                 let loggedInUserInfo = '';
                 const unseenCounter = moviesCounter.unwatched;
@@ -338,7 +348,9 @@ class MoviesContainer extends PureComponent {
                         <Movie
                             key={movie.key || movie.imdbID}
                             dbMovieID={movie.key}
-                            data={movie}
+                            data={{ ...movie, ...moviesData[movie.key] }}
+                            hasData={!!moviesData[movie.key]}
+                            saveMovieData={this.saveMovieData}
                             deleteMovie={this.deleteMovie}
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
@@ -397,10 +409,13 @@ class MoviesContainer extends PureComponent {
         } else {
             const movies = dbMovies.map((movie) => (
                 <Movie
-                    key={movie['imdbID']}
-                    dbMovieID={movie['imdbID']}
-                    {...movie}
-                    imdbID={movie['imdbID'] || null}
+                    key={movie.imdbID}
+                    dbMovieID={movie.imdbID}
+                    data={{ ...movie, ...moviesData[movie.imdbID] }}
+                    hasData={!!moviesData[movie.imdbID]}
+                    saveMovieData={this.saveMovieData}
+                    addMovie={loggedInUser && this.addMovie}
+                    disableAddMovieBtn={!!loggedInUser}
                     toggleWatchTrailer={this.toggleWatchTrailer}
                     watchingList={watchingList}
                 />

@@ -124,11 +124,13 @@ class MovieTabs extends PureComponent {
     };
 
     getActors = () => {
-        return this.props.actors.split(',').map((actor) => (
+        const actors = this.props.actors && this.props.actors.split(',');
+        if (!actors) return [];
+        return actors.map((actor) => (
             <a
                 key={actor.trim()}
-                className="actorsList"
-                href={`https://en.wikipedia.org/wiki/${actor}`}
+                className="actor"
+                href={`https://en.wikipedia.org/wiki/${actor.trim()}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
@@ -157,11 +159,10 @@ class MovieTabs extends PureComponent {
         const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : '';
 
         const ratings = this.getRatings();
-        const imdbRating = this.getImdbRating();
-        const torrents = this.getTorrentsLinks();
-        const subtitles = this.getSubtitlesLinks();
-        const actors = this.getActors();
-        const mainActor = actors[0];
+        const imdbRating = ratings && this.getImdbRating();
+        const torrentsLinks = this.getTorrentsLinks();
+        const subtitlesLinks = this.getSubtitlesLinks();
+        const [leadingActor, ...supportingActors] = this.getActors();
         const fullCast = this.getFullCast();
 
         return (
@@ -186,11 +187,11 @@ class MovieTabs extends PureComponent {
                     <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <StyledTypographyH6 variant="h6">Cast</StyledTypographyH6>
                         <StyledTypographyMg variant="subtitle2">
-                            {mainActor}& {fullCast}
+                            {leadingActor}& {fullCast}
                         </StyledTypographyMg>
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        <StyledTypographyMg variant="body2">{actors.slice(1)}</StyledTypographyMg>
+                        <StyledTypographyMg variant="body2">{supportingActors}</StyledTypographyMg>
                     </AccordionDetails>
                 </StyledExpansionPanel>
 
@@ -222,9 +223,9 @@ class MovieTabs extends PureComponent {
                                 Torrents & Subtitles
                             </StyledTypographyMg>
                         </StyledAccordionSummary>
-                        <StyledAccordionDetails>{torrents}</StyledAccordionDetails>
+                        <StyledAccordionDetails>{torrentsLinks}</StyledAccordionDetails>
                         <StyledDivider variant="middle"></StyledDivider>
-                        <StyledAccordionDetails>{subtitles}</StyledAccordionDetails>
+                        <StyledAccordionDetails>{subtitlesLinks}</StyledAccordionDetails>
                     </StyledExpansionPanel>
                 )}
             </div>

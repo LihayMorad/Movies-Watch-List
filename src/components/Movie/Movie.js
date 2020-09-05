@@ -26,6 +26,7 @@ import {
     StarBorder as StarBorderIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
+    Add as AddIcon,
     RemoveRedEye,
     RemoveRedEyeOutlined,
 } from '@material-ui/icons';
@@ -40,64 +41,57 @@ const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
 })(Tooltip);
 
-const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500/';
+const TMDB_POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500/';
 
 class Movie extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            ...props.data,
-            loading: true,
+            loading: !props.hasData,
             error: false,
         };
     }
 
     componentDidMount() {
-        this.getMovieDb();
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.data.Comments !== this.props.data.Comments)
-            this.setState({ Comments: this.props.data.Comments });
+        if (!this.props.hasData) this.getMovieDb();
     }
 
     getMovieDb = () => {
-        this.setState({ loading: true }, () => {
-            let movieData = {};
-            let error = false;
-            axios(
-                `https://www.omdbapi.com/?i=${this.props.data.imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
-            )
-                .then((response) => {
-                    if (response.status === 200 && response.data.Response === 'True') {
-                        movieData = response.data;
-                        movieData.Year = parseInt(response.data.Year);
-                        if (this.props.data.Poster)
-                            movieData.Poster = POSTER_BASE_URL + this.props.data.Poster;
+        const { dbMovieID, watchingList } = this.props;
+        const { imdbID, imdbRating, imdbRatingTimestamp, Poster } = this.props.data;
+        let movieData = {};
+        let error = false;
+        axios(
+            `https://www.omdbapi.com/?i=${imdbID}&type=movie&plot=full&apikey=${process.env.REACT_APP_OMDB_API_KEY}`
+        )
+            .then((response) => {
+                if (response.status === 200 && response.data.Response === 'True') {
+                    movieData = response.data;
+                    movieData.Year = parseInt(response.data.Year);
+                    if (Poster)
+                        // it's the poster path if we added the movie from 'Popular Movies' search results
+                        movieData.Poster = TMDB_POSTER_BASE_URL + Poster;
 
-                        const shouldUpdateIMDBRating =
-                            !this.state.imdbRating ||
-                            !this.state.imdbRatingTimestamp ||
-                            hasExpired(this.state.imdbRatingTimestamp);
-                        if (shouldUpdateIMDBRating) {
-                            const imdbRating =
-                                movieData.imdbRating && movieData.imdbRating !== 'N/A'
-                                    ? movieData.imdbRating
-                                    : '';
-                            this.updateIMDBRating(imdbRating);
-                        }
-                    } else {
-                        error = response.data.Error;
+                    const shouldUpdateIMDBRating =
+                        !watchingList &&
+                        (!imdbRating || !imdbRatingTimestamp || hasExpired(imdbRatingTimestamp));
+                    if (shouldUpdateIMDBRating) {
+                        const newIMDBRating =
+                            movieData.imdbRating && movieData.imdbRating !== 'N/A'
+                                ? movieData.imdbRating
+                                : '';
+                        this.updateIMDBRating(newIMDBRating);
                     }
-                })
-                .catch(() => {
-                    error = true;
-                })
-                .finally(() => {
-                    this.setState({ loading: false, ...movieData, error });
-                });
-        });
+                } else {
+                    error = response.data.Error;
+                }
+            })
+            .catch(() => (error = true))
+            .finally(() => {
+                this.setState({ loading: false, error });
+                this.props.saveMovieData(!watchingList ? dbMovieID : imdbID, movieData);
+            });
     };
 
     toggleMovieWatched = ({ target: { checked } }) => {
@@ -133,10 +127,16 @@ class Movie extends Component {
             .catch(() => {});
     };
 
+    addMovie = () => {
+        const { imdbID, NameEng, Year } = this.props.data;
+        this.props.addMovie({ imdbID, NameEng, Year });
+    };
+
     render() {
+        const { loading, error } = this.state;
+        const { dbMovieID, watchingList } = this.props;
         const {
             imdbID,
-            dbMovieID,
             Title,
             NameEng,
             NameHeb,
@@ -151,10 +151,7 @@ class Movie extends Component {
             Plot,
             Actors,
             Genre,
-            loading,
-            error: movieDBError,
-            watchingList,
-        } = this.state;
+        } = this.props.data;
 
         return (
             <div id="movieCardContainer">
@@ -187,14 +184,14 @@ class Movie extends Component {
                                 id="movieCardContent"
                                 onClick={() =>
                                     this.props.toggleWatchTrailer(
-                                        `${!movieDBError ? Title : NameEng} ${Year}`,
+                                        `${!error ? Title : NameEng} ${Year}`,
                                         imdbID
                                     )
                                 }
                             >
                                 <div className="movieCardContentImgDiv">
                                     {!loading ? (
-                                        !movieDBError ? (
+                                        !error ? (
                                             <>
                                                 <img
                                                     src={Poster}
@@ -211,13 +208,9 @@ class Movie extends Component {
                                             <div id="movieCardContentImgDivError">
                                                 <img
                                                     src={ErrorIcon}
-                                                    alt={
-                                                        movieDBError === true
-                                                            ? 'Error'
-                                                            : movieDBError
-                                                    }
+                                                    alt={error === true ? 'Error' : error}
                                                 />
-                                                <h1>Database error {movieDBError}</h1>
+                                                <h1>Database error {error}</h1>
                                             </div>
                                         )
                                     ) : (
@@ -231,10 +224,10 @@ class Movie extends Component {
                                     {!loading ? (
                                         <div>
                                             <Typography variant="h4">
-                                                {!movieDBError ? Title : NameEng}
+                                                {!error ? Title : NameEng}
                                             </Typography>
-                                            <Typography variant="h5"> {NameHeb}</Typography>
-                                            {!movieDBError ? (
+                                            <Typography variant="h5">{NameHeb}</Typography>
+                                            {!error ? (
                                                 <p>
                                                     {Country} {Year} <span>({Runtime})</span>
                                                 </p>
@@ -258,9 +251,9 @@ class Movie extends Component {
 
                     <CardActions>
                         {!loading ? (
-                            !movieDBError && (
+                            !error && (
                                 <MovieTabs
-                                    title={Title}
+                                    title={!error ? Title : NameEng}
                                     year={Year}
                                     ratings={Ratings}
                                     imdbRating={imdbRating}
@@ -276,7 +269,7 @@ class Movie extends Component {
                         )}
                     </CardActions>
 
-                    {!watchingList && (
+                    {!watchingList ? (
                         <>
                             <StyledTooltip
                                 title="Edit movie's personal note"
@@ -327,7 +320,7 @@ class Movie extends Component {
                                             this.props.deleteMovie(
                                                 dbMovieID,
                                                 imdbID,
-                                                !movieDBError ? Title : NameEng,
+                                                !error ? Title : NameEng,
                                                 Year,
                                                 Watched
                                             );
@@ -338,6 +331,25 @@ class Movie extends Component {
                                 </Fab>
                             </StyledTooltip>
                         </>
+                    ) : (
+                        <StyledTooltip
+                            title="Add this movie to your list"
+                            TransitionComponent={Zoom}
+                        >
+                            <Fab
+                                className={`movieCardFab ${
+                                    loading || error || this.props.disableAddMovieBtn
+                                        ? 'disabled'
+                                        : ''
+                                }`}
+                                color="primary"
+                                variant="extended"
+                                size="large"
+                                onClick={this.addMovie}
+                            >
+                                <AddIcon />
+                            </Fab>
+                        </StyledTooltip>
                     )}
                 </Card>
             </div>

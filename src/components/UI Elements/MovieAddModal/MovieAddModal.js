@@ -90,7 +90,7 @@ class movieAddModal extends Component {
             if (this.state.tmdbID) {
                 // save poster if we are adding movie from 'Popular Movies' search results
                 const poster = results.find((movie) => movie.id === tmdbID);
-                if (poster && poster.poster_path) movieDetails.Poster = poster;
+                if (poster && poster.poster_path) movieDetails.Poster = poster.poster_path;
             }
             this.props.addMovie(movieDetails);
         } else {
