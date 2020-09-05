@@ -83,11 +83,6 @@
         }
         .movieCardFab {
             margin: 7px 10px 13px !important;
-            &.disabled {
-                opacity: 0.7;
-                cursor: default;
-                pointer-events: none;
-            }
             span {
                 position: absolute;
             }

@@ -415,7 +415,6 @@ class MoviesContainer extends PureComponent {
                     hasData={!!moviesData[movie.imdbID]}
                     saveMovieData={this.saveMovieData}
                     addMovie={loggedInUser && this.addMovie}
-                    disableAddMovieBtn={!!loggedInUser}
                     toggleWatchTrailer={this.toggleWatchTrailer}
                     watchingList={watchingList}
                 />

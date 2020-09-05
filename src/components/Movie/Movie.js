@@ -332,24 +332,22 @@ class Movie extends Component {
                             </StyledTooltip>
                         </>
                     ) : (
-                        <StyledTooltip
-                            title="Add this movie to your list"
-                            TransitionComponent={Zoom}
-                        >
-                            <Fab
-                                className={`movieCardFab ${
-                                    loading || error || this.props.disableAddMovieBtn
-                                        ? 'disabled'
-                                        : ''
-                                }`}
-                                color="primary"
-                                variant="extended"
-                                size="large"
-                                onClick={this.addMovie}
+                        this.props.addMovie && (
+                            <StyledTooltip
+                                title="Add this movie to your list"
+                                TransitionComponent={Zoom}
                             >
-                                <AddIcon />
-                            </Fab>
-                        </StyledTooltip>
+                                <Fab
+                                    className="movieCardFab"
+                                    color="primary"
+                                    variant="extended"
+                                    size="large"
+                                    onClick={this.addMovie}
+                                >
+                                    <AddIcon />
+                                </Fab>
+                            </StyledTooltip>
+                        )
                     )}
                 </Card>
             </div>
