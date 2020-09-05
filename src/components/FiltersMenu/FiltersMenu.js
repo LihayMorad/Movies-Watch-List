@@ -352,7 +352,7 @@ class FiltersMenu extends Component {
                         className={loadingMovies ? 'disabled' : ''}
                         color="secondary"
                         variant="contained"
-                        onClick={!loadingMovies && this.open}
+                        onClick={!loadingMovies ? this.open : undefined}
                     >
                         <MovieFilterIcon />
                         &nbsp;Filters
