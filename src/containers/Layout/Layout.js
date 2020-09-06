@@ -33,10 +33,7 @@ class Layout extends Component {
         super(props);
 
         this.topMenuRef = React.createRef();
-        this.state = {
-            showScrollToMenuButton: false,
-            ...this.handleQueryParams(),
-        };
+        this.state = { ...this.handleQueryParams() };
     }
 
     componentDidMount() {
@@ -154,45 +151,39 @@ class Layout extends Component {
 
     render() {
         const { watchingList, watchingListUserInfo } = this.state;
-        let scrollToMenu = null;
         let filtersMenu = null;
         let accountMenu = null;
         let snackbar = null;
 
         if (!watchingList) {
-            scrollToMenu = (
-                <StyledTooltip
-                    title="Scroll up to filters menu"
-                    disableFocusListener
-                    disableTouchListener
-                    TransitionComponent={Zoom}
-                >
-                    <Fab
-                        id="scrollToMenu"
-                        color="primary"
-                        variant="extended"
-                        size="small"
-                        onClick={this.scrollToMenu}
-                    >
-                        <NavigationIcon />
-                    </Fab>
-                </StyledTooltip>
-            );
-
             const loggedInUser = AccountsService.GetLoggedInUser();
             if (loggedInUser) {
                 filtersMenu = (
                     <TrackVisibility partialVisibility>
-                        {({ isVisible }) => {
-                            setTimeout(() => {
-                                this.setState({ showScrollToMenuButton: !isVisible });
-                            }, 150);
-                            return (
+                        {({ isVisible }) => (
+                            <>
                                 <div ref={this.topMenuRef}>
                                     <FiltersMenu />
                                 </div>
-                            );
-                        }}
+                                <StyledTooltip
+                                    title="Scroll up to filters menu"
+                                    disableFocusListener
+                                    disableTouchListener
+                                    TransitionComponent={Zoom}
+                                >
+                                    <Fab
+                                        id="scrollToMenu"
+                                        className={!isVisible ? 'show' : ''}
+                                        color="primary"
+                                        variant="extended"
+                                        size="small"
+                                        onClick={this.scrollToMenu}
+                                    >
+                                        <NavigationIcon />
+                                    </Fab>
+                                </StyledTooltip>
+                            </>
+                        )}
                     </TrackVisibility>
                 );
             }
@@ -212,8 +203,6 @@ class Layout extends Component {
                     watchingList={watchingList}
                     watchingListUserInfo={watchingListUserInfo}
                 />
-
-                {this.state.showScrollToMenuButton && scrollToMenu}
 
                 <Attributions />
 

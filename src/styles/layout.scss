@@ -3,10 +3,19 @@
 }
 
 #scrollToMenu {
-    position: sticky;
-    bottom: 15px;
+    position: fixed;
+    left: calc(50% - 20px);
+    bottom: 30px;
     background-color: black;
-    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.35s;
+    &.show {
+        opacity: 1;
+        pointer-events: initial;
+        z-index: 10;
+    }
 }
 
 #moviesCounter {
