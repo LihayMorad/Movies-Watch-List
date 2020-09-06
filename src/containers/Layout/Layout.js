@@ -24,12 +24,8 @@ class Layout extends Component {
         this.topMenuRef = React.createRef();
         this.state = {
             showScrollToMenuButton: false,
-            watchingList: false,
+            ...this.handleQueryParams(),
         };
-    }
-
-    componentDidMount() {
-        this.handleQueryParams();
     }
 
     scrollToMenu = () => {
@@ -39,11 +35,11 @@ class Layout extends Component {
     handleQueryParams = () => {
         const paramsString = window.location.search;
         const searchParams = new URLSearchParams(paramsString);
-        this.setState({
+        return {
             watchingList:
                 searchParams.has('watchingList') && searchParams.get('watchingList') === 'true',
             watchingListUserInfo: searchParams.has('user') && searchParams.get('user'),
-        });
+        };
     };
 
     render() {

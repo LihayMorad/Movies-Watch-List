@@ -28,27 +28,23 @@ const StyledTooltip = withStyles({
 })(Tooltip);
 
 class MoviesContainer extends PureComponent {
-    state = {
-        showInformationModal: false,
-        informationModalTitle: '',
-        freeSearchFilter: '',
-        watchingTrailer: false,
-        searchTrailerParams: '',
-        searchID: '',
-        editingComments: false,
-        comments: '',
-        addingMovie: false,
-        moviesData: {},
-    };
+    constructor(props) {
+        super(props);
+        
+        this.handleQueryMovies();
 
-    componentDidUpdate(prevProps) {
-        if (this.props.watchingList !== prevProps.watchingList && this.props.watchingList) {
-            this.handleQueryMovies();
-            AnalyticsService({
-                category: 'User',
-                action: 'Viewing another user list',
-            });
-        }
+        this.state = {
+            showInformationModal: false,
+            informationModalTitle: '',
+            freeSearchFilter: '',
+            watchingTrailer: false,
+            searchTrailerParams: '',
+            searchID: '',
+            editingComments: false,
+            comments: '',
+            addingMovie: false,
+            moviesData: {},
+        };
     }
 
     handleQueryMovies = () => {
@@ -59,6 +55,10 @@ class MoviesContainer extends PureComponent {
             const imdbIDsArr = imdbIDsString.split(',');
             const moviesArr = imdbIDsArr.map((imdbID) => ({ imdbID: imdbID, NameEng: '' }));
             this.props.saveMovies(moviesArr);
+            AnalyticsService({
+                category: 'User',
+                action: 'Viewing another user list',
+            });
         }
     };
 
