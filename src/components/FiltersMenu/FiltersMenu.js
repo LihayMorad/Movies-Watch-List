@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import {
-    saveMovies,
-    saveMoviesYears,
-    toggleLoadingMovies,
-    toggleSnackbar,
-    updateMoviesCounter,
-    updateFilters,
-} from '../../store/actions';
+import { updateFilters } from '../../store/actions';
 
-import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
 import {
@@ -66,106 +58,11 @@ class FiltersMenu extends Component {
         filters: this.props.filters,
     };
 
-    componentDidMount() {
-        AccountsService.InitAccountService().onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in.
-                this.getMovies();
-                this.setDBListeners();
-            } else {
-                // User is signed off.
-                this.clearDBListeners(['movies', 'yearsAndCounter']);
-            }
-        });
-    }
-
     componentDidUpdate(prevProps) {
         if (this.props.filters !== prevProps.filters) {
-            this.setState({ filters: this.props.filters }, this.getMovies);
+            this.setState({ filters: this.props.filters });
         }
     }
-
-    componentWillUnmount() {
-        this.clearDBListeners(['movies', 'yearsAndCounter']);
-    }
-
-    clearDBListeners = (listeners) => {
-        if (this.state.DBListeners) {
-            listeners.forEach((listener) => {
-                this.state.DBListeners[listener] && this.state.DBListeners[listener]();
-            });
-        }
-    };
-
-    setDBListeners = () => {
-        this.clearDBListeners(['yearsAndCounter']);
-        const DBListener = AccountsService.GetDBRef('user').onSnapshot(
-            (response) => {
-                if (response.exists && response.data()) {
-                    if (response.data().counter) {
-                        this.props.updateMoviesCounter(response.data().counter);
-                    }
-                    if (response.data().years) {
-                        const years = new Set([...response.data().years]) || [];
-                        this.props.saveMoviesYears([...years].sort((a, b) => b - a));
-                    }
-                }
-            },
-            (error) => {}
-        );
-
-        this.setState({ DBListeners: { ...this.state.DBListeners, yearsAndCounter: DBListener } });
-    };
-
-    getMovies = () => {
-        this.props.toggleLoadingMovies(true);
-
-        this.clearDBListeners(['movies']);
-
-        const { filter, order, year, maxResults, showWatchedMovies } = this.props.filters;
-        const filterToShow = filter === 'releaseYear' ? 'Year' : filter;
-        const orderToShow = order === 'descending' ? 'desc' : 'asc';
-        let moviesDBRef = AccountsService.GetDBRef('userMovies');
-
-        if (year === 'All') {
-            moviesDBRef = moviesDBRef.orderBy(filterToShow, orderToShow);
-        } else {
-            // specific year
-            moviesDBRef = moviesDBRef.where('Year', '==', year);
-            if (filterToShow !== 'Year') {
-                moviesDBRef = moviesDBRef.orderBy(filterToShow, orderToShow);
-            }
-        }
-
-        const DBListener = moviesDBRef
-            .where('Watched', '==', showWatchedMovies)
-            .limit(maxResults)
-            .onSnapshot(
-                // { includeMetadataChanges: true },
-                (response) => {
-                    if (!response.empty && response.docs) {
-                        // && !response.metadata.hasPendingWrites
-                        const mappedMovies = response.docs.map((doc) => ({
-                            key: doc.id,
-                            ...doc.data(),
-                        }));
-                        this.props.saveMovies(mappedMovies);
-                    } else {
-                        this.props.saveMovies([]);
-                    }
-                },
-                () => {
-                    this.props.toggleLoadingMovies(false);
-                    this.props.toggleSnackbar(
-                        true,
-                        `There was an error retrieving movies`,
-                        'error'
-                    );
-                }
-            );
-
-        this.setState({ DBListeners: { ...this.state.DBListeners, movies: DBListener } });
-    };
 
     onShowWatchedMoviesFilterChange = () => {
         this.setState((state) => {
@@ -334,9 +231,6 @@ class FiltersMenu extends Component {
     };
 
     render() {
-        const loggedInUser = AccountsService.GetLoggedInUser();
-        if (!loggedInUser) return null;
-
         const { isOpen } = this.state;
         const { loadingMovies } = this.props;
 
@@ -393,14 +287,13 @@ class FiltersMenu extends Component {
     }
 }
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = ({ filters, moviesYears, loadingMovies }) => ({
+    filters,
+    moviesYears,
+    loadingMovies,
+});
 
 const mapDispatchToProps = (dispatch) => ({
-    saveMovies: (movies) => dispatch(saveMovies(movies)),
-    saveMoviesYears: (moviesYears) => dispatch(saveMoviesYears(moviesYears)),
-    toggleLoadingMovies: (isLoading) => dispatch(toggleLoadingMovies(isLoading)),
-    toggleSnackbar: (open, message, type) => dispatch(toggleSnackbar({ open, message, type })),
-    updateMoviesCounter: (updatedCounter) => dispatch(updateMoviesCounter(updatedCounter)),
     updateFilters: (filters) => dispatch(updateFilters(filters)),
 });
 
