@@ -33,7 +33,7 @@ const moviesResultsCard = ({
                 </div>
                 <img
                     src={youTubeIcon}
-                    id="youTubeIcon"
+                    className="youTubeIcon"
                     alt="YouTube icon"
                     title="Click to watch the trailer"
                     onClick={onTrailerClick}

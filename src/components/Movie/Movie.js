@@ -154,7 +154,7 @@ class Movie extends Component {
         } = this.props.data;
 
         return (
-            <div id="movieCardContainer">
+            <div className="movieCardContainer">
                 <Card className="movieCard">
                     {imdbRating && imdbRating !== 'N/A' && (
                         <StyledTooltip
@@ -181,7 +181,7 @@ class Movie extends Component {
                             TransitionComponent={Zoom}
                         >
                             <CardContent
-                                id="movieCardContent"
+                                className="movieCardContent"
                                 onClick={() =>
                                     this.props.toggleWatchTrailer(
                                         `${!error ? Title : NameEng} ${Year}`,
@@ -195,17 +195,17 @@ class Movie extends Component {
                                             <>
                                                 <img
                                                     src={Poster}
-                                                    id="movieCardContentImgDivPoster"
+                                                    className="movieCardContentImgDivPoster"
                                                     alt="Movie Poster Not Found"
                                                 />
                                                 <img
                                                     src={youTubeIcon}
-                                                    id="movieCardContentYouTubeImg"
+                                                    className="movieCardContentYouTubeImg"
                                                     alt="YouTube icon"
                                                 />
                                             </>
                                         ) : (
-                                            <div id="movieCardContentImgDivError">
+                                            <div className="movieCardContentImgDivError">
                                                 <img
                                                     src={ErrorIcon}
                                                     alt={error === true ? 'Error' : error}
@@ -237,7 +237,7 @@ class Movie extends Component {
                                             {Comments && (
                                                 <p>
                                                     Personal note:{' '}
-                                                    <span id="commentsSpan">{Comments}</span>
+                                                    <span className="commentsSpan">{Comments}</span>
                                                 </p>
                                             )}
                                         </div>
