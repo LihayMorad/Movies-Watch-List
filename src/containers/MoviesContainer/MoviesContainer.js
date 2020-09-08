@@ -207,7 +207,7 @@ class MoviesContainer extends PureComponent {
     };
 
     shareList = async (userInfo, movies) => {
-        const url = `https://movies-watch-list.netlify.app/?watchingList=true&user=${userInfo.replace(
+        const url = `${window.location.origin}/?watchingList=true&user=${userInfo.replace(
             /\s/g,
             '+'
         )}&imdbIDs=${movies.map((movie) => movie.imdbID).join()}`;
