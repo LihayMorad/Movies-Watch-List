@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { saveMovies, toggleSnackbar } from '../../store/actions';
 
 import MoviesService from '../../Services/MoviesService';
-import AccountsService from '../../Services/AccountsService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
 import { getShortURL } from '../../utils/urlShortener';
@@ -30,7 +29,7 @@ const StyledTooltip = withStyles({
 class MoviesContainer extends PureComponent {
     constructor(props) {
         super(props);
-        
+
         this.handleQueryMovies();
 
         this.state = {
@@ -53,7 +52,7 @@ class MoviesContainer extends PureComponent {
         if (searchParams.has('imdbIDs')) {
             const imdbIDsString = searchParams.get('imdbIDs');
             const imdbIDsArr = imdbIDsString.split(',');
-            const moviesArr = imdbIDsArr.map((imdbID) => ({ imdbID: imdbID, NameEng: '' }));
+            const moviesArr = imdbIDsArr.map((imdbID) => ({ imdbID, NameEng: '' }));
             this.props.saveMovies(moviesArr);
             AnalyticsService({
                 category: 'User',
@@ -62,58 +61,52 @@ class MoviesContainer extends PureComponent {
         }
     };
 
-    deleteMovie = async (movieID, imdbID, movieName, movieYear, isMovieWatched) => {
-        try {
-            const shouldRemoveYear = await MoviesService.ShouldRemoveYear(imdbID, movieYear);
-            MoviesService.DeleteMovie(movieID)
-                .then(() => {
+    deleteMovie = (movieID, imdbID, movieName, movieYear, isMovieWatched) => {
+        MoviesService.DeleteMovie(movieID)
+            .then(async () => {
+                try {
+                    const shouldRemoveYear = await MoviesService.ShouldRemoveYear(
+                        imdbID,
+                        movieYear
+                    );
                     if (shouldRemoveYear) {
-                        this.removeYear(movieYear);
+                        // there is another movie with the same year
+                        MoviesService.UpdateYears(movieYear, 'remove');
                     }
-                    // there is another movie with the same year
                     const properties = ['total'];
-                    if (!isMovieWatched) {
-                        properties.push('unwatched');
-                    }
-                    this.updateCounter(properties, 'Delete Movie');
+                    if (!isMovieWatched) properties.push('unwatched');
+                    MoviesService.UpdateCounter(properties, 'Delete Movie');
                     this.props.toggleSnackbar(
                         true,
                         `The movie '${movieName} (${movieYear})' deleted successfully`,
                         'success'
                     );
-                })
-                .catch(() => {
+                } catch (error) {
                     this.props.toggleSnackbar(
                         true,
                         `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`,
                         'error'
                     );
-                });
-        } catch (error) {
-            this.props.toggleSnackbar(
-                true,
-                `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`,
-                'error'
-            );
-        }
+                }
+            })
+            .catch(() => {
+                this.props.toggleSnackbar(
+                    true,
+                    `Error! There was a problem deleting the movie '${movieName} (${movieYear})'`,
+                    'error'
+                );
+            });
+
         AnalyticsService({
             category: 'Movie',
             action: 'Deleting a movie',
         });
     };
 
-    removeYear = (yearToDelete) => {
-        const years = this.props.moviesYears.filter((year) => year !== yearToDelete);
-        MoviesService.UpdateYears(years)
-            .then((res) => {})
-            .catch((error) => {});
-    };
-
     addMovie = async (movie) => {
         const { NameEng, imdbID, Year } = movie;
-
         try {
-            const isMovieExists = await MoviesService.IsMovieAlreadyExists(imdbID);
+            const isMovieExists = await MoviesService.isMovieExists(imdbID);
             if (isMovieExists) {
                 this.props.toggleSnackbar(
                     true,
@@ -137,9 +130,9 @@ class MoviesContainer extends PureComponent {
                     `The movie '${NameEng} (${Year})' added successfully`,
                     'success'
                 );
-                this.toggleAddMovie();
-                this.addYear(Year);
-                this.updateCounter(['total', 'unwatched'], 'Add Movie');
+                if (!this.props.watchingList) this.toggleAddMovie();
+                MoviesService.UpdateYears(Year, 'add');
+                MoviesService.UpdateCounter(['total', 'unwatched'], 'Add Movie');
             })
             .catch(() => {
                 this.props.toggleSnackbar(
@@ -152,18 +145,6 @@ class MoviesContainer extends PureComponent {
             category: 'Movie',
             action: 'Adding a movie',
         });
-    };
-
-    addYear = (year) => {
-        MoviesService.UpdateYears(new Set([...this.props.moviesYears, year]))
-            .then((res) => {})
-            .catch((error) => {});
-    };
-
-    updateCounter = (properties, type) => {
-        MoviesService.UpdateCounter(this.props.moviesCounter, properties, type)
-            .then((res) => {})
-            .catch((error) => {});
     };
 
     handleEditComments = (comments) => {
@@ -285,11 +266,10 @@ class MoviesContainer extends PureComponent {
             movies: dbMovies = [],
             moviesCounter,
             filters,
+            loggedInUser,
             watchingList,
             watchingListUserInfo,
         } = this.props;
-
-        const loggedInUser = AccountsService.GetLoggedInUser();
 
         let moviesContainer = null;
         let loggedOutMessage = null;
@@ -354,7 +334,6 @@ class MoviesContainer extends PureComponent {
                             deleteMovie={this.deleteMovie}
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
-                            updateCounter={this.updateCounter}
                             toggleSnackbar={this.props.toggleSnackbar}
                             watchingList={watchingList}
                         />

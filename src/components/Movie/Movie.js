@@ -69,10 +69,10 @@ class Movie extends Component {
                 if (response.status === 200 && response.data.Response === 'True') {
                     movieData = response.data;
                     movieData.Year = parseInt(response.data.Year);
-                    if (Poster)
+                    if (Poster) {
                         // it's the poster path if we added the movie from 'Popular Movies' search results
                         movieData.Poster = TMDB_POSTER_BASE_URL + Poster;
-
+                    }
                     const shouldUpdateIMDBRating =
                         !watchingList &&
                         (!imdbRating || !imdbRatingTimestamp || hasExpired(imdbRatingTimestamp));
@@ -103,7 +103,10 @@ class Movie extends Component {
                     `Movie marked as ${label} successfully`,
                     'information'
                 );
-                this.props.updateCounter(null, checked ? 'Mark as watched' : 'Mark as unwatched');
+                MoviesService.UpdateCounter(
+                    null,
+                    checked ? 'Mark as watched' : 'Mark as unwatched'
+                );
                 AnalyticsService({
                     category: 'Movie',
                     action: 'Toggle movie watched status',
@@ -128,8 +131,8 @@ class Movie extends Component {
     };
 
     addMovie = () => {
-        const { imdbID, NameEng, Year } = this.props.data;
-        this.props.addMovie({ imdbID, NameEng, Year });
+        const { imdbID, NameEng, Title, Year } = this.props.data;
+        this.props.addMovie({ imdbID, NameEng: NameEng || Title, Year, Watched: false });
     };
 
     render() {

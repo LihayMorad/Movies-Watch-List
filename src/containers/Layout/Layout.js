@@ -40,10 +40,14 @@ class Layout extends Component {
         AccountsService.InitAccountService().onAuthStateChanged((user) => {
             if (user) {
                 // User is signed in.
-                this.getMovies();
-                this.setDBListeners();
+                this.setState({ loggedInUser: user });
+                if (!this.state.watchingList) {
+                    this.getMovies();
+                    this.setDBListeners();
+                }
             } else {
                 // User is signed off.
+                this.setState({ loggedInUser: null });
                 this.clearDBListeners(['movies', 'yearsAndCounter']);
             }
         });
@@ -150,13 +154,11 @@ class Layout extends Component {
     };
 
     render() {
-        const { watchingList, watchingListUserInfo } = this.state;
+        const { loggedInUser, watchingList, watchingListUserInfo } = this.state;
         let filtersMenu = null;
         let accountMenu = null;
-        let snackbar = null;
 
         if (!watchingList) {
-            const loggedInUser = AccountsService.GetLoggedInUser();
             if (loggedInUser) {
                 filtersMenu = (
                     <TrackVisibility partialVisibility>
@@ -188,7 +190,6 @@ class Layout extends Component {
                 );
             }
             accountMenu = <AccountMenu />;
-            snackbar = <Snackbar />;
         }
 
         return (
@@ -202,11 +203,12 @@ class Layout extends Component {
                 <MoviesContainer
                     watchingList={watchingList}
                     watchingListUserInfo={watchingListUserInfo}
+                    loggedInUser={loggedInUser}
                 />
 
                 <Attributions />
 
-                {snackbar}
+                <Snackbar />
             </>
         );
     }
