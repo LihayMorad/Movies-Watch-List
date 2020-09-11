@@ -156,47 +156,43 @@ class Layout extends Component {
     render() {
         const { loggedInUser, watchingList, watchingListUserInfo } = this.state;
         let filtersMenu = null;
-        let accountMenu = null;
 
-        if (!watchingList) {
-            if (loggedInUser) {
-                filtersMenu = (
-                    <TrackVisibility partialVisibility>
-                        {({ isVisible }) => (
-                            <>
-                                <div ref={this.topMenuRef}>
-                                    <FiltersMenu />
-                                </div>
-                                <StyledTooltip
-                                    title="Scroll up to filters menu"
-                                    disableFocusListener
-                                    disableTouchListener
-                                    TransitionComponent={Zoom}
+        if (loggedInUser && !watchingList) {
+            filtersMenu = (
+                <TrackVisibility partialVisibility>
+                    {({ isVisible }) => (
+                        <>
+                            <div ref={this.topMenuRef}>
+                                <FiltersMenu />
+                            </div>
+                            <StyledTooltip
+                                title="Scroll up to filters menu"
+                                disableFocusListener
+                                disableTouchListener
+                                TransitionComponent={Zoom}
+                            >
+                                <Fab
+                                    id="scrollToMenu"
+                                    className={!isVisible ? 'show' : ''}
+                                    color="primary"
+                                    variant="extended"
+                                    size="small"
+                                    onClick={this.scrollToMenu}
                                 >
-                                    <Fab
-                                        id="scrollToMenu"
-                                        className={!isVisible ? 'show' : ''}
-                                        color="primary"
-                                        variant="extended"
-                                        size="small"
-                                        onClick={this.scrollToMenu}
-                                    >
-                                        <NavigationIcon />
-                                    </Fab>
-                                </StyledTooltip>
-                            </>
-                        )}
-                    </TrackVisibility>
-                );
-            }
-            accountMenu = <AccountMenu />;
+                                    <NavigationIcon />
+                                </Fab>
+                            </StyledTooltip>
+                        </>
+                    )}
+                </TrackVisibility>
+            );
         }
 
         return (
             <>
                 <Header />
 
-                {accountMenu}
+                <AccountMenu />
 
                 {filtersMenu}
 
