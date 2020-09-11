@@ -171,6 +171,7 @@ class MovieTabs extends PureComponent {
                     className="tabsPanel"
                     expanded={expanded === 'panel1'}
                     onChange={this.onTabChange('panel1')}
+                    TransitionProps={{ unmountOnExit: true }}
                 >
                     <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <StyledTypographyH6 variant="h6">Plot</StyledTypographyH6>
@@ -183,6 +184,7 @@ class MovieTabs extends PureComponent {
                     className="tabsPanel"
                     expanded={expanded === 'panel2'}
                     onChange={this.onTabChange('panel2')}
+                    TransitionProps={{ unmountOnExit: true }}
                 >
                     <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <StyledTypographyH6 variant="h6">Cast</StyledTypographyH6>
@@ -200,6 +202,7 @@ class MovieTabs extends PureComponent {
                         className="tabsPanel"
                         expanded={expanded === 'panel3'}
                         onChange={this.onTabChange('panel3')}
+                        TransitionProps={{ unmountOnExit: true }}
                     >
                         <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <StyledTypographyH6 variant="h6">Ratings</StyledTypographyH6>
@@ -216,6 +219,7 @@ class MovieTabs extends PureComponent {
                         className="tabsPanel"
                         expanded={expanded === 'panel4'}
                         onChange={this.onTabChange('panel4')}
+                        TransitionProps={{ unmountOnExit: true }}
                     >
                         <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <StyledTypographyH6 variant="h6">Downloads</StyledTypographyH6>
