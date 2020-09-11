@@ -51,6 +51,7 @@ const StyledCheckbox = withStyles({ root: { margin: '9.5px 3px 9.5px 10px', padd
 const StyledIconButton = withStyles({ root: { padding: '0px', color: '#3f51b5' } })(IconButton);
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 const StyledExpandMoreRoundedIcon = withStyles({ root: { color: '#3f51b5' } })(
     ExpandMoreRoundedIcon
@@ -249,6 +250,7 @@ class FiltersMenu extends Component {
                     title="Change movies list filters"
                     disableFocusListener
                     TransitionComponent={Zoom}
+                    arrow
                 >
                     <Button
                         id="filtersMenuBtn"

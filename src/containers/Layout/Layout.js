@@ -26,6 +26,7 @@ import TrackVisibility from 'react-on-screen';
 
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 
 class Layout extends Component {
@@ -169,6 +170,7 @@ class Layout extends Component {
                                 disableFocusListener
                                 disableTouchListener
                                 TransitionComponent={Zoom}
+                                arrow
                             >
                                 <Fab
                                     id="scrollToMenu"

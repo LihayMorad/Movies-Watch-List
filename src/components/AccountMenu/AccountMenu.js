@@ -18,6 +18,7 @@ import { withStyles } from '@material-ui/core/styles';
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '5px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 
 class AccountMenu extends Component {
@@ -143,6 +144,7 @@ class AccountMenu extends Component {
                     <StyledTooltip
                         title="Sign in with your Google account"
                         TransitionComponent={Zoom}
+                        arrow
                     >
                         <Button
                             className="btnPadding"
@@ -164,6 +166,7 @@ class AccountMenu extends Component {
             <StyledTooltip
                 title="Link this guest account with your Google account to save your list"
                 TransitionComponent={Zoom}
+                arrow
             >
                 <Button
                     className="btnPadding"
@@ -185,6 +188,7 @@ class AccountMenu extends Component {
                     className="btnPadding"
                     color="default"
                     variant="contained"
+                    arrow
                     onClick={this.signInAnonymously}
                 >
                     <PersonOutlineIcon />

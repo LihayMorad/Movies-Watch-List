@@ -39,6 +39,7 @@ import youTubeIcon from '../../assets/youtube_icon.png';
 
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 
 const TMDB_POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w500/';
@@ -163,6 +164,7 @@ class Movie extends Component {
                         <StyledTooltip
                             title={`IMDB rating: ${imdbRating}`}
                             TransitionComponent={Zoom}
+                            arrow
                         >
                             <div>
                                 <Rating
@@ -182,6 +184,7 @@ class Movie extends Component {
                         <StyledTooltip
                             title="Click to watch the trailer"
                             TransitionComponent={Zoom}
+                            arrow
                         >
                             <CardContent
                                 className="movieCardContent"
@@ -277,6 +280,7 @@ class Movie extends Component {
                             <StyledTooltip
                                 title="Edit movie's personal note"
                                 TransitionComponent={Zoom}
+                                arrow
                             >
                                 <Zoom
                                     in={!loading}
@@ -299,6 +303,7 @@ class Movie extends Component {
                             <StyledTooltip
                                 title={`Mark movie as ${Watched ? 'unseen' : 'watched'}`}
                                 TransitionComponent={Zoom}
+                                arrow
                             >
                                 <Zoom
                                     in={!loading}
@@ -361,6 +366,7 @@ class Movie extends Component {
                             <StyledTooltip
                                 title="Add this movie to your list"
                                 TransitionComponent={Zoom}
+                                arrow
                             >
                                 <Zoom
                                     in={!loading}

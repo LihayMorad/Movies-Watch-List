@@ -8,6 +8,7 @@ import youTubeIcon from '../../../../assets/youtube_icon.png';
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '-27px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 
 const moviesResultsCard = ({
@@ -21,7 +22,7 @@ const moviesResultsCard = ({
     onTrailerClick,
 }) => {
     return (
-        <StyledTooltip title="Click to add this movie" TransitionComponent={Zoom} key={id}>
+        <StyledTooltip title="Click to add this movie" TransitionComponent={Zoom} key={id} arrow>
             <li className={`movieElem ${isSelectedMovie ? 'chosenMovie' : ''}`} onClick={onClick}>
                 <img
                     src={poster}

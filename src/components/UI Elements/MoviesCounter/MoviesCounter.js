@@ -8,6 +8,7 @@ const StyledIconButton = withStyles({ root: { color: 'white' } })(IconButton);
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '0px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 
 export default ({ unseenCounter = 0, watchedCounter = 0 }) => (
@@ -17,6 +18,7 @@ export default ({ unseenCounter = 0, watchedCounter = 0 }) => (
             disableFocusListener
             disableTouchListener
             TransitionComponent={Zoom}
+            arrow
         >
             <StyledIconButton>
                 <Badge badgeContent={unseenCounter} color="secondary">
@@ -30,6 +32,7 @@ export default ({ unseenCounter = 0, watchedCounter = 0 }) => (
             disableFocusListener
             disableTouchListener
             TransitionComponent={Zoom}
+            arrow
         >
             <StyledIconButton>
                 <Badge badgeContent={watchedCounter} color="secondary">

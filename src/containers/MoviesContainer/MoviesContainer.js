@@ -24,6 +24,7 @@ const StyledIconButton = withStyles({ root: { color: 'inherit' } })(IconButton);
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
     tooltipPlacementBottom: { marginTop: '0px' },
+    arrow: { color: 'black' },
 })(Tooltip);
 
 class MoviesContainer extends PureComponent {
@@ -363,6 +364,7 @@ class MoviesContainer extends PureComponent {
                         disableFocusListener
                         disableTouchListener
                         TransitionComponent={Zoom}
+                        arrow
                     >
                         <StyledIconButton
                             onClick={() => this.shareList(loggedInUserInfo, dbMovies)}
