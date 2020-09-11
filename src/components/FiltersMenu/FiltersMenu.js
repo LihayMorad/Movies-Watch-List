@@ -27,6 +27,7 @@ import {
     MovieFilter as MovieFilterIcon,
     Close as CloseIcon,
     Save as SaveIcon,
+    ExpandMoreRounded as ExpandMoreRoundedIcon,
     RemoveRedEye,
     RemoveRedEyeOutlined,
 } from '@material-ui/icons';
@@ -47,10 +48,14 @@ const StyledFormControlLabel = withStyles({
 const StyledCheckbox = withStyles({ root: { margin: '9.5px 3px 9.5px 10px', padding: '0' } })(
     Checkbox
 );
-const StyledIconButton = withStyles({ root: { padding: '0px' } })(IconButton);
+const StyledIconButton = withStyles({ root: { padding: '0px', color: '#3f51b5' } })(IconButton);
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
 })(Tooltip);
+const StyledExpandMoreRoundedIcon = withStyles({ root: { color: '#3f51b5' } })(
+    ExpandMoreRoundedIcon
+);
+const expandIcon = (props) => <StyledExpandMoreRoundedIcon className={props.className} />;
 
 class FiltersMenu extends Component {
     state = {
@@ -132,6 +137,7 @@ class FiltersMenu extends Component {
                         input={
                             <StyledOutlinedInput labelWidth={52} name="filter" id="sortFilter" />
                         }
+                        IconComponent={expandIcon}
                         autoWidth
                     >
                         {filters.year === 'All' && (
@@ -151,6 +157,7 @@ class FiltersMenu extends Component {
                         value={filters.order}
                         onChange={this.onFilterChange}
                         input={<StyledOutlinedInput labelWidth={41} name="order" id="orderBy" />}
+                        IconComponent={expandIcon}
                         autoWidth
                     >
                         <MenuItem value="descending">
@@ -166,6 +173,7 @@ class FiltersMenu extends Component {
                         value={filters.year}
                         onChange={this.onFilterChange}
                         input={<StyledOutlinedInput labelWidth={33} name="year" id="showYear" />}
+                        IconComponent={expandIcon}
                         autoWidth
                     >
                         <MenuItem value="All">
@@ -191,6 +199,7 @@ class FiltersMenu extends Component {
                                 id="maxResults"
                             />
                         }
+                        IconComponent={expandIcon}
                         autoWidth
                     >
                         <MenuItem value={1000}>All</MenuItem>
