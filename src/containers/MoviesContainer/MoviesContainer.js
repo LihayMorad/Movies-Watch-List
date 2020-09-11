@@ -130,7 +130,7 @@ class MoviesContainer extends PureComponent {
                     `The movie '${NameEng} (${Year})' added successfully`,
                     'success'
                 );
-                if (!this.props.watchingList) this.toggleAddMovie();
+                if (!this.props.watchMode) this.toggleAddMovie();
                 MoviesService.UpdateYears(Year, 'add');
                 MoviesService.UpdateCounter(['total', 'unwatched'], 'Add Movie');
             })
@@ -207,7 +207,7 @@ class MoviesContainer extends PureComponent {
     };
 
     shareList = async (userInfo, movies) => {
-        const url = `${window.location.origin}/?watchingList=true&user=${userInfo.replace(
+        const url = `${window.location.origin}/?watchMode=true&user=${userInfo.replace(
             /\s/g,
             '+'
         )}&imdbIDs=${movies.map((movie) => movie.imdbID).join()}`;
@@ -267,8 +267,8 @@ class MoviesContainer extends PureComponent {
             moviesCounter,
             filters,
             loggedInUser,
-            watchingList,
-            watchingListUserInfo,
+            watchMode,
+            watchModeUserInfo,
         } = this.props;
 
         let moviesContainer = null;
@@ -278,7 +278,7 @@ class MoviesContainer extends PureComponent {
         let addMovieBtn = null;
         let shareListBtn = null;
 
-        if (!watchingList) {
+        if (!watchMode) {
             if (loggedInUser) {
                 let loggedInUserInfo = '';
                 const unseenCounter = moviesCounter.unwatched;
@@ -335,7 +335,7 @@ class MoviesContainer extends PureComponent {
                             toggleWatchTrailer={this.toggleWatchTrailer}
                             toggleEditComments={this.toggleEditComments}
                             toggleSnackbar={this.props.toggleSnackbar}
-                            watchingList={watchingList}
+                            watchMode={watchMode}
                         />
                     ));
 
@@ -395,7 +395,7 @@ class MoviesContainer extends PureComponent {
                     saveMovieData={this.saveMovieData}
                     addMovie={loggedInUser && this.addMovie}
                     toggleWatchTrailer={this.toggleWatchTrailer}
-                    watchingList={watchingList}
+                    watchMode={watchMode}
                 />
             ));
             moviesContainer =
@@ -424,10 +424,8 @@ class MoviesContainer extends PureComponent {
 
                 {shareListBtn}
 
-                {watchingListUserInfo && (
-                    <h3 className="informationH3">
-                        You are watching {watchingListUserInfo}'s list
-                    </h3>
+                {watchModeUserInfo && (
+                    <h3 className="informationH3">You are watching {watchModeUserInfo}'s list</h3>
                 )}
 
                 {moviesContainer}

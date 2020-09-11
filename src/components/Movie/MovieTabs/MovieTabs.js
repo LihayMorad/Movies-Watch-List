@@ -155,8 +155,8 @@ class MovieTabs extends PureComponent {
 
     render() {
         const { expanded } = this.state;
-        const { watchingList, genre, plot } = this.props;
-        const userEmail = !watchingList ? AccountsService.GetLoggedInUser().email : '';
+        const { watchMode, genre, plot } = this.props;
+        const userEmail = !watchMode ? AccountsService.GetLoggedInUser().email : '';
 
         const ratings = this.getRatings();
         const imdbRating = ratings && this.getImdbRating();

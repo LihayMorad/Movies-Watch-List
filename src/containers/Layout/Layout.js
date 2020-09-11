@@ -41,7 +41,7 @@ class Layout extends Component {
             if (user) {
                 // User is signed in.
                 this.setState({ loggedInUser: user });
-                if (!this.state.watchingList) {
+                if (!this.state.watchMode) {
                     this.getMovies();
                     this.setDBListeners();
                 }
@@ -147,17 +147,16 @@ class Layout extends Component {
         const paramsString = window.location.search;
         const searchParams = new URLSearchParams(paramsString);
         return {
-            watchingList:
-                searchParams.has('watchingList') && searchParams.get('watchingList') === 'true',
-            watchingListUserInfo: searchParams.has('user') && searchParams.get('user'),
+            watchMode: searchParams.has('watchMode') && searchParams.get('watchMode') === 'true',
+            watchModeUserInfo: searchParams.has('user') && searchParams.get('user'),
         };
     };
 
     render() {
-        const { loggedInUser, watchingList, watchingListUserInfo } = this.state;
+        const { loggedInUser, watchMode, watchModeUserInfo } = this.state;
         let filtersMenu = null;
 
-        if (loggedInUser && !watchingList) {
+        if (loggedInUser && !watchMode) {
             filtersMenu = (
                 <TrackVisibility partialVisibility>
                     {({ isVisible }) => (
@@ -197,8 +196,8 @@ class Layout extends Component {
                 {filtersMenu}
 
                 <MoviesContainer
-                    watchingList={watchingList}
-                    watchingListUserInfo={watchingListUserInfo}
+                    watchMode={watchMode}
+                    watchModeUserInfo={watchModeUserInfo}
                     loggedInUser={loggedInUser}
                 />
 

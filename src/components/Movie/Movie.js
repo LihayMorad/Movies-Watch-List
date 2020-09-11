@@ -58,7 +58,7 @@ class Movie extends Component {
     }
 
     getMovieDb = () => {
-        const { dbMovieID, watchingList } = this.props;
+        const { dbMovieID, watchMode } = this.props;
         const { imdbID, imdbRating, imdbRatingTimestamp, Poster } = this.props.data;
         let movieData = {};
         let error = false;
@@ -74,7 +74,7 @@ class Movie extends Component {
                         movieData.Poster = TMDB_POSTER_BASE_URL + Poster;
                     }
                     const shouldUpdateIMDBRating =
-                        !watchingList &&
+                        !watchMode &&
                         (!imdbRating || !imdbRatingTimestamp || hasExpired(imdbRatingTimestamp));
                     if (shouldUpdateIMDBRating) {
                         const newIMDBRating =
@@ -90,7 +90,7 @@ class Movie extends Component {
             .catch(() => (error = true))
             .finally(() => {
                 this.setState({ loading: false, error });
-                this.props.saveMovieData(!watchingList ? dbMovieID : imdbID, movieData);
+                this.props.saveMovieData(!watchMode ? dbMovieID : imdbID, movieData);
             });
     };
 
@@ -137,7 +137,7 @@ class Movie extends Component {
 
     render() {
         const { loading, error } = this.state;
-        const { dbMovieID, watchingList } = this.props;
+        const { dbMovieID, watchMode } = this.props;
         const {
             imdbID,
             Title,
@@ -264,7 +264,7 @@ class Movie extends Component {
                                     plot={Plot}
                                     actors={Actors}
                                     genre={Genre}
-                                    watchingList={watchingList}
+                                    watchMode={watchMode}
                                 />
                             )
                         ) : (
@@ -272,7 +272,7 @@ class Movie extends Component {
                         )}
                     </CardActions>
 
-                    {!watchingList ? (
+                    {!watchMode ? (
                         <>
                             <StyledTooltip
                                 title="Edit movie's personal note"
