@@ -6,9 +6,14 @@ const moviesService = {
             AccountsService.GetDBRef('user')
                 .get()
                 .then((querySnapshot) => {
-                    if (!querySnapshot.empty || querySnapshot.size > 0) {
-                        const { years, counter } = querySnapshot.data();
-                        resolve({ years, counter });
+                    if (querySnapshot.exists) {
+                        if (!querySnapshot.empty || querySnapshot.size > 0) {
+                            console.log('reached here', querySnapshot);
+                            const { years, counter } = querySnapshot.data();
+                            resolve({ years, counter });
+                        }
+                    } else {
+                        resolve({ years: [], counter: { total: 0, unwatched: 0 } });
                     }
                 })
                 .catch(reject);
