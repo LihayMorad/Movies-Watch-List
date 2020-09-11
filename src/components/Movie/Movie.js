@@ -278,60 +278,82 @@ class Movie extends Component {
                                 title="Edit movie's personal note"
                                 TransitionComponent={Zoom}
                             >
-                                <Fab
+                                <Zoom
+                                    in={!loading}
+                                    timeout={500}
+                                    unmountOnExit
                                     className="movieCardFab"
-                                    color="primary"
-                                    size="small"
-                                    onClick={() => {
-                                        this.props.toggleEditComments(dbMovieID, Comments);
-                                    }}
                                 >
-                                    <EditIcon />
-                                </Fab>
+                                    <Fab
+                                        color="primary"
+                                        size="small"
+                                        onClick={() => {
+                                            this.props.toggleEditComments(dbMovieID, Comments);
+                                        }}
+                                    >
+                                        <EditIcon />
+                                    </Fab>
+                                </Zoom>
                             </StyledTooltip>
 
                             <StyledTooltip
                                 title={`Mark movie as ${Watched ? 'unseen' : 'watched'}`}
                                 TransitionComponent={Zoom}
                             >
-                                <Fab className="movieCardFab" color="default" size="small">
-                                    <Checkbox
-                                        style={{ height: 'inherit' }}
-                                        checked={Watched || false}
-                                        icon={
-                                            <RemoveRedEyeOutlined fontSize="large" color="action" />
-                                        }
-                                        checkedIcon={
-                                            <RemoveRedEye fontSize="large" color="primary" />
-                                        }
-                                        onChange={this.toggleMovieWatched}
-                                    />
-                                </Fab>
+                                <Zoom
+                                    in={!loading}
+                                    timeout={500}
+                                    unmountOnExit
+                                    className="movieCardFab"
+                                >
+                                    <Fab color="default" size="small">
+                                        <Checkbox
+                                            style={{ height: 'inherit' }}
+                                            checked={Watched || false}
+                                            icon={
+                                                <RemoveRedEyeOutlined
+                                                    fontSize="large"
+                                                    color="action"
+                                                />
+                                            }
+                                            checkedIcon={
+                                                <RemoveRedEye fontSize="large" color="primary" />
+                                            }
+                                            onChange={this.toggleMovieWatched}
+                                        />
+                                    </Fab>
+                                </Zoom>
                             </StyledTooltip>
 
                             <StyledTooltip title="Delete movie" TransitionComponent={Zoom}>
-                                <Fab
+                                <Zoom
+                                    in={!loading}
+                                    timeout={500}
+                                    unmountOnExit
                                     className="movieCardFab"
-                                    color="secondary"
-                                    size="small"
-                                    onClick={() => {
-                                        if (
-                                            window.confirm(
-                                                'Are you sure you want to delete this movie?'
-                                            )
-                                        ) {
-                                            this.props.deleteMovie(
-                                                dbMovieID,
-                                                imdbID,
-                                                !error ? Title : NameEng,
-                                                Year,
-                                                Watched
-                                            );
-                                        }
-                                    }}
                                 >
-                                    <DeleteIcon />
-                                </Fab>
+                                    <Fab
+                                        color="secondary"
+                                        size="small"
+                                        onClick={() => {
+                                            if (
+                                                window.confirm(
+                                                    'Are you sure you want to delete this movie?'
+                                                )
+                                            ) {
+                                                this.props.deleteMovie(
+                                                    dbMovieID,
+                                                    imdbID,
+                                                    !error ? Title : NameEng,
+                                                    Year,
+                                                    Watched
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </Fab>
+                                </Zoom>
                             </StyledTooltip>
                         </>
                     ) : (
@@ -340,15 +362,21 @@ class Movie extends Component {
                                 title="Add this movie to your list"
                                 TransitionComponent={Zoom}
                             >
-                                <Fab
+                                <Zoom
+                                    in={!loading}
+                                    timeout={500}
+                                    unmountOnExit
                                     className="movieCardFab"
-                                    color="primary"
-                                    variant="extended"
-                                    size="large"
-                                    onClick={this.addMovie}
                                 >
-                                    <AddIcon />
-                                </Fab>
+                                    <Fab
+                                        color="primary"
+                                        variant="extended"
+                                        size="large"
+                                        onClick={this.addMovie}
+                                    >
+                                        <AddIcon />
+                                    </Fab>
+                                </Zoom>
                             </StyledTooltip>
                         )
                     )}
