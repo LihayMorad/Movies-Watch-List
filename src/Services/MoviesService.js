@@ -5,11 +5,10 @@ const moviesService = {
         return new Promise((resolve, reject) => {
             AccountsService.GetDBRef('user')
                 .get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.exists) {
-                        if (!querySnapshot.empty || querySnapshot.size > 0) {
-                            console.log('reached here', querySnapshot);
-                            const { years, counter } = querySnapshot.data();
+                .then((doc) => {
+                    if (doc.exists) {
+                        if (!doc.empty || doc.size > 0) {
+                            const { years, counter } = doc.data();
                             resolve({ years, counter });
                         }
                     } else {
