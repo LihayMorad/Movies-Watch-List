@@ -155,23 +155,30 @@ class MovieTabs extends PureComponent {
         );
     };
 
+    getAward = (value) => {
+        return (
+            <a
+                key={value}
+                className="award"
+                href={`https://www.imdb.com/title/${this.props.imdbID}/awards/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {value}
+            </a>
+        );
+    };
+
     getAwards = () => {
         if (!this.props.awards || this.props.awards === 'N/A') return [];
-        const awards = this.props.awards && this.props.awards.split('.');
-        return awards
-            .filter((award) => award)
-            .map((award) => (
-                <a
-                    key={award.trim()}
-                    className="award"
-                    href={`https://www.imdb.com/title/${this.props.imdbID}/awards/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {award.trim()}
-                </a>
-            ));
+        const awards =
+            this.props.awards &&
+            (this.props.awards || '')
+                .split('.')
+                .filter((award) => award)
+                .map((award) => this.getAward(award.trim()));
+        return awards.length === 1 ? awards.concat(this.getAward('All Awards')) : awards;
     };
 
     getTab = (tabKey, summary, details, detailsComp) => {
@@ -243,7 +250,8 @@ class MovieTabs extends PureComponent {
                             <StyledTypographyH6 variant="h6">Awards</StyledTypographyH6>
                             <StyledTypographyMg variant="subtitle2">{award}</StyledTypographyMg>
                         </>,
-                        otherAwards
+                        null,
+                        <StyledAccordionDetails>{otherAwards}</StyledAccordionDetails>
                     )}
 
                 {userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) &&
