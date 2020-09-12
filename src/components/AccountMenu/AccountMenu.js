@@ -17,7 +17,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const StyledTooltip = withStyles({
     tooltip: { color: 'white', backgroundColor: 'black', fontSize: '12px' },
-    tooltipPlacementBottom: { marginTop: '5px' },
+    tooltipPlacementBottom: { marginTop: '12px' },
     arrow: { color: 'black' },
 })(Tooltip);
 
