@@ -221,9 +221,148 @@ class movieAddModal extends Component {
         }));
     };
 
-    render() {
-        const { imdbID, tmdbID, Year, results, loading } = this.state;
+    getModalHeader = () => {
+        return (
+            <DialogTitle id="movieAddModalTitle">
+                Add a movie to your watch list
+                <IconButton className="closeModalBtn" onClick={this.props.toggle}>
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
+        );
+    };
 
+    getModalContent = () => {
+        const { imdbID, tmdbID, Year, results, loading } = this.state;
+        return (
+            <StyledDialogContent>
+                <form id="movieAddModalForm" onSubmit={this.searchMovie}>
+                    <DialogContentText>
+                        Search a movie or see popular movies now and then choose one from the search
+                        results.
+                        <br />
+                        You may specify its hebrew name and your personal note below.
+                        <br />
+                        When you're done click 'Add'.
+                    </DialogContentText>
+                    <br />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="movieNameEng"
+                        name="NameEng"
+                        label="Movie's English name"
+                        inputProps={{ type: 'text', placeholder: 'Enter english name' }}
+                        onChange={this.onChange}
+                    />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        margin="dense"
+                        id="movieReleaseYear"
+                        name="Year"
+                        label="Movie's Release year"
+                        defaultValue={Year}
+                        inputProps={{
+                            type: 'number',
+                            placeholder: 'Enter release year',
+                            min: '1950',
+                            max: currYear + 2,
+                        }}
+                        onChange={this.onChange}
+                    />
+
+                    <Button
+                        type="submit"
+                        color="primary"
+                        variant="outlined"
+                        className="movieAddModalBtn"
+                    >
+                        <SearchIcon />
+                        Search
+                    </Button>
+
+                    <Button
+                        type="button"
+                        color="secondary"
+                        variant="outlined"
+                        className="movieAddModalBtn"
+                        onClick={this.searchTrendingMovies}
+                    >
+                        <WhatshotIcon />
+                        &nbsp;Popular Movies
+                    </Button>
+
+                    {!loading ? (
+                        this.state.results &&
+                        this.state.results.length > 0 && (
+                            <MoviesResultsGrid
+                                results={results}
+                                type={this.state.resultsType}
+                                imdbID={imdbID}
+                                tmdbID={tmdbID}
+                                updateCurrentMovie={this.updateCurrentMovie}
+                                toggleWatchTrailer={this.toggleWatchTrailer}
+                                getIMDBID={this.getIMDBID}
+                            />
+                        )
+                    ) : (
+                        <SearchResultsSpinner />
+                    )}
+
+                    {imdbID && (
+                        <>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                margin="dense"
+                                id="movieNameHeb"
+                                name="NameHeb"
+                                label="Movie's Hebrew name"
+                                placeholder="Enter hebrew name (optional)"
+                                inputProps={{ type: 'text' }}
+                                onChange={this.onChange}
+                            />
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                multiline
+                                margin="normal"
+                                id="movieComments"
+                                name="Comments"
+                                label="Movie's Personal Note"
+                                placeholder="Enter Personal Note (optional)"
+                                onChange={this.onChange}
+                                inputProps={{ type: 'text', ref: this.personalNoteRef }}
+                            />
+                        </>
+                    )}
+                </form>
+            </StyledDialogContent>
+        );
+    };
+
+    getModalActions = () => {
+        const { imdbID, loading } = this.state;
+        return (
+            <DialogActions>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    id="movieAddModalAddBtn"
+                    onClick={this.addMovie}
+                    disabled={loading || !imdbID}
+                >
+                    Add
+                </Button>
+            </DialogActions>
+        );
+    };
+
+    render() {
         return (
             <>
                 <StyledDialog
@@ -233,132 +372,11 @@ class movieAddModal extends Component {
                     fullWidth
                     TransitionComponent={Zoom}
                 >
-                    <DialogTitle id="movieAddModalTitle">
-                        Add a movie to your watch list
-                        <IconButton className="closeModalBtn" onClick={this.props.toggle}>
-                            <CloseIcon />
-                        </IconButton>
-                    </DialogTitle>
+                    {this.getModalHeader()}
 
-                    <form id="movieAddModalForm" onSubmit={this.searchMovie}>
-                        <StyledDialogContent>
-                            <DialogContentText>
-                                Search a movie or see popular movies now and then choose one from
-                                the search results.
-                                <br />
-                                You may specify its hebrew name and your personal note below.
-                                <br />
-                                When you're done click 'Add'.
-                            </DialogContentText>
-                            <br />
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                autoFocus
-                                required
-                                margin="dense"
-                                id="movieNameEng"
-                                name="NameEng"
-                                label="Movie's English name"
-                                inputProps={{ type: 'text', placeholder: 'Enter english name' }}
-                                onChange={this.onChange}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                margin="dense"
-                                id="movieReleaseYear"
-                                name="Year"
-                                label="Movie's Release year"
-                                defaultValue={Year}
-                                inputProps={{
-                                    type: 'number',
-                                    placeholder: 'Enter release year',
-                                    min: '1950',
-                                    max: currYear + 2,
-                                }}
-                                onChange={this.onChange}
-                            />
+                    {this.getModalContent()}
 
-                            <Button
-                                type="submit"
-                                color="primary"
-                                variant="outlined"
-                                className="movieAddModalBtn"
-                            >
-                                <SearchIcon />
-                                Search
-                            </Button>
-
-                            <Button
-                                type="button"
-                                color="secondary"
-                                variant="outlined"
-                                className="movieAddModalBtn"
-                                onClick={this.searchTrendingMovies}
-                            >
-                                <WhatshotIcon />
-                                &nbsp;Popular Movies
-                            </Button>
-
-                            {!loading ? (
-                                this.state.results &&
-                                this.state.results.length > 0 && (
-                                    <MoviesResultsGrid
-                                        results={results}
-                                        type={this.state.resultsType}
-                                        imdbID={imdbID}
-                                        tmdbID={tmdbID}
-                                        updateCurrentMovie={this.updateCurrentMovie}
-                                        toggleWatchTrailer={this.toggleWatchTrailer}
-                                        getIMDBID={this.getIMDBID}
-                                    />
-                                )
-                            ) : (
-                                <SearchResultsSpinner />
-                            )}
-
-                            {imdbID && (
-                                <>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        margin="dense"
-                                        id="movieNameHeb"
-                                        name="NameHeb"
-                                        label="Movie's Hebrew name"
-                                        placeholder="Enter hebrew name (optional)"
-                                        inputProps={{ type: 'text' }}
-                                        onChange={this.onChange}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        multiline
-                                        margin="normal"
-                                        id="movieComments"
-                                        name="Comments"
-                                        label="Movie's Personal Note"
-                                        placeholder="Enter Personal Note (optional)"
-                                        onChange={this.onChange}
-                                        inputProps={{ type: 'text', ref: this.personalNoteRef }}
-                                    />
-                                </>
-                            )}
-                        </StyledDialogContent>
-
-                        <DialogActions>
-                            <Button
-                                color="primary"
-                                variant="contained"
-                                id="movieAddModalAddBtn"
-                                onClick={this.addMovie}
-                                disabled={loading || !imdbID}
-                            >
-                                Add
-                            </Button>
-                        </DialogActions>
-                    </form>
+                    {this.getModalActions()}
                 </StyledDialog>
 
                 <MovieTrailerModal
