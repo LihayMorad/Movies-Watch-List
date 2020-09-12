@@ -183,12 +183,11 @@ class AccountMenu extends Component {
 
     getSignInAnonymouslyButton = () => (
         <MenuItem>
-            <StyledTooltip title="Sign in anonymously" TransitionComponent={Zoom}>
+            <StyledTooltip title="Sign in anonymously" TransitionComponent={Zoom} arrow>
                 <Button
                     className="btnPadding"
                     color="default"
                     variant="contained"
-                    arrow
                     onClick={this.signInAnonymously}
                 >
                     <PersonOutlineIcon />
