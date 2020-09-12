@@ -420,7 +420,7 @@ class MoviesContainer extends PureComponent {
                     !loadingMovies &&
                     freeSearch}
 
-                {counter}
+                {!loadingMovies && counter}
 
                 {addMovieBtn}
 

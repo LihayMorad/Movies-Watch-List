@@ -11,34 +11,27 @@ const StyledTooltip = withStyles({
     arrow: { color: 'black' },
 })(Tooltip);
 
+const getCounter = (title, value, icon) => {
+    return (
+        <StyledTooltip
+            title={title}
+            disableFocusListener
+            disableTouchListener
+            TransitionComponent={Zoom}
+            arrow
+        >
+            <StyledIconButton>
+                <Badge badgeContent={value || '0'} color="secondary">
+                    {icon}
+                </Badge>
+            </StyledIconButton>
+        </StyledTooltip>
+    );
+};
+
 export default ({ unseenCounter = 0, watchedCounter = 0 }) => (
     <div id="moviesCounter">
-        <StyledTooltip
-            title="Total unseen movies"
-            disableFocusListener
-            disableTouchListener
-            TransitionComponent={Zoom}
-            arrow
-        >
-            <StyledIconButton>
-                <Badge badgeContent={unseenCounter} color="secondary">
-                    <RemoveRedEyeOutlined fontSize="default" />
-                </Badge>
-            </StyledIconButton>
-        </StyledTooltip>
-
-        <StyledTooltip
-            title="Total watched movies"
-            disableFocusListener
-            disableTouchListener
-            TransitionComponent={Zoom}
-            arrow
-        >
-            <StyledIconButton>
-                <Badge badgeContent={watchedCounter} color="secondary">
-                    <RemoveRedEye fontSize="default" />
-                </Badge>
-            </StyledIconButton>
-        </StyledTooltip>
+        {getCounter('Total watched movies', watchedCounter, <RemoveRedEye />)}
+        {getCounter('Total unseen movies', unseenCounter, <RemoveRedEyeOutlined />)}
     </div>
 );
