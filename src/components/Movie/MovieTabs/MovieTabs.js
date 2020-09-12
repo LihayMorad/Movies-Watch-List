@@ -29,7 +29,7 @@ const StyledDivider = withStyles({
 
 class MovieTabs extends PureComponent {
     state = {
-        expanded: false,
+        expanded: null,
     };
 
     onTabChange = (panel) => (e, expanded) => {
@@ -153,8 +153,23 @@ class MovieTabs extends PureComponent {
         );
     };
 
-    render() {
-        const { expanded } = this.state;
+    getTab = (tabKey, summary, details, detailsComp) => {
+        return (
+            <StyledExpansionPanel
+                className="tabsPanel"
+                expanded={this.state.expanded === tabKey}
+                onChange={this.onTabChange(tabKey)}
+                TransitionProps={{ unmountOnExit: true }}
+            >
+                <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    {summary}
+                </StyledAccordionSummary>
+                {detailsComp || <AccordionDetails>{details}</AccordionDetails>}
+            </StyledExpansionPanel>
+        );
+    };
+
+    getTabs = () => {
         const { watchMode, genre, plot } = this.props;
         const userEmail = !watchMode ? AccountsService.GetLoggedInUser().email : '';
 
@@ -167,73 +182,60 @@ class MovieTabs extends PureComponent {
 
         return (
             <div>
-                <StyledExpansionPanel
-                    className="tabsPanel"
-                    expanded={expanded === 'panel1'}
-                    onChange={this.onTabChange('panel1')}
-                    TransitionProps={{ unmountOnExit: true }}
-                >
-                    <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                {this.getTab(
+                    'panel1',
+                    <>
                         <StyledTypographyH6 variant="h6">Plot</StyledTypographyH6>
                         <StyledTypographyMg variant="subtitle2">{genre}</StyledTypographyMg>
-                    </StyledAccordionSummary>
-                    <AccordionDetails>{plot || ''}</AccordionDetails>
-                </StyledExpansionPanel>
+                    </>,
+                    plot || ''
+                )}
 
-                <StyledExpansionPanel
-                    className="tabsPanel"
-                    expanded={expanded === 'panel2'}
-                    onChange={this.onTabChange('panel2')}
-                    TransitionProps={{ unmountOnExit: true }}
-                >
-                    <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                {this.getTab(
+                    'panel2',
+                    <>
                         <StyledTypographyH6 variant="h6">Cast</StyledTypographyH6>
                         <StyledTypographyMg variant="subtitle2">
                             {leadingActor}& {fullCast}
                         </StyledTypographyMg>
-                    </StyledAccordionSummary>
-                    <AccordionDetails>
-                        <StyledTypographyMg variant="body2">{supportingActors}</StyledTypographyMg>
-                    </AccordionDetails>
-                </StyledExpansionPanel>
+                    </>,
+                    <StyledTypographyMg variant="body2">{supportingActors}</StyledTypographyMg>
+                )}
 
-                {ratings && (
-                    <StyledExpansionPanel
-                        className="tabsPanel"
-                        expanded={expanded === 'panel3'}
-                        onChange={this.onTabChange('panel3')}
-                        TransitionProps={{ unmountOnExit: true }}
-                    >
-                        <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                {ratings &&
+                    this.getTab(
+                        'panel3',
+                        <>
                             <StyledTypographyH6 variant="h6">Ratings</StyledTypographyH6>
                             <StyledTypographyMg variant="subtitle2">
                                 {imdbRating}
                             </StyledTypographyMg>
-                        </StyledAccordionSummary>
-                        <AccordionDetails>{ratings}</AccordionDetails>
-                    </StyledExpansionPanel>
-                )}
+                        </>,
+                        ratings
+                    )}
 
-                {userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) && (
-                    <StyledExpansionPanel
-                        className="tabsPanel"
-                        expanded={expanded === 'panel4'}
-                        onChange={this.onTabChange('panel4')}
-                        TransitionProps={{ unmountOnExit: true }}
-                    >
-                        <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                {userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) &&
+                    this.getTab(
+                        'panel4',
+                        <>
                             <StyledTypographyH6 variant="h6">Downloads</StyledTypographyH6>
                             <StyledTypographyMg variant="subtitle2">
                                 Torrents & Subtitles
                             </StyledTypographyMg>
-                        </StyledAccordionSummary>
-                        <StyledAccordionDetails>{torrentsLinks}</StyledAccordionDetails>
-                        <StyledDivider variant="middle"></StyledDivider>
-                        <StyledAccordionDetails>{subtitlesLinks}</StyledAccordionDetails>
-                    </StyledExpansionPanel>
-                )}
+                        </>,
+                        null,
+                        <>
+                            <StyledAccordionDetails>{torrentsLinks}</StyledAccordionDetails>
+                            <StyledDivider variant="middle"></StyledDivider>
+                            <StyledAccordionDetails>{subtitlesLinks}</StyledAccordionDetails>
+                        </>
+                    )}
             </div>
         );
+    };
+
+    render() {
+        return this.getTabs();
     }
 }
 
