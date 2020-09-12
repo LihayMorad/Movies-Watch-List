@@ -221,6 +221,17 @@ class movieAddModal extends Component {
         }));
     };
 
+    getModalHeader = () => {
+        return (
+            <DialogTitle id="movieAddModalTitle">
+                Add a movie to your watch list
+                <IconButton className="closeModalBtn" onClick={this.props.toggle}>
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
+        );
+    };
+
     render() {
         const { imdbID, tmdbID, Year, results, loading } = this.state;
 
@@ -233,12 +244,7 @@ class movieAddModal extends Component {
                     fullWidth
                     TransitionComponent={Zoom}
                 >
-                    <DialogTitle id="movieAddModalTitle">
-                        Add a movie to your watch list
-                        <IconButton className="closeModalBtn" onClick={this.props.toggle}>
-                            <CloseIcon />
-                        </IconButton>
-                    </DialogTitle>
+                    {this.getModalHeader()}
 
                     <form id="movieAddModalForm" onSubmit={this.searchMovie}>
                         <StyledDialogContent>
