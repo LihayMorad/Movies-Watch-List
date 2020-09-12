@@ -20,9 +20,11 @@ const StyledAccordionDetails = withStyles({
 })(AccordionDetails);
 const StyledAccordionSummary = withStyles({ expandIcon: { color: 'inherit' } })(AccordionSummary);
 const StyledTypographyH6 = withStyles({
-    root: { flexBasis: '33.33%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
+    root: { flexBasis: '25%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
 })(Typography);
-const StyledTypographyMg = withStyles({ root: { margin: 'auto', color: 'inherit' } })(Typography);
+const StyledTypographyMg = withStyles({
+    root: { margin: 'auto', padding: '0 3px', color: 'inherit' },
+})(Typography);
 const StyledDivider = withStyles({
     root: { height: '0.5px', backgroundColor: 'rgb(255 255 255 / 50%)' },
 })(Divider);
@@ -153,6 +155,25 @@ class MovieTabs extends PureComponent {
         );
     };
 
+    getAwards = () => {
+        if (!this.props.awards || this.props.awards === 'N/A') return [];
+        const awards = this.props.awards && this.props.awards.split('.');
+        return awards
+            .filter((award) => award)
+            .map((award) => (
+                <a
+                    key={award.trim()}
+                    className="award"
+                    href={`https://www.imdb.com/title/${this.props.imdbID}/awards/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {award.trim()}
+                </a>
+            ));
+    };
+
     getTab = (tabKey, summary, details, detailsComp) => {
         return (
             <StyledExpansionPanel
@@ -179,6 +200,7 @@ class MovieTabs extends PureComponent {
         const subtitlesLinks = this.getSubtitlesLinks();
         const [leadingActor, ...supportingActors] = this.getActors();
         const fullCast = this.getFullCast();
+        const [award, ...otherAwards] = this.getAwards();
 
         return (
             <div>
@@ -214,9 +236,19 @@ class MovieTabs extends PureComponent {
                         ratings
                     )}
 
-                {userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) &&
+                {award &&
                     this.getTab(
                         'panel4',
+                        <>
+                            <StyledTypographyH6 variant="h6">Awards</StyledTypographyH6>
+                            <StyledTypographyMg variant="subtitle2">{award}</StyledTypographyMg>
+                        </>,
+                        otherAwards
+                    )}
+
+                {userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) &&
+                    this.getTab(
+                        'panel5',
                         <>
                             <StyledTypographyH6 variant="h6">Downloads</StyledTypographyH6>
                             <StyledTypographyMg variant="subtitle2">

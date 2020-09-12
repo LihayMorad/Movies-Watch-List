@@ -232,6 +232,7 @@ class Movie extends Component {
             Plot,
             Actors,
             Genre,
+            Awards,
         } = this.props.data;
 
         return (
@@ -344,6 +345,7 @@ class Movie extends Component {
                                     plot={Plot}
                                     actors={Actors}
                                     genre={Genre}
+                                    awards={Awards}
                                     watchMode={watchMode}
                                 />
                             )
