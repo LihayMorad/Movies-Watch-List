@@ -18,12 +18,14 @@ const StyledExpansionPanel = withStyles({ root: { color: 'white' } })(Accordion)
 const StyledAccordionDetails = withStyles({
     root: { flexWrap: 'wrap', justifyContent: 'space-around' },
 })(AccordionDetails);
-const StyledAccordionSummary = withStyles({ expandIcon: { color: 'inherit' } })(AccordionSummary);
+const StyledAccordionSummary = withStyles({
+    expandIcon: { color: 'inherit', padding: '12px 5px' },
+})(AccordionSummary);
 const StyledTypographyH6 = withStyles({
     root: { flexBasis: '25%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
 })(Typography);
 const StyledTypographyMg = withStyles({
-    root: { margin: 'auto', padding: '0 3px', color: 'inherit' },
+    root: { margin: 'auto', padding: '0 5px', color: 'inherit' },
 })(Typography);
 const StyledDivider = withStyles({
     root: { height: '0.5px', backgroundColor: 'rgb(255 255 255 / 50%)' },
