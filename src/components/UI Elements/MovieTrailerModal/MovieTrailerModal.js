@@ -160,7 +160,7 @@ class MovieTrailerModal extends Component {
                     <LoadingSpinner />
                 )}
 
-                <DialogActions id="TrailerModalActions">
+                <DialogActions className="TrailerModalActions">
                     {!loading && !searchError && (
                         <Typography variant="body1" align="left">
                             *based on YouTube search results

@@ -1,11 +1,11 @@
-#snackbarRoot {
+.snackbarWrapper {
     margin: 15px auto;
-    #snackbarMessage {
+    .snackbarMessage {
         display: flex;
         align-items: center;
         margin: auto 15px;
     }
-    #snackbarCloseBtn {
+    .snackbarCloseBtn {
         position: absolute;
         top: 0;
         right: 0;

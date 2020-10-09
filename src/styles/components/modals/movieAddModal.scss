@@ -1,14 +1,10 @@
-#movieAddModalTitle {
-    padding: 24px 45px 20px 24px;
-}
-
 .closeModalBtn {
     position: absolute !important;
     right: 0;
     top: 0;
 }
 
-#movieAddModalForm {
+.movieAddModalForm {
     display: contents;
 }
 
@@ -17,10 +13,6 @@
     padding: 4px 7px 4px 5px !important;
 }
 
-#movieAddModalAddBtn {
-    padding: 5px 7px !important;
-}
-
-#movieNameHeb {
+.movieNameHeb {
     direction: rtl;
 }

@@ -30,7 +30,7 @@ const getCounter = (title, value, icon) => {
 };
 
 export default ({ unseenCounter = 0, watchedCounter = 0 }) => (
-    <div id="moviesCounter">
+    <div className="moviesCounter">
         {getCounter('Total watched movies', watchedCounter, <RemoveRedEye />)}
         {getCounter('Total unseen movies', unseenCounter, <RemoveRedEyeOutlined />)}
     </div>

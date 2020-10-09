@@ -310,7 +310,7 @@ class MoviesContainer extends PureComponent {
                 );
 
                 addMovieBtn = (
-                    <div id="addMovieBtn">
+                    <div className="addMovieBtn">
                         <Fab
                             color="primary"
                             variant="extended"

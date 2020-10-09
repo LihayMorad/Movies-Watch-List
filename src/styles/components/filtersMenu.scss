@@ -1,4 +1,4 @@
-#filtersForm {
+.filtersForm {
     justify-content: center;
     align-items: center;
     .MenuElementMg {
@@ -6,8 +6,8 @@
     }
 }
 
-#filtersMenuBtn {
-    margin: 8px 0px;
+.filtersMenuBtn {
+    margin: 8px 0px !important;
     &.disabled {
         opacity: 0.7;
         cursor: default;
@@ -15,15 +15,11 @@
     }
 }
 
-#applyFiltersBtn {
-    padding: 5px 7px !important;
-}
-
-#showWatchedMovies {
-    padding: 0 7px;
+.showWatchedMovies {
+    padding: 0 7px !important;
     max-width: 95px;
     box-sizing: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.23);
+    border: 1px solid rgba(0, 0, 0, 0.23) !important;
     border-radius: 4px;
     transition: border-color 0.2s ease-out;
     &:hover {

@@ -223,7 +223,7 @@ class movieAddModal extends Component {
 
     getModalHeader = () => {
         return (
-            <DialogTitle id="movieAddModalTitle">
+            <DialogTitle>
                 Add a movie to your watch list
                 <IconButton className="closeModalBtn" onClick={this.props.toggle}>
                     <CloseIcon />
@@ -236,7 +236,7 @@ class movieAddModal extends Component {
         const { imdbID, tmdbID, Year, results, loading } = this.state;
         return (
             <StyledDialogContent>
-                <form id="movieAddModalForm" onSubmit={this.searchMovie}>
+                <form className="movieAddModalForm" onSubmit={this.searchMovie}>
                     <DialogContentText>
                         Search a movie or see popular movies now and then choose one from the search
                         results.
@@ -320,6 +320,7 @@ class movieAddModal extends Component {
                                 variant="outlined"
                                 margin="dense"
                                 id="movieNameHeb"
+                                className="movieNameHeb"
                                 name="NameHeb"
                                 label="Movie's Hebrew name"
                                 placeholder="Enter hebrew name (optional)"
@@ -352,7 +353,6 @@ class movieAddModal extends Component {
                 <Button
                     color="primary"
                     variant="contained"
-                    id="movieAddModalAddBtn"
                     onClick={this.addMovie}
                     disabled={loading || !imdbID}
                 >

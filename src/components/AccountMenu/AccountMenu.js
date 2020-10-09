@@ -122,8 +122,7 @@ class AccountMenu extends Component {
             <MenuItem>
                 {loggedInUser ? (
                     <Button
-                        id="loggedInBtn"
-                        className="btnPadding"
+                        className="loggedInBtn btnPadding"
                         color="primary"
                         variant="contained"
                         onClick={this.signOut}
@@ -204,7 +203,7 @@ class AccountMenu extends Component {
 
         return (
             <>
-                <IconButton id="accountMenu" color="primary" onClick={this.open}>
+                <IconButton className="accountMenu" color="primary" onClick={this.open}>
                     <AccountCircle fontSize="large" />
                 </IconButton>
 

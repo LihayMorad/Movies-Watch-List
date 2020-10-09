@@ -173,8 +173,7 @@ class Layout extends Component {
                                 arrow
                             >
                                 <Fab
-                                    id="scrollToMenu"
-                                    className={!isVisible ? 'show' : ''}
+                                    className={`scrollToMenu ${!isVisible ? 'show' : ''}`}
                                     color="primary"
                                     variant="extended"
                                     size="small"

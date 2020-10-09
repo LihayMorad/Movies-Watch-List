@@ -129,7 +129,7 @@ class FiltersMenu extends Component {
         const { filters } = this.state;
         const { moviesYears } = this.props;
         return (
-            <FormGroup row id="filtersForm">
+            <FormGroup row className="filtersForm">
                 <FormControl id="sortByFilter" className="MenuElementMg" variant="outlined">
                     <InputLabel htmlFor="sortFilter">Sort by</InputLabel>
                     <Select
@@ -213,7 +213,7 @@ class FiltersMenu extends Component {
                     </Select>
                 </FormControl>
 
-                <FormControl id="showWatchedMovies" className="MenuElementMg" variant="outlined">
+                <FormControl className="showWatchedMovies MenuElementMg" variant="outlined">
                     <StyledFormControlLabel
                         control={
                             <StyledCheckbox
@@ -253,8 +253,7 @@ class FiltersMenu extends Component {
                     arrow
                 >
                     <Button
-                        id="filtersMenuBtn"
-                        className={loadingMovies ? 'disabled' : ''}
+                        className={`filtersMenuBtn ${loadingMovies ? 'disabled' : ''}`}
                         color="secondary"
                         variant="contained"
                         onClick={!loadingMovies ? this.open : undefined}
@@ -281,7 +280,6 @@ class FiltersMenu extends Component {
 
                     <DialogActions>
                         <Button
-                            id="applyFiltersBtn"
                             color="primary"
                             variant="contained"
                             size="small"

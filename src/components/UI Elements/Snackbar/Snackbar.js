@@ -41,7 +41,7 @@ const snackbar = ({ isOpen, type, message = '', close }) => {
 
     return (
         <Snackbar
-            id="snackbarRoot"
+            className="snackbarWrapper"
             open={isOpen}
             onClose={close}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
@@ -50,12 +50,17 @@ const snackbar = ({ isOpen, type, message = '', close }) => {
             <SnackbarContent
                 style={{ backgroundColor: color }}
                 message={
-                    <span id="snackbarMessage">
+                    <span className="snackbarMessage">
                         {icon}&nbsp;{message}
                     </span>
                 }
                 action={[
-                    <IconButton id="snackbarCloseBtn" key="close" color="inherit" onClick={close}>
+                    <IconButton
+                        className="snackbarCloseBtn"
+                        key="close"
+                        color="inherit"
+                        onClick={close}
+                    >
                         <CloseIcon />
                     </IconButton>,
                 ]}

@@ -65,7 +65,7 @@ const moviesResultsGrid = ({
             break;
     }
 
-    return <ul id="moviesSearchResults">{moviesSearchResultList}</ul>;
+    return <ul className="moviesSearchResults">{moviesSearchResultList}</ul>;
 };
 
 export default moviesResultsGrid;

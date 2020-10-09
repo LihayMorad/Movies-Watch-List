@@ -1,13 +1,12 @@
-#accountMenu {
-    position: absolute;
+.accountMenu {
+    position: absolute !important;
     right: 0;
-    color: inherit;
-}
-
-#loggedInBtn {
-    background-color: forestgreen;
+    color: inherit !important;
 }
 
 .btnPadding {
     padding: 6px 8px !important;
+    &.loggedInBtn {
+        background-color: forestgreen;
+    }
 }
