@@ -234,6 +234,13 @@ class movieAddModal extends Component {
 
     getModalContent = () => {
         const { imdbID, tmdbID, Year, results, loading } = this.state;
+        const inputProps = {
+            fullWidth: true,
+            variant: 'outlined',
+            margin: 'dense',
+            inputProps: { type: 'text' },
+            onChange: this.onChange,
+        };
         return (
             <StyledDialogContent>
                 <form className="movieAddModalForm" onSubmit={this.searchMovie}>
@@ -247,32 +254,26 @@ class movieAddModal extends Component {
                     </DialogContentText>
                     <br />
                     <TextField
-                        fullWidth
-                        variant="outlined"
+                        {...inputProps}
                         autoFocus
                         required
-                        margin="dense"
                         id="movieNameEng"
                         name="NameEng"
                         label="Movie's English name"
-                        inputProps={{ type: 'text', placeholder: 'Enter english name' }}
-                        onChange={this.onChange}
+                        placeholder="Enter english name"
                     />
                     <TextField
-                        fullWidth
-                        variant="outlined"
-                        margin="dense"
+                        {...inputProps}
                         id="movieReleaseYear"
                         name="Year"
                         label="Movie's Release year"
                         defaultValue={Year}
+                        placeholder="Enter release year"
                         inputProps={{
                             type: 'number',
-                            placeholder: 'Enter release year',
                             min: '1950',
                             max: currYear + 2,
                         }}
-                        onChange={this.onChange}
                     />
 
                     <Button
@@ -316,27 +317,21 @@ class movieAddModal extends Component {
                     {imdbID && (
                         <>
                             <TextField
-                                fullWidth
-                                variant="outlined"
-                                margin="dense"
+                                {...inputProps}
                                 id="movieNameHeb"
                                 className="movieNameHeb"
                                 name="NameHeb"
                                 label="Movie's Hebrew name"
                                 placeholder="Enter hebrew name (optional)"
-                                inputProps={{ type: 'text' }}
-                                onChange={this.onChange}
                             />
                             <TextField
-                                fullWidth
-                                variant="outlined"
+                                {...inputProps}
                                 multiline
                                 margin="normal"
                                 id="movieComments"
                                 name="Comments"
                                 label="Movie's Personal Note"
                                 placeholder="Enter Personal Note (optional)"
-                                onChange={this.onChange}
                                 inputProps={{ type: 'text', ref: this.personalNoteRef }}
                             />
                         </>
