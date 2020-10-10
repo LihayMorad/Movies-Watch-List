@@ -100,15 +100,17 @@ class MovieTabs extends PureComponent {
     };
 
     getSubtitlesLinks = () => {
+        const userEmail = !this.props.watchMode ? AccountsService.GetLoggedInUser().email : '';
+        if (!userEmail === atob(process.env.REACT_APP_EMAIL_BTOA)) return null;
         const { imdbID, title } = this.props;
         return subtitlesSites.map((site) => {
-            let attributes = '';
+            let attributes = site.url;
             switch (site.name) {
-                case 'ScrewZira':
-                    attributes = `${site.url}${title}`;
+                case 'Ktuvit':
+                    attributes += title;
                     break;
                 case 'Wizdom':
-                    attributes = `${site.url}${imdbID}`;
+                    attributes += imdbID;
                     break;
                 default:
                     return <p></p>;
@@ -206,7 +208,6 @@ class MovieTabs extends PureComponent {
         const ratings = this.getRatings();
         const imdbRating = ratings && this.getImdbRating();
         const torrentsLinks = this.getTorrentsLinks();
-        const subtitlesLinks = this.getSubtitlesLinks();
         const [leadingActor, ...supportingActors] = this.getActors();
         const fullCast = this.getFullCast();
         const [award, ...otherAwards] = this.getAwards();
@@ -269,7 +270,9 @@ class MovieTabs extends PureComponent {
                         <>
                             <StyledAccordionDetails>{torrentsLinks}</StyledAccordionDetails>
                             <StyledDivider variant="middle"></StyledDivider>
-                            <StyledAccordionDetails>{subtitlesLinks}</StyledAccordionDetails>
+                            <StyledAccordionDetails>
+                                {this.getSubtitlesLinks()}
+                            </StyledAccordionDetails>
                         </>
                     )}
             </div>

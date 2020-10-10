@@ -25,12 +25,12 @@
     ],
     "subtitlesSites": [
         {
-            "name": "ScrewZira",
-            "url": "https://www.screwzira.com/Search.aspx?q="
+            "name": "Ktuvit",
+            "url": "https://www.ktuvit.me/Search.aspx?q="
         },
         {
             "name": "Wizdom",
-            "url": "https://wizdom.xyz/#/movies/"
+            "url": "https://wizdom.xyz/movie/"
         }
     ]
 }
