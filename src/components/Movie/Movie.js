@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+import TrackVisibility from 'react-on-screen';
+
 import MoviesService from '../../Services/MoviesService';
 import AnalyticsService from '../../Services/AnalyticsService';
 
 import MovieTabs from './MovieTabs/MovieTabs';
 import MovieSpinner from '../../components/UI Elements/Spinners/MovieSpinner';
 
-import { hasExpired } from '../../utils/common';
+import { hasExpired, debounce } from '../../utils/common';
 
 import {
     Card,
@@ -52,10 +54,14 @@ class Movie extends Component {
             loading: !props.hasData,
             error: false,
         };
+
+        this.getMovieDb = debounce(this.getMovieDb, 500, true);
     }
 
-    componentDidMount() {
-        if (!this.props.hasData) this.getMovieDb();
+    componentDidUpdate() {
+        if (this.props.isVisible && !this.props.hasData && !this.state.error) {
+            this.getMovieDb();
+        }
     }
 
     getMovieDb = () => {
@@ -361,4 +367,17 @@ class Movie extends Component {
     }
 }
 
-export default Movie;
+const MovieVisibilityWrapper = (props) => {
+    return (
+        <TrackVisibility
+            key={props.data.key || props.data.imdbID}
+            partialVisibility
+            throttleInterval={1000}
+            className="movieCardContainerVisibilityWrapper"
+        >
+            <Movie {...props} />
+        </TrackVisibility>
+    );
+};
+
+export default MovieVisibilityWrapper;
