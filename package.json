@@ -14,7 +14,7 @@
     "react-on-screen": "^2.1.1",
     "react-rating": "^2.0.5",
     "react-redux": "^7.2.1",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "4.0.0",
     "redux": "^4.0.5"
   },
   "scripts": {
