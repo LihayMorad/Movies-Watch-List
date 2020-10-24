@@ -13,12 +13,17 @@
         display: inline-block;
         padding: 0px 3px;
     }
+    .ratingsWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
     .ratingsText {
-        margin: 0 auto !important;
         padding: 5px;
-        color: inherit !important;
     }
     .downloadSitesLinks {
         padding: 4px;
+        font-size: 13px;
     }
 }

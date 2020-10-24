@@ -153,9 +153,7 @@ class Movie extends Component {
                         <Fab
                             color="primary"
                             size="small"
-                            onClick={() => {
-                                this.props.toggleEditComments(dbMovieID, Comments);
-                            }}
+                            onClick={() => this.props.toggleEditComments(dbMovieID, Comments)}
                         >
                             <EditIcon />
                         </Fab>
@@ -313,10 +311,10 @@ class Movie extends Component {
                                 <div className="movieCardContentTextDiv">
                                     {!loading ? (
                                         <div>
-                                            <Typography variant="h4">
+                                            <Typography variant="h5">
                                                 {!error ? Title : NameEng}
                                             </Typography>
-                                            <Typography variant="h5">{NameHeb}</Typography>
+                                            <Typography variant="h6">{NameHeb}</Typography>
                                             {!error ? (
                                                 <p>
                                                     {Country} {Year} <span>({Runtime})</span>

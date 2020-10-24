@@ -314,7 +314,7 @@ class MoviesContainer extends PureComponent {
                         <Fab
                             color="primary"
                             variant="extended"
-                            size="large"
+                            size="medium"
                             onClick={this.toggleAddMovie}
                         >
                             <AddIcon />

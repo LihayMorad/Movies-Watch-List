@@ -22,10 +22,19 @@ const StyledAccordionSummary = withStyles({
     expandIcon: { color: 'inherit', padding: '12px 5px' },
 })(AccordionSummary);
 const StyledTypographyH6 = withStyles({
-    root: { flexBasis: '25%', flexShrink: 0, textAlign: 'left', margin: 'auto 0' },
+    root: {
+        flexBasis: '25%',
+        flexShrink: 0,
+        textAlign: 'left',
+        margin: 'auto 0',
+        fontSize: '14px',
+    },
 })(Typography);
 const StyledTypographyMg = withStyles({
-    root: { margin: 'auto', padding: '0 5px', color: 'inherit' },
+    root: { margin: 'auto', padding: '0 5px', color: 'inherit', fontSize: '13px' },
+})(Typography);
+const StyledTypography = withStyles({
+    root: { fontSize: '13px' },
 })(Typography);
 const StyledDivider = withStyles({
     root: { height: '0.5px', backgroundColor: 'rgb(255 255 255 / 50%)' },
@@ -46,9 +55,9 @@ class MovieTabs extends PureComponent {
         if (!ratings || !ratings.length) return null;
 
         return ratings.map((rating) => (
-            <Typography key={rating.Source} className="ratingsText" variant="body2">
+            <StyledTypography key={rating.Source} className="ratingsText" variant="body2">
                 {rating.Source}: {rating.Value}
-            </Typography>
+            </StyledTypography>
         ));
     };
 
@@ -220,7 +229,7 @@ class MovieTabs extends PureComponent {
                         <StyledTypographyH6 variant="h6">Plot</StyledTypographyH6>
                         <StyledTypographyMg variant="subtitle2">{genre}</StyledTypographyMg>
                     </>,
-                    plot || ''
+                    <StyledTypography>{plot || ''}</StyledTypography>
                 )}
 
                 {this.getTab(
@@ -243,7 +252,8 @@ class MovieTabs extends PureComponent {
                                 {imdbRating}
                             </StyledTypographyMg>
                         </>,
-                        ratings
+                        null,
+                        <div className="ratingsWrapper">{ratings}</div>
                     )}
 
                 {award &&
@@ -254,7 +264,9 @@ class MovieTabs extends PureComponent {
                             <StyledTypographyMg variant="subtitle2">{award}</StyledTypographyMg>
                         </>,
                         null,
-                        <StyledAccordionDetails>{otherAwards}</StyledAccordionDetails>
+                        <StyledAccordionDetails>
+                            <StyledTypography>{otherAwards}</StyledTypography>
+                        </StyledAccordionDetails>
                     )}
 
                 {userEmail === atob(process.env.REACT_APP_EMAIL_BTOA) &&
