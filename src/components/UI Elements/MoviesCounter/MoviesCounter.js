@@ -31,7 +31,11 @@ const getCounter = (title, value, icon) => {
 
 export default ({ unseenCounter = 0, watchedCounter = 0 }) => (
     <div className="moviesCounter">
-        {getCounter('Total watched movies', watchedCounter, <RemoveRedEye />)}
-        {getCounter('Total unseen movies', unseenCounter, <RemoveRedEyeOutlined />)}
+        {getCounter(`Total watched movies: ${watchedCounter}`, watchedCounter, <RemoveRedEye />)}
+        {getCounter(
+            `Total unseen movies: ${unseenCounter}`,
+            unseenCounter,
+            <RemoveRedEyeOutlined />
+        )}
     </div>
 );
