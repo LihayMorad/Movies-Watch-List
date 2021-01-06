@@ -1,5 +1,5 @@
 import React from 'react';
 
-const MoviesSpinner = () => <div className="movieLoading"></div>;
+const MovieSpinner = () => <div className="movieLoading"></div>;
 
-export default MoviesSpinner;
+export default MovieSpinner;
