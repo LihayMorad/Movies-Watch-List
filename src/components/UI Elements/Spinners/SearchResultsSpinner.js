@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default () => (
+const SearchResultsSpinner = () => (
     <div className="sk-circle">
         <div className="sk-circle1 sk-child"></div>
         <div className="sk-circle2 sk-child"></div>
@@ -16,3 +16,5 @@ export default () => (
         <div className="sk-circle12 sk-child"></div>
     </div>
 );
+
+export default SearchResultsSpinner;
