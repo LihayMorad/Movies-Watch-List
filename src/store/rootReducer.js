@@ -1,5 +1,14 @@
 import * as actionTypes from './actions';
 
+const FILTERS_STORAGE_KEY = 'filters';
+const DEFAULT_FILTERS = {
+    filter: 'releaseYear',
+    order: 'descending',
+    year: 'All',
+    maxResults: 10,
+    showWatchedMovies: false,
+};
+
 const initialState = {
     isSnackbarOpen: false,
     snackbarMessage: '',
@@ -10,13 +19,7 @@ const initialState = {
         total: 0,
         unwatched: 0,
     },
-    filters: {
-        filter: 'releaseYear',
-        order: 'descending',
-        year: 'All',
-        maxResults: 10,
-        showWatchedMovies: false,
-    },
+    filters: JSON.parse(localStorage.getItem(FILTERS_STORAGE_KEY)) || DEFAULT_FILTERS,
     loadingMovies: false,
 };
 
@@ -59,6 +62,7 @@ const rootReducer = (state = initialState, action) => {
 
         case actionTypes.UPDATE_FILTERS:
             if (action.payload) {
+                localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(action.payload));
                 return {
                     ...state,
                     filters: { ...action.payload },
