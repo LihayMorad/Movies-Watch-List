@@ -127,7 +127,7 @@ class MovieTrailerModal extends Component {
                 maxWidth="lg"
                 TransitionComponent={Zoom}
                 open={isOpen}
-                onEnter={this.getTrailer}
+                TransitionProps={{ onEnter: this.getTrailer }}
                 onClose={this.close}
             >
                 <div className="DialogTitleDiv">
