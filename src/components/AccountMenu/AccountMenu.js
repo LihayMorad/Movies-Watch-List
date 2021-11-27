@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { connect } from 'react-redux';
 import { toggleSnackbar } from '../../store/actions';
@@ -21,73 +21,77 @@ const StyledTooltip = withStyles({
     arrow: { color: 'black' },
 })(Tooltip);
 
-class AccountMenu extends Component {
-    state = {
-        menuAnchorEl: null,
-    };
+const AccountMenu = ({ toggleSnackbar }) => {
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const loggedInUser = AccountsService.GetLoggedInUser();
+    const isOpen = !!menuAnchorEl;
 
-    signIn = () => {
+    const open = useCallback((e) => {
+        setMenuAnchorEl(e.currentTarget);
+    }, []);
+
+    const close = useCallback(() => {
+        setMenuAnchorEl(null);
+    }, []);
+
+    const signIn = useCallback(() => {
         AccountsService.SignIn()
             .then((result) => {
-                this.props.toggleSnackbar(
+                toggleSnackbar(
                     true,
                     `Hi ${result.additionalUserInfo.profile.name}, you are now logged in.`,
                     'information'
                 );
-                this.close();
+                close();
                 AnalyticsService({
                     category: 'User',
                     action: 'User Signed in with Google account',
                 });
             })
             .catch(() => {
-                this.props.toggleSnackbar(true, `Sign in error`, 'error');
+                toggleSnackbar(true, `Sign in error`, 'error');
             });
-    };
+    }, [toggleSnackbar, close]);
 
-    signInAnonymously = () => {
+    const signInAnonymously = useCallback(() => {
         AccountsService.SignInAnonymously()
             .then(() => {
-                this.props.toggleSnackbar(
-                    true,
-                    `Hi, you are now logged in as a guest user.`,
-                    'information'
-                );
-                this.close();
+                toggleSnackbar(true, `Hi, you are now logged in as a guest user.`, 'information');
+                close();
                 AnalyticsService({
                     category: 'User',
                     action: 'User Signed in anonymously',
                 });
             })
             .catch(() => {
-                this.props.toggleSnackbar(true, `Error! cannot sign in as a guest user.`, 'error');
+                toggleSnackbar(true, `Error! cannot sign in as a guest user.`, 'error');
             });
-    };
+    }, [toggleSnackbar, close]);
 
-    linkAccount = () => {
+    const linkAccount = useCallback(() => {
         AccountsService.LinkAccount()
             .then((result) => {
-                this.props.toggleSnackbar(
+                toggleSnackbar(
                     true,
                     `You guest account was successfully linked with your Google account '${result.user.email}'.`,
                     'information'
                 );
-                this.close();
+                close();
                 AnalyticsService({
                     category: 'User',
                     action: 'User linked his anonymous account to his Google account',
                 });
             })
             .catch((error) => {
-                this.props.toggleSnackbar(
+                toggleSnackbar(
                     true,
                     `Error! Cannot link with Google account '${error.email}' because you've probably used it before. Try to login with this account.`,
                     'error'
                 );
             });
-    };
+    }, [toggleSnackbar, close]);
 
-    signOut = () => {
+    const signOut = useCallback(() => {
         const loggedInUser = AccountsService.GetLoggedInUser();
         const accountMessage = loggedInUser.isAnonymous
             ? 'guest account ?\nPlease pay attention that your list will be lost! You can link your Google account to save it.'
@@ -95,28 +99,20 @@ class AccountMenu extends Component {
         if (window.confirm(`Are you sure you want to logout from your ${accountMessage}`)) {
             AccountsService.SignOut()
                 .then(() => {
-                    this.props.toggleSnackbar(true, 'You are now logged out', 'information');
-                    this.close();
+                    toggleSnackbar(true, 'You are now logged out', 'information');
+                    close();
                     AnalyticsService({
                         category: 'User',
                         action: 'User signed out',
                     });
                 })
                 .catch(() => {
-                    this.props.toggleSnackbar(true, `Sign out error`, 'error');
+                    toggleSnackbar(true, `Sign out error`, 'error');
                 });
         }
-    };
+    }, [toggleSnackbar, close]);
 
-    open = (e) => {
-        this.setState({ menuAnchorEl: e.currentTarget });
-    };
-
-    close = () => {
-        this.setState({ menuAnchorEl: null });
-    };
-
-    getSignInOutButton = () => {
+    const getSignInOutButton = useCallback(() => {
         const loggedInUser = AccountsService.GetLoggedInUser();
         return (
             <MenuItem>
@@ -125,7 +121,7 @@ class AccountMenu extends Component {
                         className="loggedInBtn btnPadding"
                         color="primary"
                         variant="contained"
-                        onClick={this.signOut}
+                        onClick={signOut}
                     >
                         {loggedInUser.isAnonymous ? (
                             <>
@@ -149,7 +145,7 @@ class AccountMenu extends Component {
                             className="btnPadding"
                             color="primary"
                             variant="contained"
-                            onClick={this.signIn}
+                            onClick={signIn}
                         >
                             <PersonIcon />
                             &nbsp;Sign in
@@ -158,70 +154,70 @@ class AccountMenu extends Component {
                 )}
             </MenuItem>
         );
-    };
+    }, [signIn, signOut]);
 
-    getLinkAccountButton = () => (
-        <MenuItem>
-            <StyledTooltip
-                title="Link this guest account with your Google account to save your list"
-                TransitionComponent={Zoom}
-                arrow
+    const getLinkAccountButton = useCallback(
+        () => (
+            <MenuItem>
+                <StyledTooltip
+                    title="Link this guest account with your Google account to save your list"
+                    TransitionComponent={Zoom}
+                    arrow
+                >
+                    <Button
+                        className="btnPadding"
+                        color="primary"
+                        variant="contained"
+                        onClick={linkAccount}
+                    >
+                        <LinkIcon />
+                        &nbsp;Link with Google
+                    </Button>
+                </StyledTooltip>
+            </MenuItem>
+        ),
+        [linkAccount]
+    );
+
+    const getSignInAnonymouslyButton = useCallback(
+        () => (
+            <MenuItem>
+                <StyledTooltip title="Sign in anonymously" TransitionComponent={Zoom} arrow>
+                    <Button
+                        className="btnPadding"
+                        color="default"
+                        variant="contained"
+                        onClick={signInAnonymously}
+                    >
+                        <PersonOutlineIcon />
+                        &nbsp;Login as a guest
+                    </Button>
+                </StyledTooltip>
+            </MenuItem>
+        ),
+        [signInAnonymously]
+    );
+
+    return (
+        <>
+            <IconButton className="accountMenu" color="primary" onClick={open}>
+                <AccountCircle fontSize="large" />
+            </IconButton>
+
+            <Menu
+                anchorEl={menuAnchorEl}
+                open={isOpen}
+                onClose={close}
+                TransitionComponent={Fade}
+                keepMounted
             >
-                <Button
-                    className="btnPadding"
-                    color="primary"
-                    variant="contained"
-                    onClick={this.linkAccount}
-                >
-                    <LinkIcon />
-                    &nbsp;Link with Google
-                </Button>
-            </StyledTooltip>
-        </MenuItem>
+                {getSignInOutButton()}
+                {!loggedInUser && getSignInAnonymouslyButton()}
+                {loggedInUser && loggedInUser.isAnonymous && getLinkAccountButton()}
+            </Menu>
+        </>
     );
-
-    getSignInAnonymouslyButton = () => (
-        <MenuItem>
-            <StyledTooltip title="Sign in anonymously" TransitionComponent={Zoom} arrow>
-                <Button
-                    className="btnPadding"
-                    color="default"
-                    variant="contained"
-                    onClick={this.signInAnonymously}
-                >
-                    <PersonOutlineIcon />
-                    &nbsp;Login as a guest
-                </Button>
-            </StyledTooltip>
-        </MenuItem>
-    );
-
-    render() {
-        const loggedInUser = AccountsService.GetLoggedInUser();
-        const { menuAnchorEl } = this.state;
-        const isOpen = !!menuAnchorEl;
-
-        return (
-            <>
-                <IconButton className="accountMenu" color="primary" onClick={this.open}>
-                    <AccountCircle fontSize="large" />
-                </IconButton>
-
-                <Menu
-                    anchorEl={menuAnchorEl}
-                    open={isOpen}
-                    onClose={this.close}
-                    TransitionComponent={Fade}
-                    keepMounted
-                >
-                    {this.getSignInOutButton()}
-                    {!loggedInUser && this.getSignInAnonymouslyButton()}
-                    {loggedInUser && loggedInUser.isAnonymous && this.getLinkAccountButton()}
-                </Menu>
-            </>
-        );
-    }
-}
+};
 
 const mapStateToProps = (state) => state;
 
