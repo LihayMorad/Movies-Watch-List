@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import {
     Button,
@@ -15,66 +15,59 @@ import { withStyles } from '@material-ui/core/styles';
 
 const StyledDialog = withStyles({ paper: { margin: '24px' } })(Dialog);
 
-class movieCommentsModal extends Component {
-    state = {
-        comments: this.props.comments || '',
-        commentsChanged: false,
-    };
+const MovieCommentsModal = ({ isOpen, comments, toggle, handleEditComments }) => {
+    const [newComments, setNewComments] = useState(comments || '');
+    const [commentsChanged, setCommentsChanged] = useState(false);
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.comments !== this.props.comments)
-            this.setState({ comments: this.props.comments });
-    }
+    const onChange = useCallback((e) => {
+        setNewComments(e.target.value);
+        setCommentsChanged(true);
+    }, []);
 
-    onChange = ({ target: { value } }) => {
-        this.setState({ comments: value, commentsChanged: true });
-    };
+    const onClose = useCallback(() => {
+        setNewComments(comments || '');
+        setCommentsChanged(false);
+        toggle();
+    }, [comments, toggle]);
 
-    close = () => {
-        this.setState({ commentsChanged: false });
-        this.props.toggle();
-    };
+    const onSave = useCallback(() => {
+        handleEditComments(commentsChanged ? newComments : comments);
+    }, [comments, newComments, commentsChanged, handleEditComments]);
 
-    handleEditComments = () => {
-        this.props.handleEditComments(
-            this.state.commentsChanged ? this.state.comments : this.props.comments
-        );
-    };
+    useEffect(() => {
+        setNewComments(comments);
+    }, [comments]);
 
-    render() {
-        const { commentsChanged } = this.state;
+    return (
+        <StyledDialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
+            <DialogTitle>
+                Movie note
+                <IconButton className="closeModalBtn" onClick={onClose}>
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
 
-        return (
-            <StyledDialog open={this.props.isOpen} onClose={this.close} fullWidth maxWidth="md">
-                <DialogTitle>
-                    Movie note
-                    <IconButton className="closeModalBtn" onClick={this.props.toggle}>
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
+            <DialogContent>
+                <DialogContentText>Edit your personal note below.</DialogContentText>
+                <TextField
+                    id="comments"
+                    multiline
+                    autoFocus
+                    margin="dense"
+                    type="text"
+                    value={commentsChanged ? newComments : comments}
+                    onChange={onChange}
+                    fullWidth
+                />
+            </DialogContent>
 
-                <DialogContent>
-                    <DialogContentText>Edit your personal note below.</DialogContentText>
-                    <TextField
-                        id="comments"
-                        multiline
-                        autoFocus
-                        margin="dense"
-                        type="text"
-                        value={commentsChanged ? this.state.comments : this.props.comments}
-                        onChange={this.onChange}
-                        fullWidth
-                    />
-                </DialogContent>
+            <DialogActions>
+                <Button color="primary" onClick={onSave}>
+                    Save
+                </Button>
+            </DialogActions>
+        </StyledDialog>
+    );
+};
 
-                <DialogActions>
-                    <Button color="primary" onClick={this.handleEditComments}>
-                        Save
-                    </Button>
-                </DialogActions>
-            </StyledDialog>
-        );
-    }
-}
-
-export default movieCommentsModal;
+export default MovieCommentsModal;
